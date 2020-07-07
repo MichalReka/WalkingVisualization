@@ -106,7 +106,7 @@ public class GeneratePopulation : MonoBehaviour
                 animals[activeAnimalIndexes[i]].UpdateInput();
                 animals[activeAnimalIndexes[i]].chase();
                 bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
-                if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement
+                if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzecia implementuje w pliku animal movement
                 {
                     animalsObjectsCatched++;
                     animalsObjects[activeAnimalIndexes[i]].SetActive(false);   //ustawiam to zwierze jako nieaktywne

@@ -1,6 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public struct AnimalBrain
+{
+    public List<List<float>> inputSynapsesWeights;
+    public List<List<float>> outputSynapsesWeights;
+    public List<float> hiddenLayerBias;
+}
 public class AnimalMovement : MonoBehaviour
 {
     private float startingBodyY;
@@ -10,6 +16,7 @@ public class AnimalMovement : MonoBehaviour
     public float currentX;
     public float speed;
     Transform body;
+    AnimalBrain animalBrain;
     public void OrderAnimalChildren()
     {
         HingeArmPart[] temp = GetComponentsInChildren<HingeArmPart>();
@@ -43,6 +50,26 @@ public class AnimalMovement : MonoBehaviour
     public void setRandomWeights()
     {
         OrderAnimalChildren();
+        hiddenLayerSize = input.Count * 2 / 3 + outputSize;
+        inputSynapsesWeights = new List<List<float>>();
+        outputSynapsesWeights = new List<List<float>>();
+        hiddenLayerBias = new List<float>(hiddenLayerSize);
+        for (int i = 0; i < hiddenLayerSize; i++)
+        {
+            hiddenLayerBias.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+            List<float> neuronInputWeights = new List<float>();
+            List<float> neuronOutputWeights = new List<float>();
+            for (int j = 0; j < input.Count; j++)
+            {
+                neuronInputWeights.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+            }
+            for (int j = 0; j < outputSize; j++)
+            {
+                neuronOutputWeights.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+            }
+            inputSynapsesWeights.Add(neuronInputWeights);
+            outputSynapsesWeights.Add(neuronOutputWeights);
+        }
         foreach (HingeArmPart part in orderedHingeParts)
         {
             part.ifSetoToRandom = true;
@@ -50,7 +77,7 @@ public class AnimalMovement : MonoBehaviour
     }
     void Start()
     {
-        
+
     }
     public void CollisionDetected()
     {
@@ -102,7 +129,7 @@ public class AnimalMovement : MonoBehaviour
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
         }
-        else if (body.transform.position.y<0)   //jak spadnie w nieznane
+        else if (body.transform.position.y < 0)   //jak spadnie w nieznane
         {
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;

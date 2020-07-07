@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Jobs;
-using Unity.Collections;
-using Unity.Burst;
+
 
 public class HingeArmPart : MonoBehaviour
 {
@@ -134,7 +132,6 @@ public class HingeArmPart : MonoBehaviour
             outputSynapsesWeights.Add(neuronOutputWeights);
         }
     }
-
     bool roll(float chance)
     {
         float localchance = Random.Range(0.0f, 100.0f);
