@@ -19,6 +19,16 @@ public class visualizationBasics : MonoBehaviour
     public float maximumY = 60F;
 
     float rotationY = 0F;
+    void CursorLock()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible=false;
+    }
+    void CursorUnlock()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible=true;
+    }
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -61,6 +71,14 @@ public class visualizationBasics : MonoBehaviour
         if(Input.GetKey(KeyCode.Escape))
         {
             Application.Quit();
+        }
+        if(Input.GetKey(KeyCode.Space))
+        {
+            CursorUnlock();
+        }
+        else
+        {
+            CursorLock();
         }
     }
 

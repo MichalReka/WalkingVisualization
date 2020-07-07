@@ -20,12 +20,11 @@ public class GeneratePopulation : MonoBehaviour
     public string animalPrefabName = "animal0";
     public float startingPosition = 5.0f;
     public float speed = 2f;
-    private int currAnimalIndex = 0;
     public static System.Random rnd = new System.Random();
     // Start is called before the first frame update
     public GeneticAlgorithm geneticAlgorithm;
-
     public int[] activeAnimalIndexes;
+    PopulationUI populationUIhandler;
     void Start()
     {
         activeAnimalIndexes = new int[populationPartSize];
@@ -34,6 +33,7 @@ public class GeneratePopulation : MonoBehaviour
         var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
         Destroy(tempObject);
         createGeneration();
+        populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
     }
     void createGeneration()
     {
@@ -108,6 +108,7 @@ public class GeneratePopulation : MonoBehaviour
                 bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
                 if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement
                 {
+                    animalsObjectsCatched++;
                     animalsObjects[activeAnimalIndexes[i]].SetActive(false);   //ustawiam to zwierze jako nieaktywne
                     if (animalsObjects.Count != populationSize)
                     {
@@ -121,10 +122,9 @@ public class GeneratePopulation : MonoBehaviour
                             createAnimal(new Vector3(0, 0, 15 * i + transform.position.z));
                         }
                     }
-                    animalsObjectsCatched++;
                 }
             }
-
+            populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
         }
     }
 }

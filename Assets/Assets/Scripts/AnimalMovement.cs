@@ -52,7 +52,7 @@ public class AnimalMovement : MonoBehaviour
     {
         
     }
-    public void CollisionDetected(AnimalBody arm)
+    public void CollisionDetected()
     {
         var joints = GetComponentsInChildren<HingeJoint>();
         foreach (var hJoint in joints)
@@ -99,7 +99,12 @@ public class AnimalMovement : MonoBehaviour
         }
         else if (body.transform.position.y > startingBodyY * 1.5)   //jak poleci w nieznane
         {
-            body.transform.position = new Vector3(-999, -999, 0);
+            body.transform.position = new Vector3(-999, -999, -999);
+            ifCatched = true;
+        }
+        else if (body.transform.position.y<0)   //jak spadnie w nieznane
+        {
+            body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
         }
     }

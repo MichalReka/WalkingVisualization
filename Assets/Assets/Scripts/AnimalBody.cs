@@ -20,7 +20,7 @@ public class AnimalBody : MonoBehaviour
          if(collision.gameObject.name=="ground")
          {
             transform.GetComponent<Rigidbody>().isKinematic=true;
-            transform.parent.GetComponent<AnimalMovement>().CollisionDetected(this);
+            transform.parent.GetComponent<AnimalMovement>().CollisionDetected();
          }
      }
 }

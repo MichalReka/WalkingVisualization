@@ -8,15 +8,15 @@ using Unity.Burst;
 public class HingeArmPart : MonoBehaviour
 {
     public float bodyY;
-    public float motorForce = 5;
-    public float targetVelocity = 90;
+    public float motorForce;
+    public float targetVelocity;
     HingeJoint hinge;
     //prosta implementacja sieci neuronowej
     public List<List<float>> inputSynapsesWeights;
     public List<List<float>> outputSynapsesWeights;
     public List<float> hiddenLayerBias;
-    static int outputSize = 4;
-    public float[] output = new float[outputSize]; //velocity,motor,min.limit,max.limit
+    static int outputSize=4;
+    public float[] output = new float[4]; //velocity,motor,min.limit,max.limit
     public List<float> input;
     public int hiddenLayerSize;
     float startingBodyY;
@@ -219,7 +219,6 @@ public class HingeArmPart : MonoBehaviour
             tempOutputValue = sigmoid(tempOutputValue);
             output[outputIndex] = tempOutputValue;
         }
-
     }
     public void TranslateOutput()
     {

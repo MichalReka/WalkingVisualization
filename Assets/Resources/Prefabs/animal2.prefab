@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6643106805608437119}
   - component: {fileID: 169528470995702900}
   - component: {fileID: 5842664203151219155}
-  - component: {fileID: 4790626084926403845}
   m_Layer: 0
   m_Name: leg1 (1)
   m_TagString: Untagged
@@ -147,22 +146,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4790626084926403845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662464379404053439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 1000
-  ifSet: 0
 --- !u!1 &732069696664908803
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +270,6 @@ GameObject:
   - component: {fileID: 8525080244550652270}
   - component: {fileID: 1129676886317590895}
   - component: {fileID: 33572941840042024}
-  - component: {fileID: 5503506813207075899}
   m_Layer: 0
   m_Name: leg2 (1)
   m_TagString: Untagged
@@ -420,22 +402,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &5503506813207075899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 769003394866467284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 1000
-  ifSet: 0
 --- !u!1 &826398700444449507
 GameObject:
   m_ObjectHideFlags: 0
@@ -656,7 +622,6 @@ GameObject:
   - component: {fileID: 2932765672159596246}
   - component: {fileID: 6594072533414686019}
   - component: {fileID: 8313889281068154884}
-  - component: {fileID: 6836775297927383491}
   m_Layer: 0
   m_Name: hip2 (1)
   m_TagString: Untagged
@@ -789,22 +754,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &6836775297927383491
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150761822110809586}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 2000
-  ifSet: 0
 --- !u!1 &4014823529806173141
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1224,6 @@ GameObject:
   - component: {fileID: 4262061217547014999}
   - component: {fileID: 4262061217547014994}
   - component: {fileID: 4262061217547014996}
-  - component: {fileID: 4262061217547014997}
   m_Layer: 0
   m_Name: leg1
   m_TagString: Untagged
@@ -1408,22 +1356,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4262061217547014997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4262061217547014995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 1000
-  ifSet: 0
 --- !u!1 &4262061217585919270
 GameObject:
   m_ObjectHideFlags: 0
@@ -1813,7 +1745,6 @@ GameObject:
   - component: {fileID: 4262061217897328946}
   - component: {fileID: 4262061217897328947}
   - component: {fileID: 4262061217897328944}
-  - component: {fileID: 4262061217897328945}
   m_Layer: 0
   m_Name: hip1
   m_TagString: Untagged
@@ -1946,22 +1877,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4262061217897328945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4262061217897328942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 2000
-  ifSet: 0
 --- !u!1 &4262061218021860652
 GameObject:
   m_ObjectHideFlags: 0
@@ -1976,7 +1891,6 @@ GameObject:
   - component: {fileID: 4262061218021860659}
   - component: {fileID: 4262061218021860656}
   - component: {fileID: 4262061218021860657}
-  - component: {fileID: 4262061218021860654}
   m_Layer: 0
   m_Name: hip2
   m_TagString: Untagged
@@ -2109,22 +2023,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4262061218021860654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4262061218021860652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 2000
-  ifSet: 0
 --- !u!1 &4262061218370734667
 GameObject:
   m_ObjectHideFlags: 0
@@ -2442,7 +2340,6 @@ GameObject:
   - component: {fileID: 4262061219354541042}
   - component: {fileID: 4262061219354541041}
   - component: {fileID: 4262061219354541043}
-  - component: {fileID: 4262061219354541040}
   m_Layer: 0
   m_Name: leg2
   m_TagString: Untagged
@@ -2575,22 +2472,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4262061219354541040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4262061219354541038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 1000
-  ifSet: 0
 --- !u!1 &4478979124716986063
 GameObject:
   m_ObjectHideFlags: 0
@@ -3105,7 +2986,6 @@ GameObject:
   - component: {fileID: 6946847368358547652}
   - component: {fileID: 6436211537093263670}
   - component: {fileID: 9095332845595933307}
-  - component: {fileID: 7352420592677554389}
   m_Layer: 0
   m_Name: hip1 (1)
   m_TagString: Untagged
@@ -3238,22 +3118,6 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &7352420592677554389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7439838878952701638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b586aa2c9bdab4a8ffb25a2c2f4de8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  limit: 0
-  motorForce: 20
-  targetVelocity: 2000
-  ifSet: 0
 --- !u!1 &7810545381737038883
 GameObject:
   m_ObjectHideFlags: 0

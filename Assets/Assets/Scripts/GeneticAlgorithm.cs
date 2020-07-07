@@ -10,7 +10,7 @@ public class GeneticAlgorithm
     private List<List<HingeArmPart>> populationGenPool;
     private List<List<HingeArmPart>> parentsList;
     private int chromosomeLength;
-    private int bestSolutionGenNum = 0;
+    //private int bestSolutionGenNum = 0;
     private float mutationRate;
     private int numberOfParents;
     public float bestDistance{get;private set;}
