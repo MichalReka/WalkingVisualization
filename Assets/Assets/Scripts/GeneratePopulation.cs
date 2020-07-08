@@ -30,8 +30,6 @@ public class GeneratePopulation : MonoBehaviour
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
         animals = new List<AnimalMovement>();
-        var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
-        Destroy(tempObject);
         createGeneration();
         populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
     }
@@ -103,7 +101,7 @@ public class GeneratePopulation : MonoBehaviour
             });
             for (int i = 0; i < populationPartSize; i++)
             {
-                animals[activeAnimalIndexes[i]].UpdateInput();
+                animals[activeAnimalIndexes[i]].UpdateIO();
                 animals[activeAnimalIndexes[i]].chase();
                 bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
                 if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement

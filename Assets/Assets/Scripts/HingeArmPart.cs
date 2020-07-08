@@ -100,10 +100,6 @@ public class HingeArmPart : MonoBehaviour
         {
             input.Add(rigidBody.velocity[i]);
         }
-        for (int i = 0; i < 3; i++)
-        {
-            input.Add(rigidBody.angularVelocity[i]);
-        }
         bodyY = animalBody.transform.position.y;
         input.Add(bodyY);
         for (int i = 0; i < 3; i++)

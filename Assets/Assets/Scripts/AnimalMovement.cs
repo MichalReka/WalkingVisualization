@@ -73,7 +73,7 @@ public class AnimalMovement : MonoBehaviour
             orderedHingeParts[i].setOutput();
         }
     }
-    public void UpdateInput()
+    public void UpdateIO()
     {
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {

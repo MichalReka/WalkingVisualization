@@ -35,30 +35,7 @@ public class GeneticAlgorithm
         //chwilowo tylko ustawiam jak daleko zaszedl osobnik - jesli jego tulow jest powyzej (na razie stalej - pozniej ustawie niezaleznie od gatunku) wartosci, mnoze 1.2
         var individualBody=individual.transform.Find("body").gameObject;
         var xPosition = individualBody.transform.position.x;
-        var yPosition = individualBody.transform.position.y;
         var fitness=xPosition;
-        var rigidBody=individualBody.GetComponent<Rigidbody>();
-        // for (int i = 1; i < 4; i++)
-        // {
-        //     var result = individual.transform.Find("hip"+i);    //sprawdzam czy biodra nie upadly, jesli nie, zwiekszam fitness
-        //     if(result)
-        //     {
-        //         if(result.transform.position.y>1.2)
-        //         {
-        //             fitness=fitness*1.05f;
-        //         }
-        //     }
-        // }
-        // if(yPosition<1) //jesli sie wywroci
-        // {
-        //     fitness=fitness*0.7f;
-        // }
-        // fitness = fitness+rigidBody.velocity.x;    //szybko wazna - fitness sie zwieksza wraz z szybkoscia glownego ciala
-        // if(yPosition>)
-        // {
-        //     fitness=fitness*1.2f;  //jesli sie nie wywroci
-        // }
-
         return fitness;
     }
     public List<HingeArmPart> OrderAnimalChildren(GameObject obj)
@@ -143,14 +120,12 @@ public class GeneticAlgorithm
         }
         for (int i = 0; i < child.Count; i++) 
         {
-            double chance = Random.Range(0.0f,100.0f);
+            float chance = Random.Range(0.0f,100.0f);
             chance = chance/100;
             if (chance < mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem
             {
-
                 child[i].mutateWeights();
             }
-            
         }
         
         return child;
