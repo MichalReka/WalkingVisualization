@@ -1,6 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+struct AnimalBrain{
+    const int valuesPerMovingPart=4;
+    public List<List<float>> inputSynapsesWeights;
+    public List<List<float>> outputSynapsesWeights;
+    public List<float> hiddenLayerBias;
+    public List<float> output;  //dzielnik czworki
+}
 public class AnimalMovement : MonoBehaviour
 {
     private float startingBodyY;

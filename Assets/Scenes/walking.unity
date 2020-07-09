@@ -742,7 +742,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!108 &705507994
 Light:
@@ -763,7 +763,7 @@ Light:
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
-    m_Resolution: -1
+    m_Resolution: 1
     m_CustomResolution: -1
     m_Strength: 0.624
     m_Bias: 0.05
@@ -1098,7 +1098,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!64 &1310826882
 MeshCollider:
@@ -1223,7 +1223,7 @@ MonoBehaviour:
   animalsObjectsCatched: 0
   currentPart: 0
   populationSize: 1000
-  populationPartSize: 100
+  populationPartSize: 50
   maxGenNum: 5000
   mutationRate: 0.08
   currentGen: 0

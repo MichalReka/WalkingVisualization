@@ -20,8 +20,6 @@ public class HingeArmPart : MonoBehaviour
     public List<float> input;
     public int hiddenLayerSize;
     float startingBodyY;
-    Quaternion startingRotation;
-    Quaternion startingBodyRotation;
     //jako input przyjmuje - pozycje, obrot, przyspieszenie, przyspieszenie katowe czesci ktora sie porusza
     //jako output motor, limit, velocity
     // Start is called before the first frame update
@@ -35,8 +33,6 @@ public class HingeArmPart : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         animalBody = transform.parent.gameObject.transform.Find("body");
         startingBodyY = animalBody.transform.position.y;
-        startingRotation = transform.rotation;
-        startingBodyRotation = animalBody.transform.rotation;
         hinge = GetComponent<HingeJoint>();
         input = new List<float>();
         setInput();
@@ -89,23 +85,31 @@ public class HingeArmPart : MonoBehaviour
         float translatedValue = (Mathf.Exp(value) / (Mathf.Exp(value) + 1)) * 2 - 1;  // wartosci od -1 do 1
         return translatedValue;
     }
+    float normalizeValue(float value, float min, float max) //wartosci od -1 do 1 - normalizacja potrzebna dla zwiekszenia wydajnosci
+    {
+        float targetMin=-1;
+        float targetMax=1;
+        float translatedValue=(targetMax-targetMin)/(max-min)*(value-max)+targetMax;
+        return translatedValue;
+    }
     public void setInput()
     {
         input.Clear();
         for (int i = 0; i < 3; i++)
         {
-            input.Add((transform.rotation[i] - startingRotation[i]) * Mathf.Deg2Rad);
+            input.Add(normalizeValue(transform.rotation[i],-360,360));  //nie powinna nastapic wieksza rotacja
         }
         for (int i = 0; i < 3; i++)
         {
             input.Add(rigidBody.velocity[i]);
         }
-        bodyY = animalBody.transform.position.y;
+        bodyY = normalizeValue(animalBody.transform.position.y,startingBodyY*0.7f,startingBodyY*1.3f);
         input.Add(bodyY);
         for (int i = 0; i < 3; i++)
         {
-            input.Add((startingBodyRotation[i] - animalBody.transform.rotation[i]) * Mathf.Deg2Rad);
+            input.Add(normalizeValue(animalBody.transform.rotation[i],-360,360));
         }
+        
     }
 
     public void setRandomWeights()
