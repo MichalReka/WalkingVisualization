@@ -1,17 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-struct AnimalBrain{
-    const int valuesPerMovingPart=4;
-    public List<List<float>> inputSynapsesWeights;
-    public List<List<float>> outputSynapsesWeights;
-    public List<float> hiddenLayerBias;
-    public List<float> output;  //dzielnik czworki
-}
+using System.Threading;
+using System.Threading.Tasks;
+
 public class AnimalMovement : MonoBehaviour
 {
+    public AnimalBrain animalBrain;
     private float startingBodyY;
-    private HingeArmPart[] injectedHingeParts;
     public HingeArmPart[] orderedHingeParts;
     public bool ifCatched = false;
     public float currentX;
@@ -34,26 +30,14 @@ public class AnimalMovement : MonoBehaviour
 
         }
     }
-    public void setHingeParts(List<HingeArmPart> hingeParts)
+    public void setNeuralNetwork(AnimalBrain neuralNetwork)
     {
-        this.injectedHingeParts = hingeParts.ToArray();
-        OrderAnimalChildren();
-        var i = 0;
-        foreach (HingeArmPart part in orderedHingeParts)
-        {
-            part.inputSynapsesWeights = injectedHingeParts[i].inputSynapsesWeights;
-            part.outputSynapsesWeights = injectedHingeParts[i].outputSynapsesWeights;
-            part.hiddenLayerBias = injectedHingeParts[i].hiddenLayerBias;
-            i++;
-        }
+        animalBrain=neuralNetwork;
     }
     public void setRandomWeights()
     {
-        OrderAnimalChildren();
-        foreach (HingeArmPart part in orderedHingeParts)
-        {
-            part.ifSetoToRandom = true;
-        }
+        animalBrain=new AnimalBrain(orderedHingeParts.Length);
+        animalBrain.setRandomWeights();
     }
     void Start()
     {
@@ -77,19 +61,64 @@ public class AnimalMovement : MonoBehaviour
     {
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
-            orderedHingeParts[i].setOutput();
+            animalBrain.setOutput();
         }
+    }
+    private float[] gatherInput()
+    {
+        float[] input = new float[animalBrain.noMovingParts*HingeArmPart.inputSize+animalBrain.bodyInput];
+        var currIndex=0;
+        Parallel.For(0, orderedHingeParts.Length, delegate (int i)
+        {
+            for(int j=0;j<orderedHingeParts[i].input.Count;j++)
+            {
+                input[currIndex]=orderedHingeParts[i].input[j];
+                currIndex++;
+            }
+        });
+
+        // for(int i=0;i<orderedHingeParts.Length;i++)
+        // {
+        //     for(int j=0;j<orderedHingeParts[i].input.Count;j++)
+        //     {
+        //         input[currIndex]=orderedHingeParts[i].input[j];
+        //         currIndex++;
+        //     }
+        // }
+        var bodyY = HingeArmPart.normalizeValue(body.position.y,startingBodyY*0.7f,startingBodyY*1.3f);
+        input[currIndex]=bodyY;
+        currIndex++;
+        for (int i = 0; i < 3; i++)
+        {
+            input[currIndex]=HingeArmPart.normalizeValue(body.rotation[i],-360,360);
+            currIndex++;
+        }
+        return input;
     }
     public void UpdateIO()
     {
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
-            orderedHingeParts[i].TranslateOutput();
+            //orderedHingeParts[i].TranslateOutput();
             orderedHingeParts[i].setInput();
+        }
+        gatherInput();
+        int currOutputIndex=0;
+        for (int i = 0; i < orderedHingeParts.Length; i++)
+        {
+            
+            List<float> partOutput=new List<float>();
+            for(int j=0;j<HingeArmPart.outputSize;j++)
+            {
+                partOutput.Add(animalBrain.output[currOutputIndex]);
+                currOutputIndex++;
+            }
+            orderedHingeParts[i].TranslateOutput(partOutput);
         }
     }
     public void setBody()
     {
+        OrderAnimalChildren();
         body = transform.Find("body");
         startingBodyY = body.transform.position.y;
         for (int i = 0; i < orderedHingeParts.Length; i++)

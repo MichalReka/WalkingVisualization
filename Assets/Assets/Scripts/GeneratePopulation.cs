@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 public class GeneratePopulation : MonoBehaviour
 {
+    private int frame = 0;
+    private int framesToFullOutput=5;
     public int animalsObjectsCatched = 0;
     List<GameObject> animalsObjects;
     List<AnimalMovement> animals;
@@ -48,23 +50,24 @@ public class GeneratePopulation : MonoBehaviour
             activeAnimalIndexes[i] = i;
         }
     }
-    void createAnimal(Vector3 position, List<HingeArmPart> individualChromosome = null)
+    void createAnimal(Vector3 position, AnimalBrain individualBrain = null)
     {
         var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
         tempObject.transform.SetPositionAndRotation(position, new Quaternion(0, 0, 0, 0));
         tempObject.transform.SetParent(transform);
         var animalComponent = tempObject.AddComponent<AnimalMovement>();
+        animalComponent.speed = speed;
+        animalComponent.currentX = -startingPosition;
+        animalComponent.setBody();
         if (currentGen > 0)
         {
-            animalComponent.setHingeParts(individualChromosome);
+            animalComponent.setNeuralNetwork(individualBrain);
         }
         else
         {
             animalComponent.setRandomWeights();
         }
-        animalComponent.speed = speed;
-        animalComponent.currentX = -startingPosition;
-        animalComponent.setBody();
+        
         animalsObjects.Add(tempObject);
         animals.Add(animalComponent);
     }
@@ -80,13 +83,14 @@ public class GeneratePopulation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (currentGen <= maxGenNum)
         {
             if (animalsObjectsCatched == populationSize)
             {
                 animalsObjectsCatched = 0;
                 currentGen++;
-                geneticAlgorithm = new GeneticAlgorithm(animalsObjects, mutationRate);
+                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
                 currBestDistance = geneticAlgorithm.bestDistance;
                 if (currBestDistance > bestDistance)
                 {

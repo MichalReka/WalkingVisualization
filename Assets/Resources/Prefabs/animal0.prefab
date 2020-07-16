@@ -339,14 +339,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &1404477475668255668
 MonoBehaviour:
@@ -786,14 +780,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &3500150682101815625
 MonoBehaviour:
@@ -1634,14 +1622,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &8526450565798888622
 MonoBehaviour:
@@ -1943,14 +1925,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &6146601536809501617
 MonoBehaviour:
@@ -2375,14 +2351,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &8725997662500394533
 MonoBehaviour:
@@ -2559,14 +2529,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &7969334354688374342
 MonoBehaviour:
@@ -2743,14 +2707,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &4755947169521685137
 MonoBehaviour:
@@ -3065,14 +3023,8 @@ MonoBehaviour:
   bodyY: 0
   motorForce: 5
   targetVelocity: 90
-  hiddenLayerBias: []
-  output:
-  - 0
-  - 0
-  - 0
-  - 0
   input: []
-  hiddenLayerSize: 0
+  hiddenLayerBias: []
   ifSetoToRandom: 0
 --- !u!114 &261865801303652767
 MonoBehaviour:
