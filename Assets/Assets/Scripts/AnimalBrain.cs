@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 
-public class AnimalBrain 
+public class AnimalBrain
 {
-    private int outputPart=0;
-    public int bodyInput=4;
-    public int noMovingParts;
+    public List<int> limitMax;
+    public List<int> limitMin;
+    private int outputPart = 0;
+    public int bodyInput = 4;
+    public static int noMovingParts;
     public int hiddenLayerSize;
-    const int valuesPerMovingPart=4;
     public List<List<float>> inputSynapsesWeights;
     public List<List<float>> outputSynapsesWeights;
     public List<float> hiddenLayerBias;
     public float[] output;  //dzielnik czworki
     public float[] input;
+    int maxLimitBorder=55;
+    int minLimitBorder=10;
     // public AnimalBrain()
     // {
     //     hiddenLayerSize = input.Count * 2 / 3 + outputSize;
@@ -23,18 +26,18 @@ public class AnimalBrain
     //         setRandomWeights();
     //     }
     // }
-    public AnimalBrain(int noMovingParts)
+    public AnimalBrain()
     {
-        
-        this.noMovingParts=noMovingParts;
-        this.hiddenLayerSize=((noMovingParts*HingeArmPart.inputSize)+bodyInput)*2/3+noMovingParts*HingeArmPart.outputSize;
-        output=new float[noMovingParts*HingeArmPart.outputSize];
-        input=new float[(noMovingParts*HingeArmPart.inputSize)+bodyInput];
+        this.hiddenLayerSize = ((noMovingParts * HingeArmPart.inputSize) + bodyInput) * 2 / 3 + noMovingParts * HingeArmPart.outputSize;
+        output = new float[noMovingParts * HingeArmPart.outputSize];
+        input = new float[(noMovingParts * HingeArmPart.inputSize) + bodyInput];
         inputSynapsesWeights = new List<List<float>>();
         outputSynapsesWeights = new List<List<float>>();
         hiddenLayerBias = new List<float>(hiddenLayerSize);
+        limitMin=new List<int>();
+        limitMax=new List<int>();
     }
-    
+
     bool roll(float chance)
     {
         float localchance = Random.Range(0.0f, 100.0f);
@@ -49,9 +52,11 @@ public class AnimalBrain
     }
     public void deepCopy(AnimalBrain source)
     {
+        limitMax=new List<int>(source.limitMax);
+        limitMin=new List<int>(source.limitMin);
         for (int i = 0; i < source.inputSynapsesWeights.Count; i++)
         {
-            List<float> tempInputList=new List<float>();
+            List<float> tempInputList = new List<float>();
             for (int j = 0; j < source.inputSynapsesWeights[i].Count; j++)
             {
                 tempInputList.Add(source.inputSynapsesWeights[i][j]);
@@ -60,22 +65,25 @@ public class AnimalBrain
         }
         for (int i = 0; i < source.outputSynapsesWeights.Count; i++)
         {
-            List<float> tempOutputList=new List<float>();
+            List<float> tempOutputList = new List<float>();
             for (int j = 0; j < source.outputSynapsesWeights[i].Count; j++)
             {
                 tempOutputList.Add(source.outputSynapsesWeights[i][j]);
             }
             outputSynapsesWeights.Add(tempOutputList);
         }
-        List<float> tempBiasList=new List<float>();
-        for (int i = 0; i < source.hiddenLayerSize; i++)
-        {
-            tempBiasList.Add(source.hiddenLayerBias[i]);
-        }
-        hiddenLayerBias=tempBiasList;
+        hiddenLayerBias = new List<float>(source.hiddenLayerBias);
     }
     public void mixWeights(AnimalBrain parent, float chance)    //jaka jest szansa na zmiane genow
     {
+        for(int i=0;i<noMovingParts;i++)
+        {
+            if (roll(chance))
+            {
+                limitMin[i] = parent.limitMin[i];
+                limitMax[i] = parent.limitMax[i];
+            }
+        }
         for (int i = 0; i < hiddenLayerSize; i++)
         {
             if (roll(chance))
@@ -98,33 +106,68 @@ public class AnimalBrain
             }
         }
     }
-    public void mutateWeights()    
+    public void mutateWeights()
     {
-        float mutationChance;
-        for (int i = 0; i < hiddenLayerSize; i++)
+        //zmieniam tylko jedna wartosc - mutacje maja niewielki zasieg, lecz duzy wplyw na wynik
+        int synapseGroup = Random.Range(0, 4); //wybieram czy ma byc zmieniony bias, synapsy input czy synapsy output
+        switch (synapseGroup)
         {
-            mutationChance = Random.Range(0.0f, 100.0f);
-            if (roll(mutationChance))
-            {
-                hiddenLayerBias[i] = Random.Range(-1.0f, 1.0f);
-            }
-            for (int j = 0; j < input.Length; j++)
-            {
-                mutationChance = Random.Range(0.0f, 100.0f);
-                if (roll(mutationChance))
+            case 0:
+                hiddenLayerBias[Random.Range(0,hiddenLayerBias.Count)] = Random.Range(-1.0f, 1.0f);
+                break;
+            case 1:
+                inputSynapsesWeights[Random.Range(0,inputSynapsesWeights.Count)][Random.Range(0,inputSynapsesWeights[0].Count)] = Random.Range(-1.0f, 1.0f);
+                break;
+            case 2:
+                outputSynapsesWeights[Random.Range(0,outputSynapsesWeights.Count)][Random.Range(0,outputSynapsesWeights[0].Count)] = Random.Range(-1.0f, 1.0f);
+                break;
+            case 3:
+                int hingeDirection=Random.Range(0,2);
+                int randomMovingPart=Random.Range(0,noMovingParts);
+                if(hingeDirection==0)
                 {
-                    inputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+                    limitMin[randomMovingPart]=-maxLimitBorder;
+                    limitMax[randomMovingPart]=minLimitBorder;
                 }
-            }
-            for (int j = 0; j < output.Length; j++)
-            {
-                mutationChance = Random.Range(0.0f, 100.0f);
-                if (roll(mutationChance))
+                else
                 {
-                    outputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+                    limitMin[randomMovingPart]=-minLimitBorder;
+                    limitMax[randomMovingPart]=maxLimitBorder;
                 }
-            }
+                break;
         }
+        //sposob losowego doboru ilosci synaps z kazdej grupy nie dowiodl swojej skutecznosci
+        //mutowane osobniki byly w wiekszosci wadliwe i odpadaly - zbyt duzo losowych wartosci
+        //mozna bylo zaobserwowac szybki wzrost odleglosci w pierwszych paru generacjach
+        //po ktorym nastepowala stagnacja
+        //co po eksperymentach na algorytmie genetycznym w innym programie
+        //dowodzi brak prawidlowego dzialania mutacji
+        //po prostu wybrane zostaly najlepsze osobniki z puli genowej danej na poczatku
+        //mutacja nei pracowala wlasciwie
+        // for (int i = 0; i < hiddenLayerSize; i++)
+        // {
+        //     mutationChance = Random.Range(0.0f, 100.0f);
+        //     if (roll(mutationChance))
+        //     {
+        //         hiddenLayerBias[i] = Random.Range(-1.0f, 1.0f);
+        //     }
+        //     for (int j = 0; j < input.Length; j++)
+        //     {
+        //         mutationChance = Random.Range(0.0f, 100.0f);
+        //         if (roll(mutationChance))
+        //         {
+        //             inputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+        //         }
+        //     }
+        //     for (int j = 0; j < output.Length; j++)
+        //     {
+        //         mutationChance = Random.Range(0.0f, 100.0f);
+        //         if (roll(mutationChance))
+        //         {
+        //             outputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+        //         }
+        //     }
+        // }
     }
     float sigmoid(float value)
     {
@@ -134,33 +177,45 @@ public class AnimalBrain
     
     public void setRandomWeights()
     {
-
-        
+        for(int i=0;i<noMovingParts;i++)
+        {
+            int hingeDirection=Random.Range(0,2);
+            if(hingeDirection==0)
+            {
+                limitMin.Add(-maxLimitBorder);
+                limitMax.Add(minLimitBorder);
+            }
+            else
+            {
+                limitMin.Add(-minLimitBorder);
+                limitMax.Add(maxLimitBorder);
+            }
+        }
         for (int i = 0; i < hiddenLayerSize; i++)
         {
-            hiddenLayerBias.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+            hiddenLayerBias.Add(Random.Range(-1.0f, 1.0f));
             List<float> neuronInputWeights = new List<float>();
             List<float> neuronOutputWeights = new List<float>();
             for (int j = 0; j < input.Length; j++)
             {
-                neuronInputWeights.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+                neuronInputWeights.Add(Random.Range(-1.0f, 1.0f));
             }
             for (int j = 0; j < output.Length; j++)
             {
-                neuronOutputWeights.Add(System.Convert.ToSingle(GeneratePopulation.rnd.NextDouble() * 2.0 - 1.0));
+                neuronOutputWeights.Add(Random.Range(-1.0f, 1.0f));
             }
             inputSynapsesWeights.Add(neuronInputWeights);
             outputSynapsesWeights.Add(neuronOutputWeights);
         }
     }
-    
+
     public void setOutput()
     {
-        if(outputPart==output.Length)
+        if (outputPart == output.Length)
         {
-            outputPart=0;
+            outputPart = 0;
         }
-        int endPart=outputPart+HingeArmPart.outputSize;
+        int endPart = outputPart + HingeArmPart.outputSize;
         float tempOutputValue = 0;
         float neuronsCalculatedWeight;
         //Parallel.For(outputPart, endPart, delegate (int outputIndex)
@@ -182,7 +237,7 @@ public class AnimalBrain
             output[outputIndex] = tempOutputValue;
         }
         //);
-        outputPart=endPart;
+        outputPart = endPart;
         // for (int outputIndex = 0; outputIndex < output.Length; outputIndex++)
         // {
         //     for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Count  ; neuronIndex++)

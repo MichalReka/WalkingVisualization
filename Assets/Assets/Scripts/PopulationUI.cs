@@ -8,9 +8,11 @@ public class PopulationUI : MonoBehaviour
     Text catchedAnimalsNumber;
     Text currBestDistanceNumber;
     Text bestDistanceNumber;
+    GameObject pauseLayer;
     // Start is called before the first frame update
     void Start()
     {
+        pauseLayer=transform.Find("pauseLayer").gameObject;
         currGenNumber=transform.Find("currGenNumber").GetComponent<Text>();
         catchedAnimalsNumber=transform.Find("catchedAnimalsNumber").GetComponent<Text>();
         currBestDistanceNumber=transform.Find("currBestDistanceNumber").GetComponent<Text>();
@@ -26,6 +28,14 @@ public class PopulationUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(visualizationBasics.ifPaused)
+        {
+            pauseLayer.SetActive(true);
+        }
+        else
+        {
+            pauseLayer.SetActive(false);
+
+        }
     }
 }

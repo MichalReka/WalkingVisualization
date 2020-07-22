@@ -32,6 +32,12 @@ public class GeneratePopulation : MonoBehaviour
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
         animals = new List<AnimalMovement>();
+        createAnimal(new Vector3(0,0,0));
+        var movingParts=animalsObjects[0].GetComponentsInChildren<HingeArmPart>();
+        AnimalBrain.noMovingParts=movingParts.Length;
+        Destroy(animalsObjects[0]);
+        animalsObjects.RemoveAt(0);
+        animals.RemoveAt(0);
         createGeneration();
         populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
     }
@@ -84,7 +90,7 @@ public class GeneratePopulation : MonoBehaviour
     void Update()
     {
         
-        if (currentGen <= maxGenNum)
+        if (currentGen <= maxGenNum && !visualizationBasics.ifPaused)
         {
             if (animalsObjectsCatched == populationSize)
             {

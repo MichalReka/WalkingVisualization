@@ -7,15 +7,13 @@ using Unity.Burst;
 
 public class HingeArmPart : MonoBehaviour
 {
-    public float bodyY;
     public float motorForce;
     public float targetVelocity;
     HingeJoint hinge;
     //prosta implementacja sieci neuronowej
     public List<float> input;
-    public List<float> hiddenLayerBias;
-    public static int outputSize=4;
-    public static int inputSize=6;
+    public static int outputSize=2;
+    public static int inputSize=2;
 
     float startingBodyY;
     //jako input przyjmuje - pozycje, obrot, przyspieszenie, przyspieszenie katowe czesci ktora sie porusza
@@ -23,8 +21,6 @@ public class HingeArmPart : MonoBehaviour
     // Start is called before the first frame update
     Transform animalBody;
     Rigidbody rigidBody;
-    Quaternion bodyRotation;
-    public bool ifSetoToRandom = false;
 
     public void initArm()
     {
@@ -50,14 +46,16 @@ public class HingeArmPart : MonoBehaviour
     public List<float> setInput()
     {
         input.Clear();
-        for (int i = 0; i < 3; i++)
-        {
-            input.Add(normalizeValue(transform.rotation[i],-360,360));  //nie powinna nastapic wieksza rotacja
-        }
-        for (int i = 0; i < 3; i++)
-        {
-            input.Add(rigidBody.velocity[i]);
-        }
+        input.Add(normalizeValue(transform.rotation.x,-360,360));
+        input.Add(normalizeValue(transform.rotation.z,-360,360));
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     input.Add(normalizeValue(transform.rotation[i],-360,360));  //nie powinna nastapic wieksza rotacja
+        // }
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     input.Add(rigidBody.velocity[i]);
+        // }
         return input;
     }
     float translateToValue(float min, float max, float output)   //tlumacze output na wartosci
@@ -68,26 +66,35 @@ public class HingeArmPart : MonoBehaviour
         return value;
     }
     
-    public void TranslateOutput(List<float> output)
+    public void TranslateOutput(List<float> output,int limitMin,int limitMax)
     {
-        if (output[3] > output[2])
-        {
-            var temp = output[3];
-            output[3] = output[2];
-            output[2] = temp;
-        }
+        // if (output[3] > output[2])
+        // {
+        //     var temp = output[3];
+        //     output[3] = output[2];
+        //     output[2] = temp;
+        // }
         var motor = hinge.motor;
-        motor.force = translateToValue(0, 600, output[0]);
+        motor.force = translateToValue(0, 800, output[0]);
         motorForce = motor.force;
         motor.targetVelocity = translateToValue(-3000, 3000, output[1]);
         targetVelocity = motor.targetVelocity;
         JointLimits limits = hinge.limits;
-        limits.max = translateToValue(-101, 101, output[2]);
-        limits.min = translateToValue(-101, 101, output[3]);
-        hinge.useMotor = true;
-        limits.bounciness = 0;
-        limits.bounceMinVelocity = 0;
+        // float limit=translateToValue(-60,60, output[2]);
+        // if(limit<0)
+        // {
+        //     limits.max=0;
+        //     limits.min=limit;
+        // }
+        // else
+        // {
+        //     limits.max=limit;
+        //     limits.min=0;
+        // }
+        limits.max=limitMax;
+        limits.min=limitMin;
         hinge.useLimits = true;
+        hinge.useMotor = true;
         hinge.motor = motor;
         hinge.limits = limits;
     }

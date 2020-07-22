@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 public class AnimalMovement : MonoBehaviour
 {
+
     public AnimalBrain animalBrain;
     private float startingBodyY;
+    private int framesPassed;
+    public float averageBodyY;
     public HingeArmPart[] orderedHingeParts;
     public bool ifCatched = false;
+    public bool ifCrashed = false;
     public float currentX;
     public float speed;
     Transform body;
@@ -36,7 +40,7 @@ public class AnimalMovement : MonoBehaviour
     }
     public void setRandomWeights()
     {
-        animalBrain=new AnimalBrain(orderedHingeParts.Length);
+        animalBrain=new AnimalBrain();
         animalBrain.setRandomWeights();
     }
     void Start()
@@ -55,6 +59,7 @@ public class AnimalMovement : MonoBehaviour
             hJoint.useMotor = false;
         }
         ifCatched = true;
+        ifCrashed = true;
     }
     // Update is called once per frame
     public void Move()
@@ -66,25 +71,25 @@ public class AnimalMovement : MonoBehaviour
     }
     private float[] gatherInput()
     {
-        float[] input = new float[animalBrain.noMovingParts*HingeArmPart.inputSize+animalBrain.bodyInput];
+        float[] input = new float[AnimalBrain.noMovingParts*HingeArmPart.inputSize+animalBrain.bodyInput];
         var currIndex=0;
-        Parallel.For(0, orderedHingeParts.Length, delegate (int i)
-        {
-            for(int j=0;j<orderedHingeParts[i].input.Count;j++)
-            {
-                input[currIndex]=orderedHingeParts[i].input[j];
-                currIndex++;
-            }
-        });
-
-        // for(int i=0;i<orderedHingeParts.Length;i++)
+        // Parallel.For(0, orderedHingeParts.Length, delegate (int i)
         // {
         //     for(int j=0;j<orderedHingeParts[i].input.Count;j++)
         //     {
         //         input[currIndex]=orderedHingeParts[i].input[j];
         //         currIndex++;
         //     }
-        // }
+        // });
+
+        for(int i=0;i<orderedHingeParts.Length;i++)
+        {
+            for(int j=0;j<orderedHingeParts[i].input.Count;j++)
+            {
+                input[currIndex]=orderedHingeParts[i].input[j];
+                currIndex++;
+            }
+        }
         var bodyY = HingeArmPart.normalizeValue(body.position.y,startingBodyY*0.7f,startingBodyY*1.3f);
         input[currIndex]=bodyY;
         currIndex++;
@@ -102,18 +107,19 @@ public class AnimalMovement : MonoBehaviour
             //orderedHingeParts[i].TranslateOutput();
             orderedHingeParts[i].setInput();
         }
-        gatherInput();
+        animalBrain.input=gatherInput();
         int currOutputIndex=0;
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
-            
+            int limitMin=animalBrain.limitMin[i];
+            int limitMax=animalBrain.limitMax[i];
             List<float> partOutput=new List<float>();
             for(int j=0;j<HingeArmPart.outputSize;j++)
             {
                 partOutput.Add(animalBrain.output[currOutputIndex]);
                 currOutputIndex++;
             }
-            orderedHingeParts[i].TranslateOutput(partOutput);
+            orderedHingeParts[i].TranslateOutput(partOutput,limitMin,limitMax);
         }
     }
     public void setBody()
@@ -121,6 +127,7 @@ public class AnimalMovement : MonoBehaviour
         OrderAnimalChildren();
         body = transform.Find("body");
         startingBodyY = body.transform.position.y;
+        averageBodyY=0;
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
             orderedHingeParts[i].initArm();
@@ -128,8 +135,11 @@ public class AnimalMovement : MonoBehaviour
     }
     public void chase()
     {
+        
         currentX += Time.deltaTime * speed;
-        if (currentX > body.transform.position.x)
+        averageBodyY += body.transform.position.y;
+        framesPassed++;
+        if (currentX > body.transform.position.x)   //jak zostanie zlapane
         {
             ifCatched = true;
         }
@@ -142,6 +152,14 @@ public class AnimalMovement : MonoBehaviour
         {
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
+        }
+        else if(body.transform.rotation.z<-90)  //jesli zachce robic fikolki sobie
+        {
+            ifCatched = true;
+        }
+        if(ifCatched)
+        {
+            averageBodyY=averageBodyY/framesPassed;
         }
     }
     void Update()
