@@ -14,8 +14,10 @@ public class AnimalMovement : MonoBehaviour
     public HingeArmPart[] orderedHingeParts;
     public bool ifCatched = false;
     public bool ifCrashed = false;
-    public float currentX;
+    public float currentX=0;
     public float speed;
+    public float timeBeingAlive=0;
+    public float timeBeingAliveImportance=0.1f;
     Transform body;
     public void OrderAnimalChildren()
     {
@@ -137,6 +139,7 @@ public class AnimalMovement : MonoBehaviour
     {
         
         currentX += Time.deltaTime * speed;
+        timeBeingAlive+=Time.deltaTime*timeBeingAliveImportance;
         averageBodyY += body.transform.position.y;
         framesPassed++;
         if (currentX > body.transform.position.x)   //jak zostanie zlapane

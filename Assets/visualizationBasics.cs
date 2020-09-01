@@ -5,16 +5,11 @@ using UnityEngine;
 public class visualizationBasics : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 5f;
-    [SerializeField] public float mouseSensitivity = 200f;
     float oldMoveSpeed;
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
     public RotationAxes axes = RotationAxes.MouseXAndY;
     public float sensitivityX = 15F;
     public float sensitivityY = 15F;
-
-    public float minimumX = -360F;
-    public float maximumX = 360F;
-
     public float minimumY = -60F;
     public float maximumY = 60F;
     public static bool ifPaused { get; private set; }
@@ -39,7 +34,6 @@ public class visualizationBasics : MonoBehaviour
     {
         Time.timeScale = 0;
     }
-
     void ResumeGame()
     {
         Time.timeScale = 1;
@@ -94,6 +88,7 @@ public class visualizationBasics : MonoBehaviour
             else
             {
                 PauseGame();
+                
                 ifPaused = true;
             }
         }

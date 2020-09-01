@@ -16,7 +16,7 @@ public class GeneticAlgorithm
     List<float> fitnessList;
     List<int> elitesIndexes;
     const int minFitness = -999;
-    float penaltyForCrash=0.9f;
+    float penaltyForCrash=1;
     public GeneticAlgorithm(List<AnimalMovement> gen, float mutationRate)
     {
         currentGeneration = gen;
@@ -31,19 +31,18 @@ public class GeneticAlgorithm
         // sprawdzam wszystkie czesci ciala, dziele przez ilosc czesci ciala, tak otrzymuje jak daleko doszly i fitness (koniec z wyrzucaniem body d przodu)
         int bodyPartsCount = individual.transform.childCount;
         float fitness = 0;
-        float fitnessMultiplier=0;
         for (int i = 0; i < bodyPartsCount; i++)
         {
             Transform child = individual.transform.GetChild(i);
             fitness=fitness+child.transform.position.x;
-            fitnessMultiplier=fitnessMultiplier+child.position.y;
         }
         fitness=fitness/bodyPartsCount;
+        fitness=fitness*individual.averageBodyY;
+        fitness=fitness+individual.timeBeingAlive;
         if(individual.ifCrashed==true)
         {
             fitness=fitness*penaltyForCrash;   //jesli upadnie, nieznacznie zmniejszam fitness
         }
-        fitness=fitness*individual.averageBodyY;
         return fitness;
     }
     public List<HingeArmPart> OrderAnimalChildren(GameObject obj)
@@ -96,6 +95,8 @@ public class GeneticAlgorithm
         {
             bestDistance=bestDistance/penaltyForCrash;
         }
+        bestDistance=bestDistance-currentGeneration[bestDistanceIndex].timeBeingAlive;
+        
         bestDistance=bestDistance/currentGeneration[bestDistanceIndex].averageBodyY;    //wlasciwe pokazywanie w GUI
         for (int i = 0; i < currentGeneration.Count; i++)
         {

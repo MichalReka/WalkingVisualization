@@ -5,36 +5,34 @@ using System.Threading;
 using System.Threading.Tasks;
 public class GeneratePopulation : MonoBehaviour
 {
-    private int frame = 0;
-    private int framesToFullOutput=5;
-    public int animalsObjectsCatched = 0;
+    private int animalsObjectsCatched = 0;
     List<GameObject> animalsObjects;
     List<AnimalMovement> animals;
-    public int currentPart = 0;
     public int populationSize = 100;
     public int populationPartSize = 50;
-    public int maxGenNum = 5000;
+    private int maxGenNum = 5000;
     public float mutationRate = 0.05f;
     public int currentGen = 0;
-    private GameObject bestSolution;
     public float bestDistance = 0;
     public float currBestDistance = 0;
     public string animalPrefabName = "animal0";
     public float startingPosition = 5.0f;
     public float speed = 2f;
-    public static System.Random rnd = new System.Random();
+    public float timeBeingAliveImportance = 0.1f;
+    public List<float> bestDistances;
     // Start is called before the first frame update
-    public GeneticAlgorithm geneticAlgorithm;
-    public int[] activeAnimalIndexes;
+    private GeneticAlgorithm geneticAlgorithm;
+    private int[] activeAnimalIndexes;
     PopulationUI populationUIhandler;
     void Start()
     {
+        bestDistances = new List<float>();
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
         animals = new List<AnimalMovement>();
-        createAnimal(new Vector3(0,0,0));
-        var movingParts=animalsObjects[0].GetComponentsInChildren<HingeArmPart>();
-        AnimalBrain.noMovingParts=movingParts.Length;
+        createAnimal(new Vector3(0, 0, 0));
+        var movingParts = animalsObjects[0].GetComponentsInChildren<HingeArmPart>();
+        AnimalBrain.noMovingParts = movingParts.Length;
         Destroy(animalsObjects[0]);
         animalsObjects.RemoveAt(0);
         animals.RemoveAt(0);
@@ -63,6 +61,7 @@ public class GeneratePopulation : MonoBehaviour
         tempObject.transform.SetParent(transform);
         var animalComponent = tempObject.AddComponent<AnimalMovement>();
         animalComponent.speed = speed;
+        animalComponent.timeBeingAliveImportance = timeBeingAliveImportance;
         animalComponent.currentX = -startingPosition;
         animalComponent.setBody();
         if (currentGen > 0)
@@ -73,7 +72,7 @@ public class GeneratePopulation : MonoBehaviour
         {
             animalComponent.setRandomWeights();
         }
-        
+
         animalsObjects.Add(tempObject);
         animals.Add(animalComponent);
     }
@@ -89,7 +88,18 @@ public class GeneratePopulation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //WIP
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            //serializacja
+            string json = JsonUtility.ToJson(this);
+            System.IO.File.WriteAllText("tempData.json", json);
+            //uruchamianie skryptu python
+            string strCmdText;
+            strCmdText = "/C py ./presentData.py&pause";
+            System.Diagnostics.Process.Start("CMD.exe", strCmdText);
+        }
+        //koniec WIP
         if (currentGen <= maxGenNum && !visualizationBasics.ifPaused)
         {
             if (animalsObjectsCatched == populationSize)
@@ -98,9 +108,10 @@ public class GeneratePopulation : MonoBehaviour
                 currentGen++;
                 geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
                 currBestDistance = geneticAlgorithm.bestDistance;
+                bestDistances.Add(currBestDistance);
                 if (currBestDistance > bestDistance)
                 {
-                    bestDistance = geneticAlgorithm.bestDistance;
+                    bestDistance = currBestDistance;
                 }
                 createGeneration();
                 trimGeneration();
