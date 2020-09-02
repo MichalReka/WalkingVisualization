@@ -1461,8 +1461,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  populationSize: 2000
-  populationPartSize: 20
+  populationSize: 5
+  populationPartSize: 2
   mutationRate: 0.15
   currentGen: 0
   bestDistance: 0
