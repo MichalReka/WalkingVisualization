@@ -37,7 +37,7 @@ public class GeneticAlgorithm
             fitness=fitness+child.transform.position.x;
         }
         fitness=fitness/bodyPartsCount;
-        //fitness=fitness*individual.averageBodyY;
+        fitness=fitness*individual.averageBodyY;
         fitness=fitness+individual.timeBeingAlive;
         if(individual.ifCrashed==true)
         {
@@ -97,7 +97,7 @@ public class GeneticAlgorithm
         }
         bestDistance=bestDistance-currentGeneration[bestDistanceIndex].timeBeingAlive;
         
-        //bestDistance=bestDistance/currentGeneration[bestDistanceIndex].averageBodyY;    //wlasciwe pokazywanie w GUI
+        bestDistance=bestDistance/currentGeneration[bestDistanceIndex].averageBodyY;    //wlasciwe pokazywanie w GUI
         for (int i = 0; i < currentGeneration.Count; i++)
         {
             if (elitesIndexes.Contains(i))    //najlepszy zostaje
