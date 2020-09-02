@@ -5,14 +5,15 @@ import json
 import sys
 from pathlib import Path
 import os
+from datetime import datetime
 #sys.path[0] zwraca folder w ktorym jest skrypt, skrypt i json sa w tym samym folderze
 with open(sys.path[0]+'//tempData.json') as dataJson:
     data = json.load(dataJson)
-    
-    path=os.path.expanduser('~\Documents\WalkingVisualization')
+    today=datetime.date(datetime.today())
+    path=os.path.expanduser('~\Documents\WalkingVisualization\\'+data['animalPrefabName']+'\\'+str(today))
     if not os.path.exists(path):
         os.makedirs(path)
-    pp = PdfPages(path+'\oof.pdf')
+    pp = PdfPages(path+'\\'+str(datetime.now().strftime("%H-%M-%S"))+'.pdf')
     firstPage = plt.figure()
     firstPage.clf()
     firstPage.text(0.5, 0.9, 'Visualization i/o data', fontsize = 16, ha='center')
@@ -37,3 +38,4 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
 
     pp.close()
     dataJson.close()
+    os.remove(sys.path[0]+'//tempData.json')

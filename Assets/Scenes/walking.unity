@@ -1461,16 +1461,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  populationSize: 2000
+  populationSize: 1000
   populationPartSize: 20
   mutationRate: 0.15
   currentGen: 0
   bestDistance: 0
   currBestDistance: 0
   animalPrefabName: animal0
-  startingPosition: 0.65
+  startingPosition: 0.6
   speed: 0.3
-  timeBeingAliveImportance: 0.25
+  timeBeingAliveImportance: 0.1
   bestDistances: []
 --- !u!4 &1503458745
 Transform:
