@@ -14,12 +14,15 @@ public class GeneratePopulation : MonoBehaviour
     public float mutationRate = 0.05f;
     public int currentGen = 0;
     public float bestDistance = 0;
+    public float bestFitness=0;
     public float currBestDistance = 0;
+    public float currBestFitness = 0;
     public string animalPrefabName = "animal0";
     public float startingPosition = 5.0f;
     public float speed = 2f;
     public float timeBeingAliveImportance = 0.1f;
     public List<float> bestDistances;
+    public List<float> bestFitnesses;
     // Start is called before the first frame update
     private GeneticAlgorithm geneticAlgorithm;
     private int[] activeAnimalIndexes;
@@ -85,21 +88,29 @@ public class GeneratePopulation : MonoBehaviour
             animals.RemoveAt(0);
         }
     }
+    private void GenerateJson()
+    {
+        string json = JsonUtility.ToJson(this);
+        System.IO.File.WriteAllText(DatabaseHandler.jsonPath, json);
+    }
+    public void AddDataToTable()
+    {
+        GenerateJson();
+        DatabaseHandler.AddDataToTable();
+    }
+    public void GeneratePdfDataPresentation()
+    {
+        GenerateJson();
+        //uruchamianie skryptu python
+        string strCmdText;
+        //strCmdText = "/C py ./presentData.py&pause";
+        strCmdText = "/C py ./presentData.py";
+        System.Diagnostics.Process.Start("CMD.exe", strCmdText);
+    }
     // Update is called once per frame
+    
     void Update()
     {
-        //WIP
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //serializacja
-            string json = JsonUtility.ToJson(this);
-            System.IO.File.WriteAllText("tempData.json", json);
-            //uruchamianie skryptu python
-            string strCmdText;
-            strCmdText = "/C py ./presentData.py&pause";
-            System.Diagnostics.Process.Start("CMD.exe", strCmdText);
-        }
-        //koniec WIP
         if (currentGen <= maxGenNum && !visualizationBasics.ifPaused)
         {
             if (animalsObjectsCatched == populationSize)
@@ -108,10 +119,16 @@ public class GeneratePopulation : MonoBehaviour
                 currentGen++;
                 geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
                 currBestDistance = geneticAlgorithm.bestDistance;
+                currBestFitness = geneticAlgorithm.bestFitness;
                 bestDistances.Add(currBestDistance);
+                bestFitnesses.Add(currBestFitness);
                 if (currBestDistance > bestDistance)
                 {
                     bestDistance = currBestDistance;
+                }
+                if (currBestFitness > bestFitness)
+                {
+                    bestFitness = currBestFitness;
                 }
                 createGeneration();
                 trimGeneration();

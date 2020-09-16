@@ -14,15 +14,6 @@ public class visualizationBasics : MonoBehaviour
     public float maximumY = 60F;
     public static bool ifPaused { get; private set; }
     float rotationY = 0F;
-    void CursorLock()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-    void CursorUnlock()
-    {
-
-    }
     void Start()
     {
         ifPaused = false;
@@ -32,10 +23,14 @@ public class visualizationBasics : MonoBehaviour
     }
     void PauseGame()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         Time.timeScale = 0;
     }
     void ResumeGame()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         Time.timeScale = 1;
     }
     private void Update()
@@ -73,12 +68,7 @@ public class visualizationBasics : MonoBehaviour
                 transform.localEulerAngles = new Vector3(-rotationY, transform.localEulerAngles.y, 0);
             }
         }
-
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space)||Input.GetKeyDown(KeyCode.Escape))
         {
             if (ifPaused)
             {
@@ -88,7 +78,6 @@ public class visualizationBasics : MonoBehaviour
             else
             {
                 PauseGame();
-                
                 ifPaused = true;
             }
         }

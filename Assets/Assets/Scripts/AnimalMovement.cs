@@ -19,6 +19,11 @@ public class AnimalMovement : MonoBehaviour
     public float timeBeingAlive=0;
     public float timeBeingAliveImportance=0.1f;
     Transform body;
+    Transform leftFoot;
+    Transform rightFoot;
+    float startingRightFootPosition;
+    float startingLeftFootPosition;
+
     public void OrderAnimalChildren()
     {
         HingeArmPart[] temp = GetComponentsInChildren<HingeArmPart>();
@@ -110,25 +115,27 @@ public class AnimalMovement : MonoBehaviour
             orderedHingeParts[i].setInput();
         }
         animalBrain.input=gatherInput();
-        int currOutputIndex=0;
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
-            int limitMin=animalBrain.limitMin[i];
-            int limitMax=animalBrain.limitMax[i];
+            // int limitMin=animalBrain.limitMin[i];
+            // int limitMax=animalBrain.limitMax[i];
             List<float> partOutput=new List<float>();
             for(int j=0;j<HingeArmPart.outputSize;j++)
             {
-                partOutput.Add(animalBrain.output[currOutputIndex]);
-                currOutputIndex++;
+                partOutput.Add(animalBrain.output[j+HingeArmPart.outputSize*i]);
             }
-            orderedHingeParts[i].TranslateOutput(partOutput,limitMin,limitMax);
+            orderedHingeParts[i].TranslateOutput(partOutput);
         }
     }
     public void setBody()
     {
         OrderAnimalChildren();
         body = transform.Find("body");
+        rightFoot = transform.Find("RightBackFoot");
+        leftFoot = transform.Find("LeftBackFoot");
         startingBodyY = body.transform.position.y;
+        startingLeftFootPosition = leftFoot.transform.position.x;
+        startingRightFootPosition = rightFoot.transform.position.x;
         averageBodyY=0;
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
@@ -142,11 +149,14 @@ public class AnimalMovement : MonoBehaviour
         timeBeingAlive+=Time.deltaTime*timeBeingAliveImportance;
         averageBodyY += body.transform.position.y;
         framesPassed++;
-        if (currentX > body.transform.position.x)   //jak zostanie zlapane
+        var bodyX=body.transform.position.x;
+        var leftFootX=leftFoot.transform.position.x-startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
+        var rightFootX=rightFoot.transform.position.x-startingRightFootPosition;
+        if (currentX > bodyX || currentX > rightFootX || currentX > leftFootX)   //jak zostanie zlapane
         {
             ifCatched = true;
         }
-        else if (body.transform.position.y > startingBodyY * 1.5)   //jak poleci w nieznane
+        else if (body.transform.position.y > startingBodyY * 2)   //jak poleci w nieznane
         {
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
@@ -156,10 +166,10 @@ public class AnimalMovement : MonoBehaviour
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
         }
-        else if(body.transform.rotation.z<-90)  //jesli zachce robic fikolki sobie
-        {
-            ifCatched = true;
-        }
+        // else if(body.transform.rotation.z<-120)  //jesli zachce robic fikolki sobie
+        // {
+        //     ifCatched = true;
+        // }
         if(ifCatched)
         {
             averageBodyY=averageBodyY/framesPassed;

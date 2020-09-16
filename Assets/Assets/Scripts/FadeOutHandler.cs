@@ -22,7 +22,7 @@ public class FadeOutHandler : MonoBehaviour
     {
         var oldColor=image.color;
         var tempColor=image.color;
-        for (float i = oldColor.a; i >= 0; i -= Time.deltaTime*2)
+        for (float i = oldColor.a; i >= 0; i -= Time.unscaledDeltaTime*2)
         {
             // set color with i as alpha
             tempColor.a=i;

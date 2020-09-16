@@ -7,8 +7,8 @@ using Unity.Burst;
 
 public class HingeArmPart : MonoBehaviour
 {
-    public float motorForce;
-    public float targetVelocity;
+    public int maximumMotorForce;
+    public int maximumVelocityLimit;
     HingeJoint hinge;
     //prosta implementacja sieci neuronowej
     public List<float> input;
@@ -65,8 +65,8 @@ public class HingeArmPart : MonoBehaviour
         var value = output * x + y;
         return value;
     }
-    
-    public void TranslateOutput(List<float> output,int limitMin,int limitMax)
+    //,int limitMin,int limitMax
+    public void TranslateOutput(List<float> output)
     {
         // if (output[3] > output[2])
         // {
@@ -75,10 +75,8 @@ public class HingeArmPart : MonoBehaviour
         //     output[2] = temp;
         // }
         var motor = hinge.motor;
-        motor.force = translateToValue(0, 800, output[0]);
-        motorForce = motor.force;
-        motor.targetVelocity = translateToValue(-3000, 3000, output[1]);
-        targetVelocity = motor.targetVelocity;
+        motor.force = translateToValue(0, maximumMotorForce, output[0]);
+        motor.targetVelocity = translateToValue(-maximumVelocityLimit, maximumVelocityLimit, output[1]);
         JointLimits limits = hinge.limits;
         // float limit=translateToValue(-60,60, output[2]);
         // if(limit<0)
@@ -91,8 +89,8 @@ public class HingeArmPart : MonoBehaviour
         //     limits.max=limit;
         //     limits.min=0;
         // }
-        limits.max=limitMax;
-        limits.min=limitMin;
+        // limits.max=limitMax;
+        // limits.min=limitMin;
         hinge.useLimits = true;
         hinge.useMotor = true;
         hinge.motor = motor;
