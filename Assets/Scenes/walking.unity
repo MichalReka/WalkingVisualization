@@ -2211,7 +2211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  populationSize: 1500
+  populationSize: 2500
   populationPartSize: 20
   mutationRate: 0.2
   currentGen: 0
@@ -2221,7 +2221,7 @@ MonoBehaviour:
   currBestFitness: 0
   animalPrefabName: animal0
   startingPosition: 1.5
-  speed: 1.5
+  speed: 0.3
   timeBeingAliveImportance: 0.2
   bestDistances: []
   bestFitnesses: []

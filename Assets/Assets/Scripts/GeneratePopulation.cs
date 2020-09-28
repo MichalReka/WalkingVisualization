@@ -25,9 +25,11 @@ public class GeneratePopulation : MonoBehaviour
     // Start is called before the first frame update
     private GeneticAlgorithm geneticAlgorithm;
     private int[] activeAnimalIndexes;
+    private bool _newGenerationMove;
     PopulationUI populationUIhandler;
     void Start()
     {
+        _newGenerationMove=true;
         bestDistances = new List<float>();
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
@@ -114,24 +116,8 @@ public class GeneratePopulation : MonoBehaviour
     }
     IEnumerator CreateNewGeneration()
     {
-        currentGen++;
-        geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
-        currBestDistance = geneticAlgorithm.bestDistance;
-        currBestFitness = geneticAlgorithm.bestFitness;
-        bestDistances.Add(currBestDistance);
-        bestFitnesses.Add(currBestFitness);
-        if (currBestDistance > bestDistance)
-        {
-            bestDistance = currBestDistance;
-        }
-        if (currBestFitness > bestFitness)
-        {
-            bestFitness = currBestFitness;
-        }
-        createGeneration();
-        trimGeneration();
-        yield return new WaitForSeconds(0.5f);
-        animalsObjectsCatched = 0;
+        yield return new WaitForSeconds(0.5f);    
+        _newGenerationMove=true;   
     }
     void FixedUpdate()
     {
@@ -139,14 +125,32 @@ public class GeneratePopulation : MonoBehaviour
         {
             if (animalsObjectsCatched == populationSize)
             {
+                _newGenerationMove=false;
+                currentGen++;
+                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
+                currBestDistance = geneticAlgorithm.bestDistance;
+                currBestFitness = geneticAlgorithm.bestFitness;
+                bestDistances.Add(currBestDistance);
+                bestFitnesses.Add(currBestFitness);
+                if (currBestDistance > bestDistance)
+                {
+                    bestDistance = currBestDistance;
+                }
+                if (currBestFitness > bestFitness)
+                {
+                    bestFitness = currBestFitness;
+                }
+                createGeneration();
+                trimGeneration();
+                animalsObjectsCatched = 0;
                 StartCoroutine(CreateNewGeneration());
             }
-            else
+            else if(_newGenerationMove)
             {
                 Parallel.For(0, populationPartSize, delegate (int i)
-                {
-                    animals[activeAnimalIndexes[i]].Move();
-                });
+                            {
+                                animals[activeAnimalIndexes[i]].Move();
+                            });
                 for (int i = 0; i < populationPartSize; i++)
                 {
                     animals[activeAnimalIndexes[i]].UpdateIO();
@@ -170,8 +174,8 @@ public class GeneratePopulation : MonoBehaviour
                         }
                     }
                 }
-                populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
             }
+            populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
         }
     }
 }
