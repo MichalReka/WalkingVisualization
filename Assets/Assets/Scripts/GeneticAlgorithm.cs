@@ -12,7 +12,7 @@ public class GeneticAlgorithm
     private int numberOfElites;
     public float bestDistance { get; private set; }
     public float bestFitness { get; private set; }
-    private float elitionismPercent = 0.05f;
+    private float elitionismPercent = 0.1f;
     List<float> distancesList;
     List<float> fitnessList;
     List<int> elitesIndexes;
@@ -35,8 +35,8 @@ public class GeneticAlgorithm
         // var individualBody = individual.transform.Find("body").gameObject;
         // sprawdzam wszystkie czesci ciala, dziele przez ilosc czesci ciala, tak otrzymuje jak daleko doszly i fitness (koniec z wyrzucaniem body d przodu)
         float fitness = distance;
-        fitness = fitness * individual.averageBodyY;
         fitness = fitness + individual.timeBeingAlive;
+        // fitness = fitness * individual.averageBodyY;
         // if (individual.ifCrashed == true)
         // {
         //     fitness = fitness * penaltyForCrash;   //jesli upadnie, nieznacznie zmniejszam fitness
@@ -96,6 +96,7 @@ public class GeneticAlgorithm
             {
                 _populationGenPool[i] = new AnimalBrain();
                 _populationGenPool[i].deepCopy(_currentGeneration[i].animalBrain);
+                _populationGenPool[i].isElite=true;
             }
             else
             {

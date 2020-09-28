@@ -10,11 +10,10 @@ public class GeneratePopulation : MonoBehaviour
     List<AnimalMovement> animals;
     public int populationSize = 100;
     public int populationPartSize = 50;
-    private int maxGenNum = 5000;
     public float mutationRate = 0.05f;
     public int currentGen = 0;
     public float bestDistance = 0;
-    public float bestFitness=0;
+    public float bestFitness = 0;
     public float currBestDistance = 0;
     public float currBestFitness = 0;
     public string animalPrefabName = "animal0";
@@ -66,13 +65,14 @@ public class GeneratePopulation : MonoBehaviour
         animalComponent.speed = speed;
         animalComponent.timeBeingAliveImportance = timeBeingAliveImportance;
         animalComponent.currentX = -startingPosition;
-        animalComponent.setBody();
         if (currentGen > 0)
         {
+            animalComponent.setBody(individualBrain.isElite);
             animalComponent.setNeuralNetwork(individualBrain);
         }
         else
         {
+            animalComponent.setBody(false);
             animalComponent.setRandomWeights();
         }
 
@@ -108,59 +108,70 @@ public class GeneratePopulation : MonoBehaviour
         System.Diagnostics.Process.Start("CMD.exe", strCmdText);
     }
     // Update is called once per frame
-    
     void Update()
     {
-        if (currentGen <= maxGenNum && !visualizationBasics.ifPaused)
+
+    }
+    IEnumerator CreateNewGeneration()
+    {
+        currentGen++;
+        geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
+        currBestDistance = geneticAlgorithm.bestDistance;
+        currBestFitness = geneticAlgorithm.bestFitness;
+        bestDistances.Add(currBestDistance);
+        bestFitnesses.Add(currBestFitness);
+        if (currBestDistance > bestDistance)
+        {
+            bestDistance = currBestDistance;
+        }
+        if (currBestFitness > bestFitness)
+        {
+            bestFitness = currBestFitness;
+        }
+        createGeneration();
+        trimGeneration();
+        yield return new WaitForSeconds(0.5f);
+        animalsObjectsCatched = 0;
+    }
+    void FixedUpdate()
+    {
+        if (!visualizationBasics.ifPaused)
         {
             if (animalsObjectsCatched == populationSize)
             {
-                animalsObjectsCatched = 0;
-                currentGen++;
-                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
-                currBestDistance = geneticAlgorithm.bestDistance;
-                currBestFitness = geneticAlgorithm.bestFitness;
-                bestDistances.Add(currBestDistance);
-                bestFitnesses.Add(currBestFitness);
-                if (currBestDistance > bestDistance)
-                {
-                    bestDistance = currBestDistance;
-                }
-                if (currBestFitness > bestFitness)
-                {
-                    bestFitness = currBestFitness;
-                }
-                createGeneration();
-                trimGeneration();
+                StartCoroutine(CreateNewGeneration());
             }
-            Parallel.For(0, populationPartSize, delegate (int i)
+            else
             {
-                animals[activeAnimalIndexes[i]].Move();
-            });
-            for (int i = 0; i < populationPartSize; i++)
-            {
-                animals[activeAnimalIndexes[i]].UpdateIO();
-                animals[activeAnimalIndexes[i]].chase();
-                bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
-                if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement
+                Parallel.For(0, populationPartSize, delegate (int i)
                 {
-                    animalsObjectsCatched++;
-                    animalsObjects[activeAnimalIndexes[i]].SetActive(false);   //ustawiam to zwierze jako nieaktywne
-                    if (animalsObjects.Count != populationSize)
+                    animals[activeAnimalIndexes[i]].Move();
+                });
+                for (int i = 0; i < populationPartSize; i++)
+                {
+                    animals[activeAnimalIndexes[i]].UpdateIO();
+                    animals[activeAnimalIndexes[i]].chase();
+                    bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
+                    if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement
                     {
-                        activeAnimalIndexes[i] = animalsObjects.Count;   //wprowadzam do tablicy indeksow nowe zwierze - bede sie do niego odwolywac przy nastepnym sprawdzeniu
-                        if (currentGen > 0) //jesli zlapie zwierze, tworze nowe
+                        animalsObjectsCatched++;
+                        animalsObjects[activeAnimalIndexes[i]].SetActive(false);   //ustawiam to zwierze jako nieaktywne
+                        if (animalsObjects.Count != populationSize)
                         {
-                            createAnimal(new Vector3(0, 0, 15 * i + transform.position.z), geneticAlgorithm.GetPopulationGenPool()[activeAnimalIndexes[i]]);
-                        }
-                        else
-                        {
-                            createAnimal(new Vector3(0, 0, 15 * i + transform.position.z));
+                            activeAnimalIndexes[i] = animalsObjects.Count;   //wprowadzam do tablicy indeksow nowe zwierze - bede sie do niego odwolywac przy nastepnym sprawdzeniu
+                            if (currentGen > 0) //jesli zlapie zwierze, tworze nowe
+                            {
+                                createAnimal(new Vector3(0, 0, 15 * i + transform.position.z), geneticAlgorithm.GetPopulationGenPool()[activeAnimalIndexes[i]]);
+                            }
+                            else
+                            {
+                                createAnimal(new Vector3(0, 0, 15 * i + transform.position.z));
+                            }
                         }
                     }
                 }
+                populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
             }
-            populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
         }
     }
 }

@@ -21,14 +21,17 @@ public class HingeArmPart : MonoBehaviour
     // Start is called before the first frame update
     Transform animalBody;
     Rigidbody rigidBody;
-
+    // ConfigurableJoint bodyLimits;
+    Quaternion startingRotation;
     public void initArm()
     {
         rigidBody = GetComponent<Rigidbody>();
         animalBody = transform.parent.gameObject.transform.Find("body");
+        // bodyLimits=animalBody.GetComponent<ConfigurableJoint>();
         startingBodyY = animalBody.transform.position.y;
         hinge = GetComponent<HingeJoint>();
         input = new List<float>();
+        startingRotation=transform.rotation;
         setInput();
         
     }
@@ -41,13 +44,13 @@ public class HingeArmPart : MonoBehaviour
         float targetMin=-1;
         float targetMax=1;
         float translatedValue=(targetMax-targetMin)/(max-min)*(value-max)+targetMax;
-        return translatedValue;
+        return translatedValue;   
     }
     public List<float> setInput()
     {
         input.Clear();
-        input.Add(normalizeValue(transform.rotation.x,-360,360));
-        input.Add(normalizeValue(transform.rotation.z,-360,360));
+        input.Add(normalizeValue(transform.rotation.x,startingRotation.x+hinge.limits.min,startingRotation.x+hinge.limits.max));
+        input.Add(normalizeValue(transform.rotation.z,startingRotation.z-20,startingRotation.z+20));    
         // for (int i = 0; i < 3; i++)
         // {
         //     input.Add(normalizeValue(transform.rotation[i],-360,360));  //nie powinna nastapic wieksza rotacja

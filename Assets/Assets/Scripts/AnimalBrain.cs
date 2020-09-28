@@ -7,8 +7,9 @@ public class AnimalBrain
 {
     // public List<int> limitMax;
     // public List<int> limitMin;
-    private int outputPart = 0;
-    public int bodyInput = 4;
+    // private int outputPart = 0;
+    public bool isElite=false;
+    public const int bodyInput = 6;
     public static int noMovingParts;
     public int hiddenLayerSize;
     public List<List<float>> inputSynapsesWeights;
@@ -20,12 +21,12 @@ public class AnimalBrain
     public float[] input;
     // int maxLimitBorder = 70;
     // int minLimitBorder = 0;
-
+    public bool ifFirstOutput=true;
     public AnimalBrain()
     {
         this.hiddenLayerSize = ((noMovingParts * HingeArmPart.inputSize) + bodyInput) * 2 / 3 + noMovingParts * HingeArmPart.outputSize;
-        output = new float[noMovingParts * HingeArmPart.outputSize];
-        input = new float[(noMovingParts * HingeArmPart.inputSize) + bodyInput];
+        output = new float[1+HingeArmPart.outputSize];
+        input = new float[(noMovingParts * HingeArmPart.inputSize) + bodyInput + output.Length];
         inputSynapsesWeights = new List<List<float>>();
         outputSynapsesWeights = new List<List<float>>();
         hiddenLayerBias = new List<float>();
@@ -53,20 +54,12 @@ public class AnimalBrain
         // limitMin = new List<int>(source.limitMin);
         for (int i = 0; i < source.inputSynapsesWeights.Count; i++)
         {
-            List<float> tempInputList = new List<float>();
-            for (int j = 0; j < source.inputSynapsesWeights[i].Count; j++)
-            {
-                tempInputList.Add(source.inputSynapsesWeights[i][j]);
-            }
+            List<float> tempInputList = new List<float>(source.inputSynapsesWeights[i]);
             inputSynapsesWeights.Add(tempInputList);
         }
         for (int i = 0; i < source.outputSynapsesWeights.Count; i++)
         {
-            List<float> tempOutputList = new List<float>();
-            for (int j = 0; j < source.outputSynapsesWeights[i].Count; j++)
-            {
-                tempOutputList.Add(source.outputSynapsesWeights[i][j]);
-            }
+            List<float> tempOutputList = new List<float>(source.outputSynapsesWeights[i]);
             outputSynapsesWeights.Add(tempOutputList);
         }
         for (int i = 0; i < source.hiddenLayerSynapsesWeights.Count; i++)
@@ -253,16 +246,16 @@ public class AnimalBrain
 
     public void setOutput()
     {
-        if (outputPart == output.Length)
-        {
-            outputPart = 0;
-        }
-        int endPart = outputPart + HingeArmPart.outputSize;
+        // if (outputPart == output.Length)
+        // {
+        //     outputPart = 0;
+        // }
+        // int endPart = outputPart + HingeArmPart.outputSize;
         float tempOutputValue = 0;
         float neuronCalculatedWeight;
         float secondNeuronCalculatedWeight;
         //Parallel.For(outputPart, endPart, delegate (int outputIndex)
-        for (int outputIndex = outputPart; outputIndex < endPart; outputIndex++)
+        for (int outputIndex = 0; outputIndex < output.Length; outputIndex++)   //pierwszy element w tablicy to ktora noga ejst wybrana
         {
             for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerBias.Count; secondNeuronIndex++)
             {
@@ -304,7 +297,7 @@ public class AnimalBrain
         //     tempOutputValue = sigmoid(tempOutputValue);
         //     output[outputIndex] = tempOutputValue;
         // }
-        outputPart = endPart;
+        // outputPart = endPart;
         
     }
 }

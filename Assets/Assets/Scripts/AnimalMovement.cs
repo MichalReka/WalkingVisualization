@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 public class AnimalMovement : MonoBehaviour
 {
-
     public AnimalBrain animalBrain;
     private float startingBodyY;
     private int framesPassed;
@@ -14,15 +13,18 @@ public class AnimalMovement : MonoBehaviour
     public HingeArmPart[] orderedHingeParts;
     public bool ifCatched = false;
     public bool ifCrashed = false;
-    public float currentX=0;
+    public float currentX = 0;
     public float speed;
-    public float timeBeingAlive=0;
-    public float timeBeingAliveImportance=0.1f;
+    public float timeBeingAlive = 0;
+    public float timeBeingAliveImportance = 0.1f;
     Transform body;
+    Rigidbody bodyRigibody;
     Transform leftFoot;
     Transform rightFoot;
     float startingRightFootPosition;
     float startingLeftFootPosition;
+    Quaternion startingBodyRotation;
+    ConfigurableJoint bodyLimits;
 
     public void OrderAnimalChildren()
     {
@@ -43,16 +45,16 @@ public class AnimalMovement : MonoBehaviour
     }
     public void setNeuralNetwork(AnimalBrain neuralNetwork)
     {
-        animalBrain=neuralNetwork;
+        animalBrain = neuralNetwork;
     }
     public void setRandomWeights()
     {
-        animalBrain=new AnimalBrain();
+        animalBrain = new AnimalBrain();
         animalBrain.setRandomWeights();
     }
     void Start()
     {
-        
+
     }
     public void CollisionDetected()
     {
@@ -78,8 +80,8 @@ public class AnimalMovement : MonoBehaviour
     }
     private float[] gatherInput()
     {
-        float[] input = new float[AnimalBrain.noMovingParts*HingeArmPart.inputSize+animalBrain.bodyInput];
-        var currIndex=0;
+        float[] input = new float[AnimalBrain.noMovingParts * HingeArmPart.inputSize + AnimalBrain.bodyInput + animalBrain.output.Length];
+        var currIndex = 0;
         // Parallel.For(0, orderedHingeParts.Length, delegate (int i)
         // {
         //     for(int j=0;j<orderedHingeParts[i].input.Count;j++)
@@ -89,21 +91,52 @@ public class AnimalMovement : MonoBehaviour
         //     }
         // });
 
-        for(int i=0;i<orderedHingeParts.Length;i++)
+        for (int i = 0; i < orderedHingeParts.Length; i++)
         {
-            for(int j=0;j<orderedHingeParts[i].input.Count;j++)
+            for (int j = 0; j < orderedHingeParts[i].input.Count; j++)
             {
-                input[currIndex]=orderedHingeParts[i].input[j];
+                input[currIndex] = orderedHingeParts[i].input[j];
                 currIndex++;
             }
         }
-        var bodyY = HingeArmPart.normalizeValue(body.position.y,startingBodyY*0.7f,startingBodyY*1.3f);
-        input[currIndex]=bodyY;
+        var bodyY = HingeArmPart.normalizeValue(body.position.y, startingBodyY * 0.7f, startingBodyY * 1.3f);
+        input[currIndex] = bodyY;
         currIndex++;
-        for (int i = 0; i < 3; i++)
+        //rotacje
+        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.x, startingBodyRotation.x + bodyLimits.lowAngularXLimit.limit, startingBodyRotation.x + bodyLimits.highAngularXLimit.limit);
+        // currIndex++;
+        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.y, startingBodyRotation.y - bodyLimits.angularYLimit.limit, startingBodyRotation.y + bodyLimits.angularYLimit.limit);
+        // currIndex++;
+        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.z, startingBodyRotation.z - bodyLimits.angularZLimit.limit, startingBodyRotation.z + bodyLimits.angularZLimit.limit);
+        // currIndex++;
+        int rotationBorder = 20; //im mniejsze tym czulsze
+        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.x, startingBodyRotation.x - rotationBorder, startingBodyRotation.x + rotationBorder);
+        currIndex++;
+        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.y, startingBodyRotation.y - rotationBorder, startingBodyRotation.y + rotationBorder);
+        currIndex++;
+        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.z, startingBodyRotation.z - rotationBorder, startingBodyRotation.z + rotationBorder);
+        currIndex++;
+        //predkosc
+        input[currIndex] = bodyRigibody.velocity.x;
+        currIndex++;
+        input[currIndex] = bodyRigibody.velocity.y;
+        currIndex++;
+        if (!animalBrain.ifFirstOutput)
         {
-            input[currIndex]=HingeArmPart.normalizeValue(body.rotation[i],-360,360);
-            currIndex++;
+            for (int i = 0; i < animalBrain.output.Length; i++)
+            {
+                input[currIndex] = animalBrain.output[i];
+                currIndex++;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < animalBrain.output.Length; i++)
+            {
+                input[currIndex] = 0;
+                currIndex++;
+            }
+            animalBrain.ifFirstOutput = false;
         }
         return input;
     }
@@ -114,29 +147,47 @@ public class AnimalMovement : MonoBehaviour
             //orderedHingeParts[i].TranslateOutput();
             orderedHingeParts[i].setInput();
         }
-        animalBrain.input=gatherInput();
-        for (int i = 0; i < orderedHingeParts.Length; i++)
+        animalBrain.input = gatherInput();
+        float max = AnimalBrain.noMovingParts - 1;
+        float y = (0 + max) / 2.0f;   //czesc kodu z translate value
+        float x = max - y;
+        float value = animalBrain.output[0] * x + y;
+        int armToMove = (int)Mathf.Round(value);
+        List<float> partOutput = new List<float>();
+        for (int j = 1; j <= HingeArmPart.outputSize; j++)
         {
-            // int limitMin=animalBrain.limitMin[i];
-            // int limitMax=animalBrain.limitMax[i];
-            List<float> partOutput=new List<float>();
-            for(int j=0;j<HingeArmPart.outputSize;j++)
-            {
-                partOutput.Add(animalBrain.output[j+HingeArmPart.outputSize*i]);
-            }
-            orderedHingeParts[i].TranslateOutput(partOutput);
+            partOutput.Add(animalBrain.output[j]);
         }
+        orderedHingeParts[armToMove].TranslateOutput(partOutput);
+        // for (int i = 0; i < orderedHingeParts.Length; i++)
+        // {
+        //     // int limitMin=animalBrain.limitMin[i];
+        //     // int limitMax=animalBrain.limitMax[i];
+        //     List<float> partOutput=new List<float>();
+        //     for(int j=0;j<HingeArmPart.outputSize;j++)
+        //     {
+        //         partOutput.Add(animalBrain.output[j+HingeArmPart.outputSize*i]);
+        //     }
+        //     orderedHingeParts[i].TranslateOutput(partOutput);
+        // }
     }
-    public void setBody()
+    public void setBody(bool isElite)
     {
         OrderAnimalChildren();
         body = transform.Find("body");
+        if (isElite)
+        {
+            body.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+        }
         rightFoot = transform.Find("RightBackFoot");
         leftFoot = transform.Find("LeftBackFoot");
         startingBodyY = body.transform.position.y;
+        startingBodyRotation = body.transform.rotation;
         startingLeftFootPosition = leftFoot.transform.position.x;
         startingRightFootPosition = rightFoot.transform.position.x;
-        averageBodyY=0;
+        bodyRigibody = body.GetComponent<Rigidbody>();
+        // bodyLimits = body.GetComponent<ConfigurableJoint>();
+        averageBodyY = 0;
         for (int i = 0; i < orderedHingeParts.Length; i++)
         {
             orderedHingeParts[i].initArm();
@@ -144,14 +195,14 @@ public class AnimalMovement : MonoBehaviour
     }
     public void chase()
     {
-        
+
         currentX += Time.deltaTime * speed;
-        timeBeingAlive+=Time.deltaTime*timeBeingAliveImportance;
+        timeBeingAlive += Time.deltaTime * timeBeingAliveImportance;
         averageBodyY += body.transform.position.y;
         framesPassed++;
-        var bodyX=body.transform.position.x;
-        var leftFootX=leftFoot.transform.position.x-startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
-        var rightFootX=rightFoot.transform.position.x-startingRightFootPosition;
+        var bodyX = body.transform.position.x;
+        var leftFootX = leftFoot.transform.position.x - startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
+        var rightFootX = rightFoot.transform.position.x - startingRightFootPosition;
         if (currentX > bodyX || currentX > rightFootX || currentX > leftFootX)   //jak zostanie zlapane
         {
             ifCatched = true;
@@ -161,7 +212,7 @@ public class AnimalMovement : MonoBehaviour
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
         }
-        else if (body.transform.position.y<0)   //jak spadnie w nieznane
+        else if (body.transform.position.y < 0)   //jak spadnie w nieznane
         {
             body.transform.position = new Vector3(-999, -999, -999);
             ifCatched = true;
@@ -170,9 +221,9 @@ public class AnimalMovement : MonoBehaviour
         // {
         //     ifCatched = true;
         // }
-        if(ifCatched)
+        if (ifCatched)
         {
-            averageBodyY=averageBodyY/framesPassed;
+            averageBodyY = averageBodyY / framesPassed;
         }
     }
     void Update()
