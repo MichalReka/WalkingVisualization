@@ -1883,7 +1883,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1310826881}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 6232431bcebdf6546b76cc78a748d05c, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -2211,18 +2211,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  populationSize: 2500
-  populationPartSize: 20
+  populationSize: 1000
+  populationPartSize: 70
   mutationRate: 0.2
   currentGen: 0
   bestDistance: 0
   bestFitness: 0
   currBestDistance: 0
   currBestFitness: 0
-  animalPrefabName: animal0
-  startingPosition: 1.5
+  animalPrefabName: animal00
+  startingPosition: 1.2
   speed: 0.3
-  timeBeingAliveImportance: 0.2
+  timeBeingAliveImportance: 0.1
   bestDistances: []
   bestFitnesses: []
 --- !u!4 &1503458745

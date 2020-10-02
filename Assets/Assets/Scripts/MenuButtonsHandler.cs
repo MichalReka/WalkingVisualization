@@ -33,7 +33,6 @@ public class MenuButtonsHandler : MonoBehaviour
     }
     public void Quit()
     {
-        Debug.Log("quit");
         var coroutineHandler=FadeInAndDo(()=>{Application.Quit();});
         StartCoroutine(coroutineHandler);
     }

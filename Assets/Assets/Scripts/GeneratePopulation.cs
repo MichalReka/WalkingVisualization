@@ -35,7 +35,7 @@ public class GeneratePopulation : MonoBehaviour
         animalsObjects = new List<GameObject>();
         animals = new List<AnimalMovement>();
         createAnimal(new Vector3(0, 0, 0));
-        var movingParts = animalsObjects[0].GetComponentsInChildren<HingeArmPart>();
+        var movingParts = animalsObjects[0].GetComponentsInChildren<JointHandler>();
         AnimalBrain.noMovingParts = movingParts.Length;
         Destroy(animalsObjects[0]);
         animalsObjects.RemoveAt(0);
@@ -110,16 +110,12 @@ public class GeneratePopulation : MonoBehaviour
         System.Diagnostics.Process.Start("CMD.exe", strCmdText);
     }
     // Update is called once per frame
-    void Update()
-    {
-
-    }
     IEnumerator CreateNewGeneration()
     {
         yield return new WaitForSeconds(0.5f);    
         _newGenerationMove=true;   
     }
-    void FixedUpdate()
+    void Update()
     {
         if (!visualizationBasics.ifPaused)
         {

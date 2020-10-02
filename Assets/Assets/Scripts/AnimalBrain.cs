@@ -2,40 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-
 public class AnimalBrain
 {
     // public List<int> limitMax;
     // public List<int> limitMin;
     // private int outputPart = 0;
-    public bool isElite=false;
-    public const int bodyInput = 6;
+    public bool isElite = false;
+    public const int bodyInput = 3;
     public static int noMovingParts;
     public int hiddenLayerSize;
-    public List<List<float>> inputSynapsesWeights;
-    public List<List<float>> outputSynapsesWeights;
-    public List<List<float>> hiddenLayerSynapsesWeights;
-    public List<float> hiddenLayerBias;
-    public List<float> secondHiddenLayerBias;
+    public float[,] inputSynapsesWeights;
+    public float[,] outputSynapsesWeights;
+    public float[,] hiddenLayerSynapsesWeights;
+    public float[] hiddenLayerBias;
+    public float[] secondHiddenLayerBias;
     public float[] output;  //dzielnik czworki
     public float[] input;
     // int maxLimitBorder = 70;
     // int minLimitBorder = 0;
-    public bool ifFirstOutput=true;
-    public AnimalBrain()
+    public bool ifFirstOutput = true;
+    public AnimalBrain()  
     {
-        this.hiddenLayerSize = ((noMovingParts * HingeArmPart.inputSize) + bodyInput) * 2 / 3 + noMovingParts * HingeArmPart.outputSize;
-        output = new float[1+HingeArmPart.outputSize];
-        input = new float[(noMovingParts * HingeArmPart.inputSize) + bodyInput + output.Length];
-        inputSynapsesWeights = new List<List<float>>();
-        outputSynapsesWeights = new List<List<float>>();
-        hiddenLayerBias = new List<float>();
-        secondHiddenLayerBias = new List<float>();
-        hiddenLayerSynapsesWeights = new List<List<float>>();
-        // limitMin = new List<int>();
-        // limitMax = new List<int>();
+        this.hiddenLayerSize = ((noMovingParts * JointHandler.inputSize) + bodyInput) * 2 / 3 + noMovingParts * JointHandler.outputSize;
+        output = new float[1 + JointHandler.outputSize];
+        input = new float[(noMovingParts * JointHandler.inputSize) + bodyInput + output.Length];
+        inputSynapsesWeights = new float[hiddenLayerSize, input.Length];
+        outputSynapsesWeights = new float[hiddenLayerSize, output.Length];
+        hiddenLayerBias = new float[hiddenLayerSize];
+        secondHiddenLayerBias = new float[hiddenLayerSize];
+        hiddenLayerSynapsesWeights = new float[hiddenLayerSize, hiddenLayerSize];
     }
-
     bool roll(float chance)
     {
         float localchance = Random.Range(0.0f, 100.0f);
@@ -52,22 +48,11 @@ public class AnimalBrain
     {
         // limitMax = new List<int>(source.limitMax);
         // limitMin = new List<int>(source.limitMin);
-        for (int i = 0; i < source.inputSynapsesWeights.Count; i++)
-        {
-            List<float> tempInputList = new List<float>(source.inputSynapsesWeights[i]);
-            inputSynapsesWeights.Add(tempInputList);
-        }
-        for (int i = 0; i < source.outputSynapsesWeights.Count; i++)
-        {
-            List<float> tempOutputList = new List<float>(source.outputSynapsesWeights[i]);
-            outputSynapsesWeights.Add(tempOutputList);
-        }
-        for (int i = 0; i < source.hiddenLayerSynapsesWeights.Count; i++)
-        {
-            hiddenLayerSynapsesWeights.Add(new List<float>(source.hiddenLayerSynapsesWeights[i]));
-        }
-        secondHiddenLayerBias = new List<float>(source.secondHiddenLayerBias);
-        hiddenLayerBias = new List<float>(source.hiddenLayerBias);
+        inputSynapsesWeights=source.inputSynapsesWeights.Clone() as float[,];
+        outputSynapsesWeights=source.outputSynapsesWeights.Clone() as float[,];
+        hiddenLayerSynapsesWeights=source.hiddenLayerSynapsesWeights.Clone() as float[,];
+        secondHiddenLayerBias = source.secondHiddenLayerBias.Clone() as float[];
+        hiddenLayerBias = source.hiddenLayerBias.Clone() as float[];
     }
     public void mixWeights(AnimalBrain parent, float chance)    //jaka jest szansa na zmiane genow
     {
@@ -93,21 +78,21 @@ public class AnimalBrain
             {
                 if (roll(chance))
                 {
-                    hiddenLayerSynapsesWeights[i][j] = parent.hiddenLayerSynapsesWeights[i][j];
+                    hiddenLayerSynapsesWeights[i,j] = parent.hiddenLayerSynapsesWeights[i,j];
                 }
             }
             for (int j = 0; j < input.Length; j++)
             {
                 if (roll(chance))
                 {
-                    inputSynapsesWeights[i][j] = parent.inputSynapsesWeights[i][j];
+                    inputSynapsesWeights[i,j] = parent.inputSynapsesWeights[i,j];
                 }
             }
             for (int j = 0; j < output.Length; j++)
             {
                 if (roll(chance))
                 {
-                    outputSynapsesWeights[i][j] = parent.outputSynapsesWeights[i][j];
+                    outputSynapsesWeights[i,j] = parent.outputSynapsesWeights[i,j];
                 }
             }
         }
@@ -123,39 +108,39 @@ public class AnimalBrain
             switch (synapseGroup)
             {
                 case 0:
-                    hiddenLayerBias[Random.Range(0, hiddenLayerBias.Count)] = Random.Range(-1.0f, 1.0f);
+                    hiddenLayerBias[Random.Range(0, hiddenLayerSize)] = Random.Range(-1.0f, 1.0f);
                     break;
                 case 1:
-                    inputSynapsesWeights[Random.Range(0, inputSynapsesWeights.Count)][Random.Range(0, inputSynapsesWeights[0].Count)] = Random.Range(-1.0f, 1.0f);
+                    inputSynapsesWeights[Random.Range(0, hiddenLayerSize), Random.Range(0, input.Length)] = Random.Range(-1.0f, 1.0f);
                     break;
                 case 2:
-                    outputSynapsesWeights[Random.Range(0, outputSynapsesWeights.Count)][Random.Range(0, outputSynapsesWeights[0].Count)] = Random.Range(-1.0f, 1.0f);
+                    outputSynapsesWeights[Random.Range(0, hiddenLayerSize),Random.Range(0, output.Length)] = Random.Range(-1.0f, 1.0f);
                     break;
                 case 3:
-                    secondHiddenLayerBias[Random.Range(0, secondHiddenLayerBias.Count)] = Random.Range(-1.0f, 1.0f);
+                    secondHiddenLayerBias[Random.Range(0, secondHiddenLayerBias.Length)] = Random.Range(-1.0f, 1.0f);
                     break;
                 case 4:
-                    hiddenLayerSynapsesWeights[Random.Range(0, hiddenLayerSynapsesWeights.Count)][Random.Range(0, hiddenLayerSynapsesWeights[0].Count)] = Random.Range(-1.0f, 1.0f);
+                    hiddenLayerSynapsesWeights[Random.Range(0, hiddenLayerSize),Random.Range(0, hiddenLayerSize)] = Random.Range(-1.0f, 1.0f);
                     break;
-                // case 5:
-                //     int hingeDirection = Random.Range(0, 3);    //3 rozne tryby zginania 
-                //     int randomMovingPart = Random.Range(0, noMovingParts);
-                //     if (hingeDirection == 0)
-                //     {
-                //         limitMin[randomMovingPart] = -maxLimitBorder;
-                //         limitMax[randomMovingPart] = minLimitBorder;
-                //     }
-                //     else if (hingeDirection == 1)
-                //     {
-                //         limitMin[randomMovingPart] = -minLimitBorder;
-                //         limitMax[randomMovingPart] = maxLimitBorder;
-                //     }
-                //     else
-                //     {
-                //         limitMin[randomMovingPart] = -maxLimitBorder;
-                //         limitMax[randomMovingPart] = maxLimitBorder;
-                //     }
-                //     break;
+                    // case 5:
+                    //     int hingeDirection = Random.Range(0, 3);    //3 rozne tryby zginania 
+                    //     int randomMovingPart = Random.Range(0, noMovingParts);
+                    //     if (hingeDirection == 0)
+                    //     {
+                    //         limitMin[randomMovingPart] = -maxLimitBorder;
+                    //         limitMax[randomMovingPart] = minLimitBorder;
+                    //     }
+                    //     else if (hingeDirection == 1)
+                    //     {
+                    //         limitMin[randomMovingPart] = -minLimitBorder;
+                    //         limitMax[randomMovingPart] = maxLimitBorder;
+                    //     }
+                    //     else
+                    //     {
+                    //         limitMin[randomMovingPart] = -maxLimitBorder;
+                    //         limitMax[randomMovingPart] = maxLimitBorder;
+                    //     }
+                    //     break;
             }
         }
 
@@ -179,7 +164,7 @@ public class AnimalBrain
         //         mutationChance = Random.Range(0.0f, 100.0f);
         //         if (roll(mutationChance))
         //         {
-        //             inputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+        //             inputSynapsesWeights[i,j] = Random.Range(-1.0f, 1.0f);
         //         }
         //     }
         //     for (int j = 0; j < output.Length; j++)
@@ -187,7 +172,7 @@ public class AnimalBrain
         //         mutationChance = Random.Range(0.0f, 100.0f);
         //         if (roll(mutationChance))
         //         {
-        //             outputSynapsesWeights[i][j] = Random.Range(-1.0f, 1.0f);
+        //             outputSynapsesWeights[i,j] = Random.Range(-1.0f, 1.0f);
         //         }
         //     }
         // }
@@ -221,59 +206,93 @@ public class AnimalBrain
         // }
         for (int i = 0; i < hiddenLayerSize; i++)
         {
-            hiddenLayerBias.Add(Random.Range(-1.0f, 1.0f));
-            secondHiddenLayerBias.Add(Random.Range(-1.0f, 1.0f));
-            List<float> neuronInputWeights = new List<float>();
-            List<float> neuronOutputWeights = new List<float>();
-            List<float> neuronHiddenLayerWeights = new List<float>();
+            hiddenLayerBias[i]=Random.Range(-1.0f, 1.0f);
+            secondHiddenLayerBias[i]=Random.Range(-1.0f, 1.0f);
             for (int j = 0; j < input.Length; j++)
             {
-                neuronInputWeights.Add(Random.Range(-1.0f, 1.0f));
+                inputSynapsesWeights[i,j]=Random.Range(-1.0f, 1.0f);
             }
             for (int j = 0; j < output.Length; j++)
             {
-                neuronOutputWeights.Add(Random.Range(-1.0f, 1.0f));
+                outputSynapsesWeights[i,j]=Random.Range(-1.0f, 1.0f);
             }
             for (int j = 0; j < hiddenLayerSize; j++)
             {
-                neuronHiddenLayerWeights.Add(Random.Range(-1.0f, 1.0f));
+                hiddenLayerSynapsesWeights[i,j]=Random.Range(-1.0f, 1.0f);
             }
-            hiddenLayerSynapsesWeights.Add(neuronHiddenLayerWeights);
-            inputSynapsesWeights.Add(neuronInputWeights);
-            outputSynapsesWeights.Add(neuronOutputWeights);
         }
     }
-
     public void setOutput()
     {
-        // if (outputPart == output.Length)
-        // {
-        //     outputPart = 0;
-        // }
-        // int endPart = outputPart + HingeArmPart.outputSize;
+
         float tempOutputValue = 0;
-        float neuronCalculatedWeight;
         float secondNeuronCalculatedWeight;
-        //Parallel.For(outputPart, endPart, delegate (int outputIndex)
+        int vectorSize = 4; //Vector4
+        float[] neuronsCalculatedWeightsVector = new float[vectorSize];
+        //var accVector = System.Numerics.Vector3.Zero;
+        int synapseIndex;
+        int neuronVectorIndex = 0;
         for (int outputIndex = 0; outputIndex < output.Length; outputIndex++)   //pierwszy element w tablicy to ktora noga ejst wybrana
         {
-            for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerBias.Count; secondNeuronIndex++)
+            for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerSize; secondNeuronIndex++)
             {
                 secondNeuronCalculatedWeight = 0;
-                for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Count; neuronIndex++)
+                // for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Count; neuronIndex++)
+                // {
+                //     neuronCalculatedWeight = 0;
+                //     for (int synapseIndex = 0; synapseIndex < inputSynapsesWeights[neuronIndex].Count; synapseIndex++)
+                //     {
+                //         //neuronCalculatedWeight += sigmoid(input[synapseIndex]) * inputSynapsesWeights[neuronIndex,synapseIndex];
+                //         neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex][synapseIndex];
+                //     }
+                //     //neuronCalculatedWeight = sigmoid(neuronCalculatedWeight);
+                //     neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
+                //     secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex][neuronIndex];
+                // }
+                for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Length; neuronIndex++)
                 {
-                    neuronCalculatedWeight = 0;
-                    for (int synapseIndex = 0; synapseIndex < inputSynapsesWeights[neuronIndex].Count; synapseIndex++)
+                    neuronsCalculatedWeightsVector[neuronVectorIndex] = 0;
+                    //takie podejscie daje 6-7 fps przy update - SIMD mniej obciaza procesor
+                    for (synapseIndex = 0; synapseIndex <= input.Length - vectorSize; synapseIndex += vectorSize)
                     {
-                        //neuronCalculatedWeight += sigmoid(input[synapseIndex]) * inputSynapsesWeights[neuronIndex][synapseIndex];
-                        neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex][synapseIndex];
+                        var inputVector = new System.Numerics.Vector4(input[synapseIndex], input[synapseIndex + 1], input[synapseIndex + 2], input[synapseIndex + 3]);
+                        var weightsVector = new System.Numerics.Vector4(inputSynapsesWeights[neuronIndex, synapseIndex], inputSynapsesWeights[neuronIndex,synapseIndex + 1], inputSynapsesWeights[neuronIndex,synapseIndex + 2], inputSynapsesWeights[neuronIndex,synapseIndex + 3]);
+                        neuronsCalculatedWeightsVector[neuronVectorIndex] += System.Numerics.Vector4.Dot(inputVector, weightsVector);
                     }
+                    for (; synapseIndex < input.Length; synapseIndex++)
+                    {
+                        neuronsCalculatedWeightsVector[neuronVectorIndex] += input[synapseIndex] * inputSynapsesWeights[neuronIndex, synapseIndex];
+                    }
+                    // for (int synapseIndex = 0; synapseIndex < inputSynapsesWeights[neuronIndex].Count; synapseIndex++)
+                    // {
+
+                    //     //neuronCalculatedWeight += sigmoid(input[synapseIndex]) * inputSynapsesWeights[neuronIndex][synapseIndex];
+                    //     neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex][synapseIndex];
+                    // }
                     //neuronCalculatedWeight = sigmoid(neuronCalculatedWeight);
-                    neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
-                    secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex][neuronIndex];
+                    neuronsCalculatedWeightsVector[neuronVectorIndex] += hiddenLayerBias[neuronIndex];
+                    if (neuronVectorIndex == (vectorSize - 1))
+                    {
+                        var hiddenLayer = new System.Numerics.Vector4(hiddenLayerSynapsesWeights[secondNeuronIndex,neuronIndex], hiddenLayerSynapsesWeights[secondNeuronIndex,neuronIndex - 1], hiddenLayerSynapsesWeights[secondNeuronIndex,neuronIndex - 2], hiddenLayerSynapsesWeights[secondNeuronIndex,neuronIndex - 3]);
+                        var neuronWeightsVector = new System.Numerics.Vector4(neuronsCalculatedWeightsVector[neuronVectorIndex], neuronsCalculatedWeightsVector[neuronVectorIndex - 1], neuronsCalculatedWeightsVector[neuronVectorIndex - 2], neuronsCalculatedWeightsVector[neuronVectorIndex - 3]);
+                        secondNeuronCalculatedWeight += System.Numerics.Vector4.Dot(hiddenLayer, neuronWeightsVector);
+                        neuronVectorIndex = 0;
+                    }
+                    else
+                    {
+                        neuronVectorIndex++;
+                    }
+                    // secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex][neuronIndex];
+                }
+                neuronVectorIndex=0;
+                int j = 0;
+                for (int i = neuronVectorIndex; i >= 0; i--)
+                {
+                    secondNeuronCalculatedWeight += neuronsCalculatedWeightsVector[j] * hiddenLayerSynapsesWeights[secondNeuronIndex,neuronVectorIndex - i];
+                    j++;
                 }
                 secondNeuronCalculatedWeight += secondHiddenLayerBias[secondNeuronIndex];
-                tempOutputValue = tempOutputValue + secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex][outputIndex];
+                tempOutputValue = tempOutputValue + secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex,outputIndex];
             }
 
             tempOutputValue = sigmoid(tempOutputValue);
@@ -298,6 +317,6 @@ public class AnimalBrain
         //     output[outputIndex] = tempOutputValue;
         // }
         // outputPart = endPart;
-        
+
     }
 }

@@ -35,7 +35,6 @@ public class PopulationUI : MonoBehaviour
         else
         {
             pauseLayer.SetActive(false);
-
         }
     }
 }

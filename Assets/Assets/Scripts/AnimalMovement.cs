@@ -10,7 +10,7 @@ public class AnimalMovement : MonoBehaviour
     private float startingBodyY;
     private int framesPassed;
     public float averageBodyY;
-    public HingeArmPart[] orderedHingeParts;
+    public JointHandler[] orderedMovingParts;
     public bool ifCatched = false;
     public bool ifCrashed = false;
     public float currentX = 0;
@@ -28,19 +28,21 @@ public class AnimalMovement : MonoBehaviour
 
     public void OrderAnimalChildren()
     {
-        HingeArmPart[] temp = GetComponentsInChildren<HingeArmPart>();
-        orderedHingeParts = new HingeArmPart[temp.Length];
+        JointHandler[] temp = GetComponentsInChildren<JointHandler>();
+        orderedMovingParts = new JointHandler[temp.Length];
         int index = 0;
         int noOfChildren = transform.childCount;
         for (int i = 0; i < noOfChildren; i++)
         {
-            HingeArmPart childComponent = transform.GetChild(i).GetComponent<HingeArmPart>();
+            JointHandler[] childComponent = transform.GetChild(i).GetComponents<JointHandler>();
             if (childComponent != null)
             {
-                orderedHingeParts[index] = childComponent;
-                index++;
+                for (int j = 0; j < childComponent.Length; j++)
+                {
+                    orderedMovingParts[index] = childComponent[j];
+                    index++;
+                }
             }
-
         }
     }
     public void setNeuralNetwork(AnimalBrain neuralNetwork)
@@ -58,64 +60,46 @@ public class AnimalMovement : MonoBehaviour
     }
     public void CollisionDetected()
     {
-        var joints = GetComponentsInChildren<HingeJoint>();
-        foreach (var hJoint in joints)
-        {
-            var motor = hJoint.motor;
-            motor.force = 0;
-            motor.targetVelocity = 0;
-            hJoint.motor = motor;
-            hJoint.useMotor = false;
-        }
         ifCatched = true;
         ifCrashed = true;
     }
     // Update is called once per frame
     public void Move()
     {
-        for (int i = 0; i < orderedHingeParts.Length; i++)
+        for (int i = 0; i < orderedMovingParts.Length; i++)
         {
             animalBrain.setOutput();
         }
     }
     private float[] gatherInput()
     {
-        float[] input = new float[AnimalBrain.noMovingParts * HingeArmPart.inputSize + AnimalBrain.bodyInput + animalBrain.output.Length];
+        float[] input = new float[AnimalBrain.noMovingParts * JointHandler.inputSize + AnimalBrain.bodyInput + animalBrain.output.Length];
         var currIndex = 0;
-        // Parallel.For(0, orderedHingeParts.Length, delegate (int i)
-        // {
-        //     for(int j=0;j<orderedHingeParts[i].input.Count;j++)
-        //     {
-        //         input[currIndex]=orderedHingeParts[i].input[j];
-        //         currIndex++;
-        //     }
-        // });
-
-        for (int i = 0; i < orderedHingeParts.Length; i++)
+        for (int i = 0; i < orderedMovingParts.Length; i++)
         {
-            for (int j = 0; j < orderedHingeParts[i].input.Count; j++)
+            for (int j = 0; j < orderedMovingParts[i].input.Length; j++)
             {
-                input[currIndex] = orderedHingeParts[i].input[j];
+                input[currIndex] = orderedMovingParts[i].input[j];
                 currIndex++;
             }
         }
-        var bodyY = HingeArmPart.normalizeValue(body.position.y, startingBodyY * 0.7f, startingBodyY * 1.3f);
+        var bodyY = JointHandler.normalizeValue(body.position.y, startingBodyY * 0.7f, startingBodyY * 1.3f);
         input[currIndex] = bodyY;
         currIndex++;
         //rotacje
-        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.x, startingBodyRotation.x + bodyLimits.lowAngularXLimit.limit, startingBodyRotation.x + bodyLimits.highAngularXLimit.limit);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.x, startingBodyRotation.x + bodyLimits.lowAngularXLimit.limit, startingBodyRotation.x + bodyLimits.highAngularXLimit.limit);
         // currIndex++;
-        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.y, startingBodyRotation.y - bodyLimits.angularYLimit.limit, startingBodyRotation.y + bodyLimits.angularYLimit.limit);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.y, startingBodyRotation.y - bodyLimits.angularYLimit.limit, startingBodyRotation.y + bodyLimits.angularYLimit.limit);
         // currIndex++;
-        // input[currIndex] = HingeArmPart.normalizeValue(body.rotation.z, startingBodyRotation.z - bodyLimits.angularZLimit.limit, startingBodyRotation.z + bodyLimits.angularZLimit.limit);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, startingBodyRotation.z - bodyLimits.angularZLimit.limit, startingBodyRotation.z + bodyLimits.angularZLimit.limit);
         // currIndex++;
-        int rotationBorder = 20; //im mniejsze tym czulsze
-        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.x, startingBodyRotation.x - rotationBorder, startingBodyRotation.x + rotationBorder);
-        currIndex++;
-        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.y, startingBodyRotation.y - rotationBorder, startingBodyRotation.y + rotationBorder);
-        currIndex++;
-        input[currIndex] = HingeArmPart.normalizeValue(body.rotation.z, startingBodyRotation.z - rotationBorder, startingBodyRotation.z + rotationBorder);
-        currIndex++;
+        // int rotationBorder = 20; //im mniejsze tym czulsze
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.x, startingBodyRotation.x - rotationBorder, startingBodyRotation.x + rotationBorder);
+        // currIndex++;
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.y, startingBodyRotation.y - rotationBorder, startingBodyRotation.y + rotationBorder);
+        // currIndex++;
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, startingBodyRotation.z - rotationBorder, startingBodyRotation.z + rotationBorder);
+        // currIndex++;
         //predkosc
         input[currIndex] = bodyRigibody.velocity.x;
         currIndex++;
@@ -142,10 +126,9 @@ public class AnimalMovement : MonoBehaviour
     }
     public void UpdateIO()
     {
-        for (int i = 0; i < orderedHingeParts.Length; i++)
+        for (int i = 0; i < orderedMovingParts.Length; i++)
         {
-            //orderedHingeParts[i].TranslateOutput();
-            orderedHingeParts[i].setInput();
+            orderedMovingParts[i].setInput();
         }
         animalBrain.input = gatherInput();
         float max = AnimalBrain.noMovingParts - 1;
@@ -154,22 +137,11 @@ public class AnimalMovement : MonoBehaviour
         float value = animalBrain.output[0] * x + y;
         int armToMove = (int)Mathf.Round(value);
         List<float> partOutput = new List<float>();
-        for (int j = 1; j <= HingeArmPart.outputSize; j++)
+        for (int j = 1; j <= JointHandler.outputSize; j++)
         {
             partOutput.Add(animalBrain.output[j]);
         }
-        orderedHingeParts[armToMove].TranslateOutput(partOutput);
-        // for (int i = 0; i < orderedHingeParts.Length; i++)
-        // {
-        //     // int limitMin=animalBrain.limitMin[i];
-        //     // int limitMax=animalBrain.limitMax[i];
-        //     List<float> partOutput=new List<float>();
-        //     for(int j=0;j<HingeArmPart.outputSize;j++)
-        //     {
-        //         partOutput.Add(animalBrain.output[j+HingeArmPart.outputSize*i]);
-        //     }
-        //     orderedHingeParts[i].TranslateOutput(partOutput);
-        // }
+        orderedMovingParts[armToMove].TranslateOutput(partOutput);
     }
     public void setBody(bool isElite)
     {
@@ -188,9 +160,9 @@ public class AnimalMovement : MonoBehaviour
         bodyRigibody = body.GetComponent<Rigidbody>();
         // bodyLimits = body.GetComponent<ConfigurableJoint>();
         averageBodyY = 0;
-        for (int i = 0; i < orderedHingeParts.Length; i++)
+        for (int i = 0; i < orderedMovingParts.Length; i++)
         {
-            orderedHingeParts[i].initArm();
+            orderedMovingParts[i].initArm();
         }
     }
     public void chase()
@@ -226,8 +198,5 @@ public class AnimalMovement : MonoBehaviour
             averageBodyY = averageBodyY / framesPassed;
         }
     }
-    void Update()
-    {
 
-    }
 }
