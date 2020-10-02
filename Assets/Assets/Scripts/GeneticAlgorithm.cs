@@ -6,130 +6,136 @@ using UnityEngine;
 
 public class GeneticAlgorithm
 {
-    private List<GameObject> currentGeneration;   //list of animals
-    private List<List<HingeArmPart>> populationGenPool;
-    private List<List<HingeArmPart>> parentsList;
-    private int chromosomeLength;
-    //private int bestSolutionGenNum = 0;
-    private float mutationRate;
-    private int numberOfParents;
-    public float bestDistance{get;private set;}
-    public GeneticAlgorithm(List<GameObject> gen, float mutationRate)
+    private List<AnimalMovement> _currentGeneration;   //list of animals
+    private AnimalBrain[] _populationGenPool;
+    private float _mutationRate;
+    private int numberOfElites;
+    public float bestDistance { get; private set; }
+    public float bestFitness { get; private set; }
+    private float elitionismPercent = 0.05f;
+    List<float> distancesList;
+    List<float> fitnessList;
+    List<int> elitesIndexes;
+    const int minFitness = -999;
+    // float penaltyForCrash = 1;
+    public GeneticAlgorithm(List<AnimalMovement> gen, float _mutationRate)
     {
-        currentGeneration = gen;
-        this.mutationRate = mutationRate;
-        var tempPartContainer=gen[0].GetComponentsInChildren<HingeArmPart>();
-        chromosomeLength=tempPartContainer.Length;
-        populationGenPool = new List<List<HingeArmPart>>(currentGeneration.Count());
-        for(int i = 0;i<populationGenPool.Count();i++)
-        {
-            populationGenPool[i]=new List<HingeArmPart>(chromosomeLength);
-        }
-        for (int i=0;i<currentGeneration.Count();i++) populationGenPool.Add(null);
-        numberOfParents=1+currentGeneration.Count()/30; //na 10 osobnikow kolejny rodzic
+        _currentGeneration = gen;
+        this._mutationRate = _mutationRate;
+        _populationGenPool = new AnimalBrain[_currentGeneration.Count()];
+        numberOfElites = (int)Mathf.Ceil(_currentGeneration.Count() * elitionismPercent);
         AlgorithmStart();
     }
-    float calculateFitness(GameObject individual)
+    public List<AnimalBrain> GetPopulationGenPool()
     {
-        //chwilowo tylko cztery nogi
-        //chwilowo tylko ustawiam jak daleko zaszedl osobnik - jesli jego tulow jest powyzej (na razie stalej - pozniej ustawie niezaleznie od gatunku) wartosci, mnoze 1.2
-        var individualBody=individual.transform.Find("body").gameObject;
-        var xPosition = individualBody.transform.position.x;
-        var fitness=xPosition;
+        return _populationGenPool.ToList();
+    }
+    float calculateFitness(AnimalMovement individual,float distance)
+    {
+        // var individualBody = individual.transform.Find("body").gameObject;
+        // sprawdzam wszystkie czesci ciala, dziele przez ilosc czesci ciala, tak otrzymuje jak daleko doszly i fitness (koniec z wyrzucaniem body d przodu)
+        float fitness = distance;
+        fitness = fitness * individual.averageBodyY;
+        fitness = fitness + individual.timeBeingAlive;
+        // if (individual.ifCrashed == true)
+        // {
+        //     fitness = fitness * penaltyForCrash;   //jesli upadnie, nieznacznie zmniejszam fitness
+        // }
         return fitness;
     }
-    public List<HingeArmPart> OrderAnimalChildren(GameObject obj)
+    float calculateDistance(AnimalMovement individual)
     {
-        HingeArmPart[] temp = obj.GetComponentsInChildren<HingeArmPart>();
-        HingeArmPart[] orderedHingeParts = new HingeArmPart[temp.Length];
-        int index = 0;
-        int noOfChildren = obj.transform.childCount;
-        for (int i = 0; i < noOfChildren; i++)
+        int bodyPartsCount = individual.transform.childCount;
+        float distance = 0;
+        for (int i = 0; i < bodyPartsCount; i++)
         {
-            HingeArmPart childComponent = obj.transform.GetChild(i).GetComponent<HingeArmPart>();
-            if (childComponent != null)
-            {
-                orderedHingeParts[index] = childComponent;
-                index++;
-            }
+            Transform child = individual.transform.GetChild(i);
+            distance = distance + child.transform.position.x;
         }
-        return orderedHingeParts.ToList();
+        distance = distance / bodyPartsCount;
+        return distance;
     }
-    public List<List<HingeArmPart>> GetPopulationGenPool()
+    private void SetDistancesList()
     {
-        return populationGenPool;
+        distancesList = new List<float>();
+        for (int i = 0; i < _currentGeneration.Count; i++)
+        {
+            distancesList.Add(calculateDistance(_currentGeneration[i])); //tutaj bede trzymac wagi
+        }
+    }
+    private void SetFitnessList()
+    {
+        fitnessList = new List<float>();
+        for (int i = 0; i < _currentGeneration.Count; i++)
+        {
+            fitnessList.Add(calculateFitness(_currentGeneration[i],distancesList[i])); //tutaj bede trzymac wagi
+        }
+    }
+    private void SetElitiesIndexesList()
+    {
+        elitesIndexes = new List<int>();
+        List<float> tempFitnessList = new List<float>(fitnessList); //kopiowanie jest niezbedne, lista bedzie modyfikowana
+        for (int i = 0; i < numberOfElites; i++)
+        {
+            int nextEliteIndex = tempFitnessList.IndexOf(tempFitnessList.Max());
+            elitesIndexes.Add(nextEliteIndex);
+            tempFitnessList[nextEliteIndex] = minFitness;
+        }
     }
     private void AlgorithmStart()
     {
-        const int minFitness = -999;
-        float currentBestValue=0;
-        int maxValueIndex = 0;
-        List<float> fitnessList=new List<float>(currentGeneration.Count());
-        for (int i=0;i<currentGeneration.Count();i++) fitnessList.Add(0);
-        List<HingeArmPart> currentBest; //najlepszy zostaje
-        List<List<HingeArmPart>> betaParents = new List<List<HingeArmPart>>();
-        for(int i=0;i<currentGeneration.Count;i++)
+        SetDistancesList();
+        SetFitnessList();
+        SetElitiesIndexesList();
+        bestDistance = distancesList.Max();
+        bestFitness = fitnessList.Max();
+        var bestFitnessIndex = fitnessList.IndexOf(bestFitness);
+        for (int i = 0; i < _currentGeneration.Count; i++)
         {
-            fitnessList[i] = calculateFitness(currentGeneration[i]); //tutaj bede trzymac wagi
-            if(fitnessList[i]>currentBestValue) //nie musze dwa razy przechodzic przez cala liste
+            if (elitesIndexes.Contains(i))    //najlepszy zostaje
             {
-                currentBestValue=fitnessList[i];
-                maxValueIndex=i;
-            }
-        }
-        bestDistance=currentBestValue;
-        fitnessList[maxValueIndex] = minFitness;    //zamieniam najmniejsza w najwieksza - uzyskam tak prosto liste reszty 
-        for(int i=0;i<numberOfParents;i++)
-        {
-            var parentFitness = fitnessList.Max();
-            betaParents.Add(OrderAnimalChildren(currentGeneration[fitnessList.IndexOf(parentFitness)]));
-            fitnessList[fitnessList.IndexOf(parentFitness)]=fitnessList.Min();
-        }
-        fitnessList[maxValueIndex] = currentBestValue;
-        currentBest = OrderAnimalChildren(currentGeneration[maxValueIndex]);
-        for (int i = 0; i < currentGeneration.Count; i++)
-        {
-            if(i==maxValueIndex)    //najlepszy zostaje
-            {
-                populationGenPool[i]=currentBest;
-  
+                _populationGenPool[i] = new AnimalBrain();
+                _populationGenPool[i].deepCopy(_currentGeneration[i].animalBrain);
             }
             else
             {
-                var chance=Random.Range(0,numberOfParents);
-                populationGenPool[i] = Mate(currentBest, betaParents[chance],i);
+                _populationGenPool[i] = Mate();
             }
         }
     }
-    //rozmnazanie - osobnik alfa i lista osobnikow beta, osobnik alfa na pewno przekaze czesc genow, ilosc osobnikow beta 
-    public List<HingeArmPart> Mate(List<HingeArmPart> alphaParent, List<HingeArmPart> betaParent,int generationIndex)  //trzeba przerobobic to by synapsy sie zmienialy, nie cale "nogi"
+    private int ChooseParent()
     {
-        //nie tworzyc obiektow - stworzyc liste genow 
-        //krzyzowanie polega na kopiowaniu genow z rodzica 1
-        //losowanie szansy od 0 do 100 przekazania genow 2 rodzica
-        //zmianie genow kopii 1 rodzica jesli lokalna szansa jest mniejsza od szansy 2 rodzica
-        List<int> genesFromParent1 = new List<int>();
-        List<int> genesFromParent2 = new List<int>();
-        List<HingeArmPart> child=OrderAnimalChildren(currentGeneration[generationIndex]);
+        int parentIndex = Random.Range(0, _currentGeneration.Count);
+        float worstFitness = fitnessList.Min();
+        float bestFitness = fitnessList.Max();
+        float randomFitnessNumber = Random.Range(worstFitness, bestFitness);
+        while (fitnessList[parentIndex] < randomFitnessNumber)
+        {
+            parentIndex = Random.Range(0, _currentGeneration.Count);
+        }
+        return parentIndex;
+    }
+    public AnimalBrain Mate()
+    {
+        //krzyzowanie polega na "konkursie" wynialajacym dwoch rodzicow na jednego osobnika potomnego
+        //osobniki o wiekszym fitness maja wieksza szanse na zostanie wybranym do krzyzowania
+        //losowana jest wartosc pomiedzy minimalna wartoscia z fitness list a maksymalna wartoscia z fitness list
+        //losowany index osobnika dopoki wylosowana wczesniej wartosc nie jest mniejsza od wartosci fitness danego indexu
+        //losowani dwaj rodzice, rozmnazanie jak wczesniej
+        int parent1Index = ChooseParent();
+        int parent2Index = ChooseParent();
+        AnimalBrain child = new AnimalBrain();
         float mixChance;
-        for (int i=0;i<chromosomeLength;i++)
+        child.deepCopy(_currentGeneration[parent1Index].animalBrain);
+        mixChance = Random.Range(0.0f, 100.0f);
+        child.mixWeights(_currentGeneration[parent2Index].animalBrain, mixChance);
+        float chance = Random.Range(0.0f, 1.0f);
+        if (chance < _mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem
         {
-            child[i].deepCopy(alphaParent[i]);
-            mixChance=Random.Range(0.0f,100.0f);
-            child[i].mixWeights(betaParent[i],mixChance);
+            child.mutateWeights();
         }
-        for (int i = 0; i < child.Count; i++) 
-        {
-            float chance = Random.Range(0.0f,100.0f);
-            chance = chance/100;
-            if (chance < mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem
-            {
-                child[i].mutateWeights();
-            }
-        }
-        
         return child;
     }
+
 }
 
-            
