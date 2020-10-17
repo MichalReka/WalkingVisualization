@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class visualizationBasics : MonoBehaviour
+public class VisualizationBasics : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 5f;
+    float moveSpeed = 5f;
     float oldMoveSpeed;
     public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
     public RotationAxes axes = RotationAxes.MouseXAndY;
@@ -16,19 +16,22 @@ public class visualizationBasics : MonoBehaviour
     float rotationY = 0F;
     void Start()
     {
-        ifPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         oldMoveSpeed = moveSpeed;
+        ifPaused = false;
+
     }
     void PauseGame()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         Time.timeScale = 0;
+        ifPaused = true;
     }
-    void ResumeGame()
+    public static void ResumeGame()
     {
+        ifPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         Time.timeScale = 1;
@@ -73,12 +76,10 @@ public class visualizationBasics : MonoBehaviour
             if (ifPaused)
             {
                 ResumeGame();
-                ifPaused = false;
             }
             else
             {
                 PauseGame();
-                ifPaused = true;
             }
         }
     }

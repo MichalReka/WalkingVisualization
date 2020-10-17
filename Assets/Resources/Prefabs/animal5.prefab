@@ -285,9 +285,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 3000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1124,9 +1124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 3000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1299,9 +1299,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 4000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1612,9 +1612,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 3000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1787,9 +1787,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 4000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2431,9 +2431,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 3000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2606,9 +2606,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 4000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2919,9 +2919,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 4000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2920274470001068082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3096,7 +3096,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2920274470001069178}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.4927101, y: -0.03, z: -36.47229}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2920274470001069445}

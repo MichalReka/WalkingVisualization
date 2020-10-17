@@ -363,7 +363,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -223.59, y: 159.83}
+  m_AnchoredPosition: {x: -192.03, y: 159.83}
   m_SizeDelta: {x: 50, y: 19.803146}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &70418281
@@ -445,7 +445,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 150, y: 30}
+  m_SizeDelta: {x: 170, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &109840594
 MonoBehaviour:
@@ -591,8 +591,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -318.03, y: 180}
-  m_SizeDelta: {x: 138.87888, y: 19.166843}
+  m_AnchoredPosition: {x: -301.6, y: 179.5}
+  m_SizeDelta: {x: 170, y: 19.166843}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &191493698
 MonoBehaviour:
@@ -626,7 +626,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Animals catched:'
+  m_Text: "Z\u0142apane osobniki:"
 --- !u!222 &191493699
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -704,7 +704,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Save best individual
+  m_Text: "Wr\xF3\u0107 do menu g\u0142\xF3wnego"
 --- !u!222 &384557130
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -751,7 +751,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 40}
-  m_SizeDelta: {x: 170, y: 30}
+  m_SizeDelta: {x: 165, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &447835114
 Animator:
@@ -963,7 +963,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -223.59, y: 180}
+  m_AnchoredPosition: {x: -192.03, y: 180.34}
   m_SizeDelta: {x: 50, y: 19.457115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &478124736
@@ -1140,7 +1140,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -223.59, y: 200}
+  m_AnchoredPosition: {x: -192.03, y: 199.79988}
   m_SizeDelta: {x: 50, y: 19.457115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &596779738
@@ -1438,7 +1438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -223.59, y: 140}
+  m_AnchoredPosition: {x: -192.03, y: 140.00009}
   m_SizeDelta: {x: 50, y: 19.457115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &816624876
@@ -1508,7 +1508,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -1533,7 +1533,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 350
+  far clip plane: 300
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -1578,7 +1578,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95331b076e8e3fd48858d9822c9735f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
   axes: 0
   sensitivityX: 15
   sensitivityY: 15
@@ -1656,8 +1655,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -318.03, y: 160}
-  m_SizeDelta: {x: 138.88025, y: 20.149128}
+  m_AnchoredPosition: {x: -302.03, y: 160}
+  m_SizeDelta: {x: 170, y: 20.149128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1159283237
 MonoBehaviour:
@@ -1691,7 +1690,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Current best distance:'
+  m_Text: 'Obecny najlepszy dystans:'
 --- !u!222 &1159283238
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1769,7 +1768,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Gather data to pdf
+  m_Text: Przedstaw dane w pdf
 --- !u!222 &1191512909
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1847,7 +1846,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Save data to database
+  m_Text: Zapisz dane do bazy
 --- !u!222 &1299207275
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1946,7 +1945,7 @@ Transform:
   m_GameObject: {fileID: 1310826881}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 60, y: 0, z: 1471}
-  m_LocalScale: {x: 1637.5759, y: 10, z: 340.34}
+  m_LocalScale: {x: 2000, y: 10, z: 340.34}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -2005,7 +2004,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 190, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1368024259
 Animator:
@@ -2069,8 +2068,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1503458744}
-        m_MethodName: GeneratePdfDataPresentation
+      - m_Target: {fileID: 1501299694}
+        m_MethodName: GoBackToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2211,18 +2210,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  populationSize: 1000
-  populationPartSize: 70
-  mutationRate: 0.2
   currentGen: 0
   bestDistance: 0
   bestFitness: 0
   currBestDistance: 0
   currBestFitness: 0
-  animalPrefabName: animal00
-  startingPosition: 1.2
-  speed: 0.3
-  timeBeingAliveImportance: 0.1
   bestDistances: []
   bestFitnesses: []
 --- !u!4 &1503458745
@@ -2309,7 +2301,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PAUSED
+  m_Text: PAUZA
 --- !u!222 &1667480128
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2352,8 +2344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -318.06, y: 200}
-  m_SizeDelta: {x: 138.81842, y: 19.457092}
+  m_AnchoredPosition: {x: -301.63, y: 199.5}
+  m_SizeDelta: {x: 170, y: 19.457092}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1709751434
 MonoBehaviour:
@@ -2387,7 +2379,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Current generation: '
+  m_Text: 'Numer generacji: '
 --- !u!222 &1709751435
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2465,7 +2457,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Quit
+  m_Text: "Wyjd\u017A"
 --- !u!222 &1741195926
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2630,13 +2622,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.1
-  m_Text: 'WASD to move
-
-    Mouse to rotate
-
-    SPACE to pause
-
-    ESC to exit'
+  m_Text: "WASD - ruch\nMyszka - obr\xF3t\nESC - pauza/menu\n"
 --- !u!222 &1862227763
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2829,8 +2815,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -318, y: 140}
-  m_SizeDelta: {x: 138.81842, y: 19.453732}
+  m_AnchoredPosition: {x: -301.57, y: 139.5}
+  m_SizeDelta: {x: 170, y: 19.453732}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1989890741
 MonoBehaviour:
@@ -2864,7 +2850,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Best distance:'
+  m_Text: 'Najlepszy dystans:'
 --- !u!222 &1989890742
 CanvasRenderer:
   m_ObjectHideFlags: 0

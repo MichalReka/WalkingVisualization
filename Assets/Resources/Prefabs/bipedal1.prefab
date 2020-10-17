@@ -343,7 +343,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.65}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.35001117, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.35001117, z: -0.00000019868214}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -379,9 +379,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 300
-  maximumVelocityLimit: 2000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &7844780285228914462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -794,9 +794,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 300
-  maximumVelocityLimit: 1000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!59 &9137049995274991996
 HingeJoint:
   m_ObjectHideFlags: 0
@@ -956,9 +956,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 300
-  maximumVelocityLimit: 1000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!59 &3459878781234385140
 HingeJoint:
   m_ObjectHideFlags: 0
@@ -970,7 +970,7 @@ HingeJoint:
   m_Anchor: {x: -0.3, y: 0, z: -1.2}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.044999834, y: -0.009999717, z: 0}
+  m_ConnectedAnchor: {x: 0.044999834, y: -0.009999717, z: 0.00000014901163}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -1118,7 +1118,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.7}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.55000037, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.55000037, z: 0.00000029802325}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -1154,9 +1154,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 1200
-  maximumVelocityLimit: 5000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &6592868737014891489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1331,7 +1331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3211842113877524390}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3703766, y: 9.730101e-16, z: -6.87}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3211842114726967263}
@@ -1483,7 +1483,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.7}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.55000037, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.55000037, z: 0.00000029802325}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -1519,9 +1519,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 1200
-  maximumVelocityLimit: 5000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &721599850137662148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1906,7 +1906,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.7}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.5499998, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.5499998, z: 0.00000029802325}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -1942,9 +1942,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 2500
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &2111689550036591588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2081,7 +2081,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.7}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.5499998, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.5499998, z: 0.00000029802325}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -2117,9 +2117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 600
-  maximumVelocityLimit: 2500
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &4492110144954197243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2751,7 +2751,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: 0, z: -0.65}
   m_Axis: {x: 0, y: 1, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.350008, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.350008, z: 0.0000003973643}
   m_UseSpring: 0
   m_Spring:
     spring: 0
@@ -2787,9 +2787,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 300
-  maximumVelocityLimit: 2000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!114 &3752260809598771410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3112,9 +3112,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumMotorForce: 100
-  maximumVelocityLimit: 1000
+  targetVelocity: 0
   input: []
+  axisToMove: 0
 --- !u!1 &6348081021435740595
 GameObject:
   m_ObjectHideFlags: 0

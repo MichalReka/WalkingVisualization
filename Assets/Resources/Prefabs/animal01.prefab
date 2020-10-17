@@ -1222,6 +1222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1400
   input: []
+  axisToMove: 0
 --- !u!114 &1326229235081899882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1456,6 +1457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1400
   input: []
+  axisToMove: 0
 --- !u!114 &6036344373687403620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1909,6 +1911,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1400
   input: []
+  axisToMove: 0
 --- !u!114 &9177527513890021555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2143,6 +2146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 500
   input: []
+  axisToMove: 0
 --- !u!114 &7556225836957040848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2348,6 +2352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1000
   input: []
+  axisToMove: 0
 --- !u!65 &8454388338878464354
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2817,6 +2822,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 500
   input: []
+  axisToMove: 0
 --- !u!114 &4938476754427385156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3145,6 +3151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 350
   input: []
+  axisToMove: 0
 --- !u!1 &8454388339268757087
 GameObject:
   m_ObjectHideFlags: 0
@@ -3272,6 +3279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 500
   input: []
+  axisToMove: 0
 --- !u!114 &7463003773536997979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3806,6 +3814,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 350
   input: []
+  axisToMove: 0
 --- !u!1 &8454388339551728813
 GameObject:
   m_ObjectHideFlags: 0
@@ -4590,6 +4599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 500
   input: []
+  axisToMove: 0
 --- !u!114 &2402366357468909500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4918,6 +4928,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 350
   input: []
+  axisToMove: 0
 --- !u!1 &8454388340060241735
 GameObject:
   m_ObjectHideFlags: 0
@@ -5358,6 +5369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 350
   input: []
+  axisToMove: 0
 --- !u!1 &8454388340151034644
 GameObject:
   m_ObjectHideFlags: 0
@@ -5485,6 +5497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1400
   input: []
+  axisToMove: 0
 --- !u!114 &196002429583750465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5616,7 +5629,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8454388340264913158}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.9717255, y: 9.896053e-16, z: -45.82263}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8454388338878464383}

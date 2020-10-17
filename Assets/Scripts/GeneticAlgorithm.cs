@@ -16,12 +16,14 @@ public class GeneticAlgorithm
     List<float> distancesList;
     List<float> fitnessList;
     List<int> elitesIndexes;
+    public float _maxPercentGenesToMutate;
     const int minFitness = -999;
     // float penaltyForCrash = 1;
-    public GeneticAlgorithm(List<AnimalMovement> gen, float _mutationRate)
+    public GeneticAlgorithm(List<AnimalMovement> gen, float _mutationRate,float maxPercentGenesToMutate)
     {
         _currentGeneration = gen;
         this._mutationRate = _mutationRate;
+        this._maxPercentGenesToMutate=maxPercentGenesToMutate;
         _populationGenPool = new AnimalBrain[_currentGeneration.Count()];
         numberOfElites = (int)Mathf.Ceil(_currentGeneration.Count() * elitionismPercent);
         AlgorithmStart();
@@ -94,7 +96,7 @@ public class GeneticAlgorithm
         {
             if (elitesIndexes.Contains(i))    //najlepszy zostaje
             {
-                _populationGenPool[i] = new AnimalBrain();
+                _populationGenPool[i] = new AnimalBrain(_maxPercentGenesToMutate);
                 _populationGenPool[i].deepCopy(_currentGeneration[i].animalBrain);
                 _populationGenPool[i].isElite=true;
             }
@@ -104,17 +106,22 @@ public class GeneticAlgorithm
             }
         }
     }
+    
     private int ChooseParent()
     {
-        int parentIndex = Random.Range(0, _currentGeneration.Count);
-        float worstFitness = fitnessList.Min();
-        float bestFitness = fitnessList.Max();
-        float randomFitnessNumber = Random.Range(worstFitness, bestFitness);
-        while (fitnessList[parentIndex] < randomFitnessNumber)
-        {
-            parentIndex = Random.Range(0, _currentGeneration.Count);
-        }
-        return parentIndex;
+        // int parentIndex = Random.Range(0, _currentGeneration.Count);
+        // float worstFitness = fitnessList.Min();
+        // float bestFitness = fitnessList.Max();
+        // float randomFitnessNumber = Random.Range(worstFitness, bestFitness);
+        // while (fitnessList[parentIndex] < randomFitnessNumber)
+        // {
+        //     parentIndex = Random.Range(0, _currentGeneration.Count);
+        // }
+        //tournament
+        int border=Random.Range(0,fitnessList.Count-1);
+        int count=Random.Range(1,fitnessList.Count-border);
+        float parentFitness=fitnessList.GetRange(border,count).Max();
+        return fitnessList.IndexOf(parentFitness);
     }
     public AnimalBrain Mate()
     {
@@ -125,7 +132,11 @@ public class GeneticAlgorithm
         //losowani dwaj rodzice, rozmnazanie jak wczesniej
         int parent1Index = ChooseParent();
         int parent2Index = ChooseParent();
-        AnimalBrain child = new AnimalBrain();
+        while(parent2Index==parent1Index)
+        {
+            parent2Index = ChooseParent();
+        }
+        AnimalBrain child = new AnimalBrain(_maxPercentGenesToMutate);
         float mixChance;
         child.deepCopy(_currentGeneration[parent1Index].animalBrain);
         mixChance = Random.Range(0.0f, 100.0f);

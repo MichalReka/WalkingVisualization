@@ -28,7 +28,7 @@ public class PopulationUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(visualizationBasics.ifPaused)
+        if(VisualizationBasics.ifPaused)
         {
             pauseLayer.SetActive(true);
         }

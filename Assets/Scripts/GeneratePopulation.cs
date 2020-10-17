@@ -1,28 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 public class GeneratePopulation : MonoBehaviour
 {
-    private int animalsObjectsCatched = 0;
+    private int animalsObjectsCatched=0;
     List<GameObject> animalsObjects;
     List<AnimalMovement> animals;
-    public int populationSize = 100;
-    public int populationPartSize = 50;
-    public float mutationRate = 0.05f;
-    public int currentGen = 0;
-    public float bestDistance = 0;
-    public float bestFitness = 0;
-    public float currBestDistance = 0;
-    public float currBestFitness = 0;
-    public string animalPrefabName = "animal0";
-    public float startingPosition = 5.0f;
-    public float speed = 2f;
-    public float timeBeingAliveImportance = 0.1f;
+    public int currentGen=0;
+    public float bestDistance=0;
+    public float bestFitness=0;
+    public float currBestDistance=0;
+    public float currBestFitness=0;
+    public static int populationSize;
+    public static int populationPartSize;
+    public static float mutationRate;
+    public static string animalPrefabName;
+    public static float startingPosition;
+    public static float speed;
+    public static float maxPercentGenesToMutate;
+    public static float timeBeingAliveImportance;
     public List<float> bestDistances;
     public List<float> bestFitnesses;
-    // Start is called before the first frame update
     private GeneticAlgorithm geneticAlgorithm;
     private int[] activeAnimalIndexes;
     private bool _newGenerationMove;
@@ -34,12 +36,10 @@ public class GeneratePopulation : MonoBehaviour
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
         animals = new List<AnimalMovement>();
-        createAnimal(new Vector3(0, 0, 0));
-        var movingParts = animalsObjects[0].GetComponentsInChildren<JointHandler>();
+        var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
+        var movingParts = tempObject.GetComponentsInChildren<JointHandler>();
         AnimalBrain.noMovingParts = movingParts.Length;
-        Destroy(animalsObjects[0]);
-        animalsObjects.RemoveAt(0);
-        animals.RemoveAt(0);
+        Destroy(tempObject);
         createGeneration();
         populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
     }
@@ -49,6 +49,7 @@ public class GeneratePopulation : MonoBehaviour
         {
             if (currentGen > 0)
             {
+                
                 createAnimal(new Vector3(0, 0, 15 * i + transform.position.z), geneticAlgorithm.GetPopulationGenPool()[i]);
             }
             else
@@ -67,6 +68,7 @@ public class GeneratePopulation : MonoBehaviour
         animalComponent.speed = speed;
         animalComponent.timeBeingAliveImportance = timeBeingAliveImportance;
         animalComponent.currentX = -startingPosition;
+        animalComponent.maxPercentGenesToMutate=maxPercentGenesToMutate;
         if (currentGen > 0)
         {
             animalComponent.setBody(individualBrain.isElite);
@@ -85,6 +87,7 @@ public class GeneratePopulation : MonoBehaviour
     {
         for (int i = 0; i < populationSize; i++)
         {
+            animals[0].Destroy();
             Destroy(animalsObjects[0]);
             animalsObjects.RemoveAt(0);
             animals.RemoveAt(0);
@@ -99,6 +102,17 @@ public class GeneratePopulation : MonoBehaviour
     {
         GenerateJson();
         DatabaseHandler.AddDataToTable();
+    }
+    public void ComeBackToMainMenu()
+    {
+        //var coroutineHandler=FadeInAndDo(()=>{SceneManager.LoadScene("walking");});
+        //StartCoroutine(coroutineHandler);
+    }
+    IEnumerator FadeInAndDo(Action toDoAfterFade=null)  //uzycie action pozwala na zrobienie czegos po animacji
+    {
+        var coroutineHandler=FadeOutHandler.FadeOut(GameObject.Find("FindInOutImage").GetComponent<Image>());
+        yield return StartCoroutine(coroutineHandler);
+        toDoAfterFade.Invoke();
     }
     public void GeneratePdfDataPresentation()
     {
@@ -115,15 +129,15 @@ public class GeneratePopulation : MonoBehaviour
         yield return new WaitForSeconds(0.5f);    
         _newGenerationMove=true;   
     }
-    void Update()
+    void FixedUpdate()
     {
-        if (!visualizationBasics.ifPaused)
+        if (!VisualizationBasics.ifPaused)
         {
             if (animalsObjectsCatched == populationSize)
             {
                 _newGenerationMove=false;
                 currentGen++;
-                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate);
+                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate,maxPercentGenesToMutate);
                 currBestDistance = geneticAlgorithm.bestDistance;
                 currBestFitness = geneticAlgorithm.bestFitness;
                 bestDistances.Add(currBestDistance);
@@ -143,12 +157,13 @@ public class GeneratePopulation : MonoBehaviour
             }
             else if(_newGenerationMove)
             {
-                Parallel.For(0, populationPartSize, delegate (int i)
-                            {
-                                animals[activeAnimalIndexes[i]].Move();
-                            });
+                // Parallel.For(0, populationPartSize, delegate (int i)
+                // {
+                //     animals[activeAnimalIndexes[i]].Move();
+                // });
                 for (int i = 0; i < populationPartSize; i++)
                 {
+                    animals[activeAnimalIndexes[i]].Move();
                     animals[activeAnimalIndexes[i]].UpdateIO();
                     animals[activeAnimalIndexes[i]].chase();
                     bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
@@ -174,4 +189,5 @@ public class GeneratePopulation : MonoBehaviour
             populationUIhandler.UpdateUI(currentGen, animalsObjectsCatched, currBestDistance, bestDistance);
         }
     }
+
 }
