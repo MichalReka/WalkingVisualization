@@ -11,6 +11,8 @@ public class AnimalMovement : MonoBehaviour
     private int framesPassed;
     public float averageBodyY;
     public JointHandler[] orderedMovingParts;
+    public AnimalBody[] orderedBodyParts;
+
     public bool ifCatched = false;
     public bool ifCrashed = false;
     public float currentX = 0;
@@ -25,21 +27,26 @@ public class AnimalMovement : MonoBehaviour
     float startingLeftFootPosition;
     Quaternion startingBodyRotation;
     ConfigurableJoint bodyLimits;
+    AnimalBody[] bodyPartsData;
+    List<int> limbsIndexes;
+    List<int> similarBodyPartsIndexes;
+    Dictionary<int,AnimalBody[]> limbsDictionary;
+    Dictionary<int,AnimalBody[]> similarBodyPartsDictionary;
     public float maxPercentGenesToMutate;
-    public void OrderAnimalChildren()
+    public void OrderAnimalChildren<T>(ref T[] orderedContainer)
     {
-        JointHandler[] temp = GetComponentsInChildren<JointHandler>();
-        orderedMovingParts = new JointHandler[temp.Length];
+        T[] temp = GetComponentsInChildren<T>();
+        orderedContainer = new T[temp.Length];
         int index = 0;
         int noOfChildren = transform.childCount;
         for (int i = 0; i < noOfChildren; i++)
         {
-            JointHandler[] childComponent = transform.GetChild(i).GetComponents<JointHandler>();
+            T[] childComponent = transform.GetChild(i).GetComponents<T>();
             if (childComponent != null)
             {
                 for (int j = 0; j < childComponent.Length; j++)
                 {
-                    orderedMovingParts[index] = childComponent[j];
+                    orderedContainer[index] = childComponent[j];
                     index++;
                 }
             }
@@ -52,6 +59,7 @@ public class AnimalMovement : MonoBehaviour
     public void setRandomWeights()
     {
         animalBrain = new AnimalBrain(maxPercentGenesToMutate);
+        
         animalBrain.setRandomWeights();
     }
 
@@ -61,12 +69,13 @@ public class AnimalMovement : MonoBehaviour
         ifCrashed = true;
     }
     // Update is called once per frame
-    public void Move()
+    public void StartJob()
     {
-        for (int i = 0; i < orderedMovingParts.Length; i++)
-        {
-            animalBrain.setOutput();
-        }
+        animalBrain.SetOutput();
+    }
+    public void FinishJob()
+    {
+        animalBrain.FinishJob();
     }
     private void gatherInput(NativeArray<float> input)
     {
@@ -100,25 +109,25 @@ public class AnimalMovement : MonoBehaviour
         // currIndex++;
         // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, startingBodyRotation.z - rotationBorder, startingBodyRotation.z + rotationBorder);
         // currIndex++;
-        //predkosc
         
-        if (!animalBrain.ifFirstOutput)
-        {
-            for (int i = 0; i < animalBrain.output.Length-1; i++)
-            {
-                input[currIndex] = animalBrain.output[i];
-                currIndex++;
-            }
-        }
-        else
-        {
-            for (int i = 0; i < animalBrain.output.Length-1; i++)
-            {
-                input[currIndex] = 0;
-                currIndex++;
-            }
-            animalBrain.ifFirstOutput = false;
-        }
+        //predkosc
+        // if (!animalBrain.ifFirstOutput)
+        // {
+        //     for (int i = 0; i < animalBrain.output.Length-1; i++)
+        //     {
+        //         input[currIndex] = animalBrain.output[i];
+        //         currIndex++;
+        //     }
+        // }
+        // else
+        // {
+        //     for (int i = 0; i < animalBrain.output.Length-1; i++)
+        //     {
+        //         input[currIndex] = 0;
+        //         currIndex++;
+        //     }
+        //     animalBrain.ifFirstOutput = false;
+        // }
     }
     public void UpdateIO()
     {
@@ -127,29 +136,53 @@ public class AnimalMovement : MonoBehaviour
             orderedMovingParts[i].setInput();
         }
         gatherInput(animalBrain.input);
-        float max = AnimalBrain.noMovingParts;
-        float y = (0 + max) / 2.0f;   //czesc kodu z translate value
-        float x = max - y;
-        float value = animalBrain.output[0] * x + y;
-        int armToMove = (int)Mathf.Round(value);
-        if (armToMove != max)
+        
+        int[] armsToMove = new int[AnimalBrain.armsToMove];
+        int outputIndexesForArm = (AnimalBrain.outputSize - armsToMove.Length) / armsToMove.Length;
+        for (int i = 0; i < armsToMove.Length; i++)
         {
+            armsToMove[i] = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalBrain.output[i]));
+            if(armsToMove[i]==orderedMovingParts.Length)
+            {
+                armsToMove[i]-=1;
+            }
             List<float> partOutput = new List<float>();
-            for (int j = 1; j <= JointHandler.outputSize; j++)
+            for (int j = armsToMove.Length + (i * outputIndexesForArm); j <= armsToMove.Length + (i * outputIndexesForArm) + outputIndexesForArm; j++)
             {
                 partOutput.Add(animalBrain.output[j]);
             }
-            orderedMovingParts[armToMove].TranslateOutput(partOutput);
+            orderedMovingParts[armsToMove[i]].TranslateOutput(partOutput);
         }
+
+    }
+    void SetIndexesLists()
+    {
+        foreach(AnimalBody bodyPart in orderedBodyParts)
+        {
+            if(!limbsIndexes.Contains(bodyPart.limbIndex))
+            {
+                limbsIndexes.Add(bodyPart.limbIndex);
+            }
+            if(!similarBodyPartsIndexes.Contains(bodyPart.partIndex))
+            {
+                similarBodyPartsIndexes.Add(bodyPart.partIndex);
+            }
+        }
+    }
+    void SetLimbsAndSimilarParts()
+    {
+        
     }
     public void setBody(bool isElite)
     {
-        OrderAnimalChildren();
+        OrderAnimalChildren<JointHandler>(ref orderedMovingParts);
         body = transform.Find("body");
         if (isElite)
         {
             body.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         }
+        OrderAnimalChildren<AnimalBody>(ref orderedBodyParts);
+        SetIndexesLists();
         rightFoot = transform.Find("RightBackFoot");
         leftFoot = transform.Find("LeftBackFoot");
         startingBodyY = body.transform.position.y;

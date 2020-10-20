@@ -8,6 +8,9 @@ using Unity.Burst;
 using JacksonDunstan.NativeCollections;
 public class AnimalBrain : MonoBehaviour
 {
+
+    public static int armsToMove=2;
+    public static int outputSize=3*armsToMove;
     public bool isElite = false;
     private const int bodyInput = 1;
     public static int noMovingParts;
@@ -19,22 +22,22 @@ public class AnimalBrain : MonoBehaviour
     public NativeArray<float> secondHiddenLayerBias;
     public NativeArray<float> output;
     public NativeArray<float> input;
-
+    private JobHandle _jobHandler;
     public bool ifFirstOutput = true;
     private int _numberOfWeights;
     private float _maxPercentGenesToMutate;
     public AnimalBrain(float maxPercentGenesToMutate)
     {
-        output = new NativeArray<float>(1 + JointHandler.outputSize, Allocator.Persistent);
+        output = new NativeArray<float>(outputSize, Allocator.Persistent);
         input = new NativeArray<float>((noMovingParts * JointHandler.inputSize) + bodyInput + output.Length - 1, Allocator.Persistent);
-        hiddenLayerSize = input.Length *4/3;
+        hiddenLayerSize = input.Length * 4 / 3;
         inputSynapsesWeights = new NativeArray2D<float>(hiddenLayerSize, input.Length, Allocator.Persistent);
         outputSynapsesWeights = new NativeArray2D<float>(hiddenLayerSize, output.Length, Allocator.Persistent);
         hiddenLayerSynapsesWeights = new NativeArray2D<float>(hiddenLayerSize, hiddenLayerSize, Allocator.Persistent);
         hiddenLayerBias = new NativeArray<float>(hiddenLayerSize, Allocator.Persistent);
         secondHiddenLayerBias = new NativeArray<float>(hiddenLayerSize, Allocator.Persistent);
-        _numberOfWeights=input.Length*hiddenLayerSize+hiddenLayerSize*hiddenLayerSize+hiddenLayerSize*output.Length+2*hiddenLayerSize;
-        this._maxPercentGenesToMutate=maxPercentGenesToMutate;
+        _numberOfWeights = input.Length * hiddenLayerSize + hiddenLayerSize * hiddenLayerSize + hiddenLayerSize * output.Length + 2 * hiddenLayerSize;
+        this._maxPercentGenesToMutate = maxPercentGenesToMutate;
     }
     bool roll(float chance)
     {
@@ -99,11 +102,11 @@ public class AnimalBrain : MonoBehaviour
     }
     public void mutateWeights() //mutacja zakonczona dla dwoch warstw
     {
-        int maxMutations = Mathf.RoundToInt(_numberOfWeights*_maxPercentGenesToMutate);
-        List<int> mutationIndexes = new List<int>();
-        int mutationsToOccur = Random.Range(0, maxMutations); //wybieram ile mutacji zajdzie
-        for (int i = 0; i < mutationsToOccur; i++)
-        {
+        // int maxMutations = Mathf.RoundToInt(_numberOfWeights * _maxPercentGenesToMutate);
+        // List<int> mutationIndexes = new List<int>();
+        // int mutationsToOccur = Random.Range(0, maxMutations); //wybieram ile mutacji zajdzie
+        // for (int i = 0; i < mutationsToOccur; i++)
+        // {
             int synapseGroup = Random.Range(0, 5); //wybieram czy ma byc zmieniony bias, synapsy input czy synapsy output
             switch (synapseGroup)
             {
@@ -123,7 +126,7 @@ public class AnimalBrain : MonoBehaviour
                     hiddenLayerSynapsesWeights[Random.Range(0, hiddenLayerSize), Random.Range(0, hiddenLayerSize)] = Random.Range(-1.0f, 1.0f);
                     break;
             }
-        }
+        // }
 
         //sposob losowego doboru ilosci synaps z kazdej grupy nie dowiodl swojej skutecznosci
         //mutowane osobniki byly w wiekszosci wadliwe i odpadaly - zbyt duzo losowych wartosci
@@ -166,7 +169,7 @@ public class AnimalBrain : MonoBehaviour
 
     public void setRandomWeights()
     {
-
+        
         for (int i = 0; i < hiddenLayerSize; i++)
         {
             hiddenLayerBias[i] = Random.Range(-1.0f, 1.0f);
@@ -186,7 +189,7 @@ public class AnimalBrain : MonoBehaviour
         }
     }
     [BurstCompile]
-    struct ComputeOutputJob : IJobParallelFor
+    struct ComputeOutputJob : IJob
     {
         [ReadOnly]
         public NativeArray<float> hiddenLayerBias;
@@ -201,134 +204,51 @@ public class AnimalBrain : MonoBehaviour
         [ReadOnly]
         public NativeArray2D<float> outputSynapsesWeights;
         public NativeArray<float> tempOutputValue;
-        public int vectorSize;
-        public int outputIndex;
-        public void Execute(int i)
+        public void Execute()
         {
-            float secondNeuronCalculatedWeight = 0;
-            for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Length; neuronIndex++)
+            for (int i = 0; i < tempOutputValue.Length; i++)
             {
-                float neuronCalculatedWeight = 0;
-                for (int synapseIndex = 0; synapseIndex < input.Length; synapseIndex++)
+                tempOutputValue[i] = 0;
+                for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerBias.Length; secondNeuronIndex++)
                 {
-                    neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex,synapseIndex];
+                    float secondNeuronCalculatedWeight = 0;
+                    for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Length; neuronIndex++)
+                    {
+                        float neuronCalculatedWeight = 0;
+                        for (int synapseIndex = 0; synapseIndex < input.Length; synapseIndex++)
+                        {
+                            neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex, synapseIndex];
+                        }
+                        neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
+                        secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex];
+                    }
+                    secondNeuronCalculatedWeight += secondHiddenLayerBias[secondNeuronIndex];
+                    tempOutputValue[i] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, i];
                 }
-                neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
-                secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[i,neuronIndex];
             }
-            secondNeuronCalculatedWeight += secondHiddenLayerBias[i];
-            tempOutputValue[i] = secondNeuronCalculatedWeight * outputSynapsesWeights[i,outputIndex];
-
-            // float neuronCalculatedWeight = 0;
-            // for (int synapseIndex = 0; synapseIndex < input.Length; synapseIndex++)
-            // {
-            //     neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[i, synapseIndex];
-            // }
-            // neuronCalculatedWeight += hiddenLayerBias[i];
-            // tempOutputValue[i] = neuronCalculatedWeight * outputSynapsesWeights[i, outputIndex];
 
         }
     }
-    public void setOutput()
+    public void SetOutput()
     {
-
-        // float tempOutputValue = 0;
-        // float secondNeuronCalculatedWeight;
-        int vectorSize = 4; //Vector4
-        // float[] neuronsCalculatedWeightsVector = new float[vectorSize];
-        //var accVector = System.Numerics.Vector3.Zero;
-        // int synapseIndex;
-        // int neuronVectorIndex = 0;
-        JobHandle[] jobsHandler = new JobHandle[output.Length];
-        for (int outputIndex = 0; outputIndex < output.Length; outputIndex++)   //pierwszy element w tablicy to ktora noga ejst wybrana
-        {
-            // Set up the job data
-
-            // for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerSize; secondNeuronIndex++)
-            // {
-            //     secondNeuronCalculatedWeight = 0;
-            //     for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Length; neuronIndex++)
-            //     {
-            //         neuronsCalculatedWeightsVector[neuronVectorIndex] = 0;
-            //         //takie podejscie daje 6-7 fps przy update - SIMD mniej obciaza procesor
-            //         for (synapseIndex = 0; synapseIndex <= input.Length - vectorSize; synapseIndex += vectorSize)
-            //         {
-            //             var inputVector = new System.Numerics.Vector4(input[synapseIndex], input[synapseIndex + 1], input[synapseIndex + 2], input[synapseIndex + 3]);
-            //             var weightsVector = new System.Numerics.Vector4(inputSynapsesWeights[neuronIndex, synapseIndex], inputSynapsesWeights[neuronIndex, synapseIndex + 1], inputSynapsesWeights[neuronIndex, synapseIndex + 2], inputSynapsesWeights[neuronIndex, synapseIndex + 3]);
-            //             neuronsCalculatedWeightsVector[neuronVectorIndex] += System.Numerics.Vector4.Dot(inputVector, weightsVector);
-            //         }
-            //         for (; synapseIndex < input.Length; synapseIndex++)
-            //         {
-            //             neuronsCalculatedWeightsVector[neuronVectorIndex] += input[synapseIndex] * inputSynapsesWeights[neuronIndex, synapseIndex];
-            //         }
-            //         neuronsCalculatedWeightsVector[neuronVectorIndex] += hiddenLayerBias[neuronIndex];
-            //         if (neuronVectorIndex == (vectorSize - 1))
-            //         {
-            //             var hiddenLayer = new System.Numerics.Vector4(hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex], hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex - 1], hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex - 2], hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex - 3]);
-            //             var neuronWeightsVector = new System.Numerics.Vector4(neuronsCalculatedWeightsVector[neuronVectorIndex], neuronsCalculatedWeightsVector[neuronVectorIndex - 1], neuronsCalculatedWeightsVector[neuronVectorIndex - 2], neuronsCalculatedWeightsVector[neuronVectorIndex - 3]);
-            //             secondNeuronCalculatedWeight += System.Numerics.Vector4.Dot(hiddenLayer, neuronWeightsVector);
-            //             neuronVectorIndex = 0;
-            //         }
-            //         else
-            //         {
-            //             neuronVectorIndex++;
-            //         }
-            //     }
-            //     neuronVectorIndex = 0;
-            //     int j = 0;
-            //     for (int i = neuronVectorIndex; i >= 0; i--)
-            //     {
-            //         secondNeuronCalculatedWeight += neuronsCalculatedWeightsVector[j] * hiddenLayerSynapsesWeights[secondNeuronIndex, neuronVectorIndex - i];
-            //         j++;
-            //     }
-            //     secondNeuronCalculatedWeight += secondHiddenLayerBias[secondNeuronIndex];
-            //     tempOutputValue = tempOutputValue + secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, outputIndex];
-            // }
-            // tempOutputValue = sigmoid(tempOutputValue);
-            // output[outputIndex] = tempOutputValue;
-            NativeArray<float> outputArr = new NativeArray<float>(hiddenLayerSize, Allocator.TempJob);
-            ComputeOutputJob outputJob = new ComputeOutputJob();
-            outputJob.hiddenLayerBias = hiddenLayerBias;
-            outputJob.secondHiddenLayerBias = secondHiddenLayerBias;
-            outputJob.input = input;
-            outputJob.inputSynapsesWeights = inputSynapsesWeights;
-            outputJob.hiddenLayerSynapsesWeights = hiddenLayerSynapsesWeights;
-            outputJob.outputSynapsesWeights = outputSynapsesWeights;
-            outputJob.tempOutputValue = outputArr;
-            outputJob.vectorSize = vectorSize;
-            outputJob.outputIndex = outputIndex;
-            jobsHandler[outputIndex] = outputJob.Schedule(hiddenLayerSize, 20);
-            jobsHandler[outputIndex].Complete();
-            output[outputIndex] = 0;
-            for (int i = 0; i < hiddenLayerSize; i++)
-            {
-                output[outputIndex] += outputArr[i];
-            }
-            outputArr.Dispose();
-            output[outputIndex] = sigmoid(output[outputIndex]);
-        }
-
-
-        //);
-        //jedna
-        // for (int outputIndex = 0; outputIndex < output.Length; outputIndex++)
-        // {
-        //     for (int neuronIndex = 0; neuronIndex < hiddenLayerBias.Count  ; neuronIndex++)
-        //     {
-        //         neuronCalculatedWeight = 0;
-        //         for (int synapseIndex = 0; synapseIndex < inputSynapsesWeights[neuronIndex].Count; synapseIndex++)
-        //         {
-        //             neuronCalculatedWeight += sigmoid(input[synapseIndex]) * inputSynapsesWeights[neuronIndex][synapseIndex];
-        //         }
-        //         neuronCalculatedWeight = sigmoid(neuronCalculatedWeight);
-        //         neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
-        //         tempOutputValue = tempOutputValue + neuronCalculatedWeight * outputSynapsesWeights[neuronIndex][outputIndex];
-        //     }
-        //     tempOutputValue = sigmoid(tempOutputValue);
-        //     output[outputIndex] = tempOutputValue;
-        // }
+        ComputeOutputJob outputJob = new ComputeOutputJob();
+        outputJob.hiddenLayerBias = hiddenLayerBias;
+        outputJob.secondHiddenLayerBias = secondHiddenLayerBias;
+        outputJob.input = input;
+        outputJob.inputSynapsesWeights = inputSynapsesWeights;
+        outputJob.hiddenLayerSynapsesWeights = hiddenLayerSynapsesWeights;
+        outputJob.outputSynapsesWeights = outputSynapsesWeights;
+        outputJob.tempOutputValue = output;
+        _jobHandler = outputJob.Schedule();
     }
-
+    public void FinishJob()
+    {
+        _jobHandler.Complete();
+        for (int i = 0; i < output.Length; i++)
+        {
+            output[i] = sigmoid(output[i]);
+        }
+    }
     public void Dispose()
     {
         output.Dispose();

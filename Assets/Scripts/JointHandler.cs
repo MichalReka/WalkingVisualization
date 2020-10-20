@@ -15,8 +15,7 @@ public class JointHandler : MonoBehaviour
     ConfigurableJoint joint;
     //prosta implementacja sieci neuronowej
     public float[] input;
-    public static int outputSize=2;
-    public static int inputSize=2;
+    public static int inputSize=3;
     public MoveableAxis axisToMove;
     float startingBodyY;
     //jako input przyjmuje - pozycje, obrot, przyspieszenie, przyspieszenie katowe czesci ktora sie porusza
@@ -26,8 +25,8 @@ public class JointHandler : MonoBehaviour
     Rigidbody rigidBody;
     // ConfigurableJoint bodyLimits;
     Vector3 startingRotation;
-    float maxMoveTime = 1.5f;
-    float moveTimeLeft = 0.5f;
+    float maxMoveTime = 1f;
+    public float moveTimeLeft = -1f;
     public void initArm()
     {
         rigidBody = GetComponent<Rigidbody>();
@@ -76,9 +75,10 @@ public class JointHandler : MonoBehaviour
             input[0]=normalizeValue(AdjustRotation(transform.localEulerAngles.z),startingRotation.z-joint.angularZLimit.limit,startingRotation.z+joint.angularZLimit.limit);
             input[1]=normalizeValue(joint.targetAngularVelocity.z,-targetVelocity,targetVelocity);
         }
+        input[2]=moveTimeLeft;
         return input;
     }
-    float translateToValue(float min, float max, float output)   //tlumacze output na wartosci
+    public static float translateToValue(float min, float max, float output)   //tlumacze output na wartosci
     {
         var y = (max + min) / 2.0f;
         var x = max - y;
@@ -89,16 +89,16 @@ public class JointHandler : MonoBehaviour
     public void TranslateOutput(List<float> output)
     {
         var velocityVector=joint.targetAngularVelocity;
-        moveTimeLeft = translateToValue(0, maxMoveTime, output[0]);
+        moveTimeLeft = output[0];
         velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);
         joint.targetAngularVelocity=velocityVector;
     }
-    // Update is called once per frame
+
     private void FixedUpdate() {
-        if(moveTimeLeft>0)
-        {
-            moveTimeLeft-=Time.fixedDeltaTime;
-        }
+        // if(moveTimeLeft>0)
+        // {
+        //     moveTimeLeft-=Time.fixedDeltaTime;
+        // }
         if(moveTimeLeft<=0)
         {        
             var velocityVector=joint.targetAngularVelocity;

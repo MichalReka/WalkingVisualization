@@ -74,6 +74,7 @@ public class DropdownHandler : MonoBehaviour
         //     animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = animalName });
         // }
         animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal00" });
+        animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal01" });
         animalPrefabDropdown.onValueChanged.AddListener(delegate
         {
             DropdownValueChanged(animalPrefabDropdown.options[animalPrefabDropdown.value].text);
@@ -93,7 +94,6 @@ public class DropdownHandler : MonoBehaviour
     {
         Destroy(animalPreview);
         animalPreview = Instantiate(Resources.Load("Prefabs/" + animalName) as GameObject);
-        Debug.Log(Screen.width/33);
         var animalPrefabCollision = animalPreview.AddComponent<AnimalPrefabCollision>();
         animalPreview.transform.SetParent(GameObject.Find("Borders").transform);
         float x = GameObject.Find("rightBorder").transform.localPosition.x+GameObject.Find("leftBorder").transform.localPosition.x;

@@ -23,22 +23,22 @@ public class MenuButtonsHandler : MonoBehaviour
     public void StartVisualization()
     {
         var animalDropdown=GameObject.Find("AnimalDropdown").GetComponent<Dropdown>();
-        GeneratePopulation.animalPrefabName=animalDropdown.options[animalDropdown.value].text;
-        GeneratePopulation.populationSize=Int32.Parse(GameObject.Find("PopulationSizeInput").GetComponent<InputField>().text);
-        GeneratePopulation.populationPartSize=Int32.Parse(GameObject.Find("PopulationPartSizeInput").GetComponent<InputField>().text);
-        GeneratePopulation.startingPosition=float.Parse(GameObject.Find("StartingPositionInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        GeneratePopulation.speed=float.Parse(GameObject.Find("SpeedInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        GeneratePopulation.timeBeingAliveImportance=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        GeneratePopulation.mutationRate=float.Parse(GameObject.Find("MutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        GeneratePopulation.maxPercentGenesToMutate=float.Parse(GameObject.Find("MaxGenesToMutateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.animalPrefabName=animalDropdown.options[animalDropdown.value].text;
+        PopulationInputData.populationSize=Int32.Parse(GameObject.Find("PopulationSizeInput").GetComponent<InputField>().text);
+        PopulationInputData.populationPartSize=Int32.Parse(GameObject.Find("PopulationPartSizeInput").GetComponent<InputField>().text);
+        PopulationInputData.startingPosition=float.Parse(GameObject.Find("StartingPositionInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.speed=float.Parse(GameObject.Find("SpeedInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.timeBeingAliveImportance=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.mutationRate=float.Parse(GameObject.Find("MutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.maxPercentGenesToMutate=float.Parse(GameObject.Find("MaxGenesToMutateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PlayerPrefs.SetInt("animalPrefabDropdownValue",animalDropdown.value);
-        PlayerPrefs.SetInt("populationSize",GeneratePopulation.populationSize);
-        PlayerPrefs.SetInt("populationPartSize",GeneratePopulation.populationPartSize);
-        PlayerPrefs.SetFloat("startingPosition", GeneratePopulation.startingPosition);
-        PlayerPrefs.SetFloat("speed", GeneratePopulation.speed);
-        PlayerPrefs.SetFloat("timeBeingAliveImportance", GeneratePopulation.timeBeingAliveImportance);
-        PlayerPrefs.SetFloat("mutationRate", GeneratePopulation.mutationRate);
-        PlayerPrefs.SetFloat("maxPercentGenesToMutate", GeneratePopulation.maxPercentGenesToMutate);
+        PlayerPrefs.SetInt("populationSize",PopulationInputData.populationSize);
+        PlayerPrefs.SetInt("populationPartSize",PopulationInputData.populationPartSize);
+        PlayerPrefs.SetFloat("startingPosition", PopulationInputData.startingPosition);
+        PlayerPrefs.SetFloat("speed", PopulationInputData.speed);
+        PlayerPrefs.SetFloat("timeBeingAliveImportance", PopulationInputData.timeBeingAliveImportance);
+        PlayerPrefs.SetFloat("mutationRate", PopulationInputData.mutationRate);
+        PlayerPrefs.SetFloat("maxPercentGenesToMutate", PopulationInputData.maxPercentGenesToMutate);
         var coroutineHandler=FadeInAndDo(()=>{VisualizationBasics.ResumeGame();SceneManager.LoadScene("walking");});
         StartCoroutine(coroutineHandler);
     }

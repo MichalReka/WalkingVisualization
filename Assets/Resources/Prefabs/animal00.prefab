@@ -59,6 +59,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -83,6 +84,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189013687402542
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -124,6 +126,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 2
+  partIndex: 2
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &2553052265743219494
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -279,6 +285,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -303,6 +310,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189013728468093
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -344,9 +352,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 1200
+  targetVelocity: 2200
   input: []
   axisToMove: 0
+  moveTimeLeft: 1
 --- !u!114 &1853103204017326639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +368,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 3
+  partIndex: 3
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &2295001269693467282
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -390,11 +403,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -60
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -426,7 +439,7 @@ ConfigurableJoint:
     positionDamper: 0
     maximumForce: 3.4028233e+38
   m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_TargetAngularVelocity: {x: -500, y: 0, z: 0}
+  m_TargetAngularVelocity: {x: 500, y: 0, z: 0}
   m_RotationDriveMode: 1
   m_AngularXDrive:
     serializedVersion: 3
@@ -468,6 +481,7 @@ GameObject:
   - component: {fileID: 7952189013759536682}
   - component: {fileID: 7952189013759536683}
   - component: {fileID: 5171213751038844294}
+  - component: {fileID: 5818224256031823256}
   m_Layer: 0
   m_Name: foot3
   m_TagString: Untagged
@@ -484,7 +498,7 @@ Transform:
   m_GameObject: {fileID: 7952189013759536678}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.5, y: 0.16000009, z: 1.5}
-  m_LocalScale: {x: 0.6, y: 0.1, z: 0.6}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 7952189014152672879}
   m_RootOrder: 15
@@ -512,6 +526,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -536,6 +551,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189013759536682
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -660,6 +676,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &5818224256031823256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189013759536678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 3
+  partIndex: 0
+  ifCollisionKills: 0
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189013871296624
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,6 +706,7 @@ GameObject:
   - component: {fileID: 7952189013871296629}
   - component: {fileID: 7952189013871296630}
   - component: {fileID: 3180227221363597205}
+  - component: {fileID: 7532870304875429762}
   m_Layer: 0
   m_Name: LeftBackFoot
   m_TagString: Untagged
@@ -690,7 +723,7 @@ Transform:
   m_GameObject: {fileID: 7952189013871296624}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.5, y: 0.16000009, z: 1.5}
-  m_LocalScale: {x: 0.6, y: 0.1, z: 0.6}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 7952189014152672879}
   m_RootOrder: 5
@@ -718,6 +751,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -742,6 +776,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189013871296629
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -866,6 +901,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &7532870304875429762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189013871296624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 2
+  partIndex: 0
+  ifCollisionKills: 0
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189014152672872
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,6 +926,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7952189014152672879}
+  - component: {fileID: 8008466455615856108}
   m_Layer: 0
   m_Name: animal00
   m_TagString: Untagged
@@ -917,6 +969,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8008466455615856108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189014152672872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f348ca856632e4cba045f625bb8039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animalBrain: {fileID: 0}
+  averageBodyY: 0
+  orderedMovingParts: []
+  ifCatched: 0
+  ifCrashed: 0
+  currentX: 0
+  speed: 0
+  timeBeingAlive: 0
+  timeBeingAliveImportance: 0.1
+  maxPercentGenesToMutate: 0
 --- !u!1 &7952189014261091267
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,6 +1050,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1000,6 +1075,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189014261091264
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1041,6 +1117,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 3
+  partIndex: 2
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &4140637869288539831
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1150,6 +1230,7 @@ GameObject:
   - component: {fileID: 7952189014329236182}
   - component: {fileID: 7952189014329236183}
   - component: {fileID: 6886160784894074080}
+  - component: {fileID: 7771136252027880402}
   m_Layer: 0
   m_Name: foot4
   m_TagString: Untagged
@@ -1166,7 +1247,7 @@ Transform:
   m_GameObject: {fileID: 7952189014329236177}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.5, y: 0.16000009, z: -1.5}
-  m_LocalScale: {x: 0.6, y: 0.1, z: 0.6}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 7952189014152672879}
   m_RootOrder: 20
@@ -1194,6 +1275,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1218,6 +1300,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189014329236182
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1342,6 +1425,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &7771136252027880402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189014329236177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 0
+  partIndex: 0
+  ifCollisionKills: 0
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189014594254843
 GameObject:
   m_ObjectHideFlags: 0
@@ -1355,8 +1454,8 @@ GameObject:
   - component: {fileID: 7952189014594254840}
   - component: {fileID: 7952189014594254842}
   - component: {fileID: 7952189014594254841}
-  - component: {fileID: 3645340521720233780}
   - component: {fileID: 3182546505581438787}
+  - component: {fileID: 4728961872283944314}
   m_Layer: 0
   m_Name: joint3
   m_TagString: Untagged
@@ -1401,6 +1500,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1425,6 +1525,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189014594254842
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1454,18 +1555,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3645340521720233780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7952189014594254843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!153 &3182546505581438787
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1477,7 +1566,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0.4999981, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.375, y: -0.60000014, z: 0.375}
+  m_ConnectedAnchor: {x: 0.4166667, y: -0.60000014, z: 0.375}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -1561,6 +1650,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &4728961872283944314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189014594254843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 3
+  partIndex: 4
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189014617017073
 GameObject:
   m_ObjectHideFlags: 0
@@ -1574,8 +1679,8 @@ GameObject:
   - component: {fileID: 7952189014617017078}
   - component: {fileID: 7952189014617017079}
   - component: {fileID: 7952189014617017072}
-  - component: {fileID: 1644551584496401246}
   - component: {fileID: 3293062181658814820}
+  - component: {fileID: 7085319775673582519}
   m_Layer: 0
   m_Name: joint4
   m_TagString: Untagged
@@ -1590,13 +1695,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7952189014617017073}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.000047861166, y: 0.0002953922, z: -0.002955004, w: 0.9999956}
   m_LocalPosition: {x: 1.5, y: 2.8600004, z: -1.5}
   m_LocalScale: {x: 0.20000015, y: 0.20000012, z: 0.19999999}
   m_Children: []
   m_Father: {fileID: 7952189014152672879}
   m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.006, y: 0.034, z: -0.339}
 --- !u!33 &7952189014617017077
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1620,6 +1725,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1644,6 +1750,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189014617017079
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1673,18 +1780,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1644551584496401246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7952189014617017073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!153 &3293062181658814820
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1696,7 +1791,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0.4999981, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0.375, y: -0.60000014, z: -0.375}
+  m_ConnectedAnchor: {x: 0.4166667, y: -0.60000014, z: -0.375}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -1780,6 +1875,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &7085319775673582519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189014617017073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 0
+  partIndex: 4
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189014683333004
 GameObject:
   m_ObjectHideFlags: 0
@@ -1840,6 +1951,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1864,6 +1976,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189014683333008
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1905,9 +2018,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 900
+  targetVelocity: 1400
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &4204453132889764050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1920,6 +2034,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 1
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &8419470458821446878
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1951,11 +2069,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -60
+    limit: -10
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 60
+    limit: 45
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -2075,6 +2193,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2099,6 +2218,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189014804458776
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2140,9 +2260,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 900
+  targetVelocity: 1400
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &6883508836751092266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2155,6 +2276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 3
+  partIndex: 1
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &4768881597379606506
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2186,11 +2311,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -60
+    limit: -10
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 60
+    limit: 45
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -2265,8 +2390,7 @@ GameObject:
   - component: {fileID: 7952189014934224400}
   - component: {fileID: 906811852629873025}
   - component: {fileID: 5688922442982377432}
-  - component: {fileID: 4966926195634308603}
-  - component: {fileID: 3767922005178902682}
+  - component: {fileID: 7253108113404623976}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -2311,6 +2435,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2335,6 +2460,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189014934224396
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2376,6 +2502,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 4
+  partIndex: 5
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 0
 --- !u!153 &5688922442982377432
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2393,9 +2523,9 @@ ConfigurableJoint:
   m_XMotion: 2
   m_YMotion: 2
   m_ZMotion: 2
-  m_AngularXMotion: 1
+  m_AngularXMotion: 2
   m_AngularYMotion: 1
-  m_AngularZMotion: 1
+  m_AngularZMotion: 2
   m_LinearLimitSpring:
     spring: 0
     damper: 0
@@ -2407,22 +2537,22 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -30
+    limit: -40
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 30
+    limit: 40
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 20
+    limit: 30
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 30
+    limit: 40
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -2471,7 +2601,7 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &4966926195634308603
+--- !u!114 &7253108113404623976
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2485,22 +2615,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetVelocity: 1200
   input: []
-  axisToMove: 0
---- !u!114 &3767922005178902682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7952189014934224397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetVelocity: 1200
-  input: []
-  axisToMove: 2
+  axisToMove: 1
+  moveTimeLeft: -1
 --- !u!1 &7952189014943631486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2515,6 +2631,7 @@ GameObject:
   - component: {fileID: 7952189014943631484}
   - component: {fileID: 7952189014943631485}
   - component: {fileID: 8870028619293866557}
+  - component: {fileID: 8328016234278949709}
   m_Layer: 0
   m_Name: joint1
   m_TagString: Untagged
@@ -2559,6 +2676,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2583,6 +2701,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189014943631484
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2623,7 +2742,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0.4999981, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.375, y: -0.60000014, z: 0.375}
+  m_ConnectedAnchor: {x: -0.43333334, y: -0.60000014, z: 0.375}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -2707,6 +2826,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &8328016234278949709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189014943631486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 2
+  partIndex: 4
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189015014578481
 GameObject:
   m_ObjectHideFlags: 0
@@ -2767,6 +2902,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2791,6 +2927,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015014578485
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2832,9 +2969,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 900
+  targetVelocity: 1400
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &8979674923655376181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2847,6 +2985,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 2
+  partIndex: 1
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &3655463034469963193
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2878,11 +3020,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -60
+    limit: -10
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 60
+    limit: 45
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -2956,6 +3098,7 @@ GameObject:
   - component: {fileID: 7952189015057481546}
   - component: {fileID: 7952189015057481547}
   - component: {fileID: 7991608774289286373}
+  - component: {fileID: 4971436812635320434}
   m_Layer: 0
   m_Name: joint2
   m_TagString: Untagged
@@ -3000,6 +3143,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3024,6 +3168,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189015057481546
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3064,7 +3209,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0.4999981, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: -0.375, y: -0.60000014, z: -0.375}
+  m_ConnectedAnchor: {x: -0.43333334, y: -0.60000014, z: -0.375}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -3148,6 +3293,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &4971436812635320434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189015057481540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 4
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189015176739758
 GameObject:
   m_ObjectHideFlags: 0
@@ -3162,6 +3323,7 @@ GameObject:
   - component: {fileID: 7952189015176739763}
   - component: {fileID: 7952189015176739756}
   - component: {fileID: 7273584234953173348}
+  - component: {fileID: 2032233233936076698}
   m_Layer: 0
   m_Name: RightBackFoot
   m_TagString: Untagged
@@ -3178,7 +3340,7 @@ Transform:
   m_GameObject: {fileID: 7952189015176739758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.5, y: 0.16000009, z: -1.5}
-  m_LocalScale: {x: 0.6, y: 0.1, z: 0.6}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 7952189014152672879}
   m_RootOrder: 10
@@ -3206,6 +3368,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3230,6 +3393,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015176739763
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3354,6 +3518,22 @@ ConfigurableJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &2032233233936076698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7952189015176739758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 0
+  ifCollisionKills: 0
+  ifPositionCanBeChanged: 1
 --- !u!1 &7952189015341501475
 GameObject:
   m_ObjectHideFlags: 0
@@ -3413,6 +3593,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3437,6 +3618,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189015341501472
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3478,6 +3660,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 2
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &7947537062430276733
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -3633,6 +3819,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3657,6 +3844,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015368923984
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3698,9 +3886,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 1200
+  targetVelocity: 2200
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &5245210985026059018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3713,6 +3902,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 2
+  partIndex: 3
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &3283782890748733965
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -3744,11 +3937,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -60
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -3867,6 +4060,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3891,6 +4085,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!135 &7952189015383569666
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3932,6 +4127,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 0
+  partIndex: 2
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &48794130916098750
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4087,6 +4286,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4111,6 +4311,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015493947217
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4152,9 +4353,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 1200
+  targetVelocity: 2200
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &677909211378601988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4167,6 +4369,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 3
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &6408894842786753067
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4198,11 +4404,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -60
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -4322,6 +4528,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4346,6 +4553,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015564116798
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4387,9 +4595,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 1200
+  targetVelocity: 2200
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &7229117456129548253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4402,6 +4611,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 0
+  partIndex: 3
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &1168353557553266945
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4433,11 +4646,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -60
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -4557,6 +4770,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4581,6 +4795,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &7952189015586797318
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4622,9 +4837,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetVelocity: 900
+  targetVelocity: 1400
   input: []
   axisToMove: 0
+  moveTimeLeft: -1
 --- !u!114 &8345952950514925502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4637,6 +4853,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb4f0740646c124ba0451adc6bfbc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limbIndex: 1
+  partIndex: 1
+  ifCollisionKills: 1
+  ifPositionCanBeChanged: 1
 --- !u!153 &1736071263307245629
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4668,11 +4888,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -60
+    limit: -10
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 60
+    limit: 45
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:

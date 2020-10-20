@@ -5,16 +5,8 @@ using UnityEngine.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-public class GeneratePopulation : MonoBehaviour
+public struct PopulationInputData
 {
-    private int animalsObjectsCatched=0;
-    List<GameObject> animalsObjects;
-    List<AnimalMovement> animals;
-    public int currentGen=0;
-    public float bestDistance=0;
-    public float bestFitness=0;
-    public float currBestDistance=0;
-    public float currBestFitness=0;
     public static int populationSize;
     public static int populationPartSize;
     public static float mutationRate;
@@ -23,6 +15,25 @@ public class GeneratePopulation : MonoBehaviour
     public static float speed;
     public static float maxPercentGenesToMutate;
     public static float timeBeingAliveImportance;
+}
+public class GeneratePopulation : MonoBehaviour
+{
+    private int animalsObjectsCatched = 0;
+    List<GameObject> animalsObjects;
+    List<AnimalMovement> animals;
+    public int currentGen = 0;
+    public float bestDistance = 0;
+    public float bestFitness = 0;
+    public float currBestDistance = 0;
+    public float currBestFitness = 0;
+    public int populationSize;
+    public int populationPartSize;
+    public float mutationRate;
+    public string animalPrefabName;
+    public float startingPosition;
+    public float speed;
+    public float maxPercentGenesToMutate;
+    public float timeBeingAliveImportance;
     public List<float> bestDistances;
     public List<float> bestFitnesses;
     private GeneticAlgorithm geneticAlgorithm;
@@ -31,7 +42,15 @@ public class GeneratePopulation : MonoBehaviour
     PopulationUI populationUIhandler;
     void Start()
     {
-        _newGenerationMove=true;
+        populationSize=PopulationInputData.populationSize;
+        populationPartSize=PopulationInputData.populationPartSize;
+        mutationRate=PopulationInputData.mutationRate;
+        animalPrefabName=PopulationInputData.animalPrefabName;
+        startingPosition=PopulationInputData.startingPosition;
+        speed=PopulationInputData.speed;
+        maxPercentGenesToMutate=PopulationInputData.maxPercentGenesToMutate;
+        timeBeingAliveImportance=PopulationInputData.timeBeingAliveImportance;
+        _newGenerationMove = true;
         bestDistances = new List<float>();
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
@@ -49,7 +68,7 @@ public class GeneratePopulation : MonoBehaviour
         {
             if (currentGen > 0)
             {
-                
+
                 createAnimal(new Vector3(0, 0, 15 * i + transform.position.z), geneticAlgorithm.GetPopulationGenPool()[i]);
             }
             else
@@ -68,7 +87,7 @@ public class GeneratePopulation : MonoBehaviour
         animalComponent.speed = speed;
         animalComponent.timeBeingAliveImportance = timeBeingAliveImportance;
         animalComponent.currentX = -startingPosition;
-        animalComponent.maxPercentGenesToMutate=maxPercentGenesToMutate;
+        animalComponent.maxPercentGenesToMutate = maxPercentGenesToMutate;
         if (currentGen > 0)
         {
             animalComponent.setBody(individualBrain.isElite);
@@ -108,9 +127,9 @@ public class GeneratePopulation : MonoBehaviour
         //var coroutineHandler=FadeInAndDo(()=>{SceneManager.LoadScene("walking");});
         //StartCoroutine(coroutineHandler);
     }
-    IEnumerator FadeInAndDo(Action toDoAfterFade=null)  //uzycie action pozwala na zrobienie czegos po animacji
+    IEnumerator FadeInAndDo(Action toDoAfterFade = null)  //uzycie action pozwala na zrobienie czegos po animacji
     {
-        var coroutineHandler=FadeOutHandler.FadeOut(GameObject.Find("FindInOutImage").GetComponent<Image>());
+        var coroutineHandler = FadeOutHandler.FadeOut(GameObject.Find("FindInOutImage").GetComponent<Image>());
         yield return StartCoroutine(coroutineHandler);
         toDoAfterFade.Invoke();
     }
@@ -120,14 +139,14 @@ public class GeneratePopulation : MonoBehaviour
         //uruchamianie skryptu python
         string strCmdText;
         //strCmdText = "/C py ./presentData.py&pause";
-        strCmdText = "/C py ./presentData.py";
+        strCmdText = "/C py ./presentData.py&pause";
         System.Diagnostics.Process.Start("CMD.exe", strCmdText);
     }
     // Update is called once per frame
     IEnumerator CreateNewGeneration()
     {
-        yield return new WaitForSeconds(0.5f);    
-        _newGenerationMove=true;   
+        yield return new WaitForSeconds(0.5f);
+        _newGenerationMove = true;
     }
     void FixedUpdate()
     {
@@ -135,9 +154,9 @@ public class GeneratePopulation : MonoBehaviour
         {
             if (animalsObjectsCatched == populationSize)
             {
-                _newGenerationMove=false;
+                _newGenerationMove = false;
                 currentGen++;
-                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate,maxPercentGenesToMutate);
+                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate, maxPercentGenesToMutate);
                 currBestDistance = geneticAlgorithm.bestDistance;
                 currBestFitness = geneticAlgorithm.bestFitness;
                 bestDistances.Add(currBestDistance);
@@ -155,7 +174,7 @@ public class GeneratePopulation : MonoBehaviour
                 animalsObjectsCatched = 0;
                 StartCoroutine(CreateNewGeneration());
             }
-            else if(_newGenerationMove)
+            else if (_newGenerationMove)
             {
                 // Parallel.For(0, populationPartSize, delegate (int i)
                 // {
@@ -163,7 +182,11 @@ public class GeneratePopulation : MonoBehaviour
                 // });
                 for (int i = 0; i < populationPartSize; i++)
                 {
-                    animals[activeAnimalIndexes[i]].Move();
+                    animals[activeAnimalIndexes[i]].StartJob();
+                }
+                for (int i = 0; i < populationPartSize; i++)
+                {
+                    animals[activeAnimalIndexes[i]].FinishJob();
                     animals[activeAnimalIndexes[i]].UpdateIO();
                     animals[activeAnimalIndexes[i]].chase();
                     bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;

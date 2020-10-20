@@ -32,7 +32,7 @@ public class GeneticAlgorithm
     {
         return _populationGenPool.ToList();
     }
-    float calculateFitness(AnimalMovement individual,float distance)
+    float CalculateFitness(AnimalMovement individual,float distance)
     {
         // var individualBody = individual.transform.Find("body").gameObject;
         // sprawdzam wszystkie czesci ciala, dziele przez ilosc czesci ciala, tak otrzymuje jak daleko doszly i fitness (koniec z wyrzucaniem body d przodu)
@@ -45,7 +45,7 @@ public class GeneticAlgorithm
         // }
         return fitness;
     }
-    float calculateDistance(AnimalMovement individual)
+    float CalculateDistance(AnimalMovement individual)
     {
         int bodyPartsCount = individual.transform.childCount;
         float distance = 0;
@@ -62,7 +62,7 @@ public class GeneticAlgorithm
         distancesList = new List<float>();
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
-            distancesList.Add(calculateDistance(_currentGeneration[i])); //tutaj bede trzymac wagi
+            distancesList.Add(CalculateDistance(_currentGeneration[i])); //tutaj bede trzymac wagi
         }
     }
     private void SetFitnessList()
@@ -70,7 +70,7 @@ public class GeneticAlgorithm
         fitnessList = new List<float>();
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
-            fitnessList.Add(calculateFitness(_currentGeneration[i],distancesList[i])); //tutaj bede trzymac wagi
+            fitnessList.Add(CalculateFitness(_currentGeneration[i],distancesList[i])); //tutaj bede trzymac wagi
         }
     }
     private void SetElitiesIndexesList()
@@ -118,7 +118,7 @@ public class GeneticAlgorithm
         //     parentIndex = Random.Range(0, _currentGeneration.Count);
         // }
         //tournament
-        int border=Random.Range(0,fitnessList.Count-1);
+        int border=Random.Range(0,fitnessList.Count);
         int count=Random.Range(1,fitnessList.Count-border);
         float parentFitness=fitnessList.GetRange(border,count).Max();
         return fitnessList.IndexOf(parentFitness);
