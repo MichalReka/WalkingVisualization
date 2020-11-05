@@ -100,7 +100,7 @@ public class DropdownHandler : MonoBehaviour
         float y = GameObject.Find("upBorder").transform.localPosition.y+GameObject.Find("downBorder").transform.localPosition.y;
         animalPreview.transform.localPosition=new Vector3(x/2,y/2,-20);
         RemoveComponents<JointHandler>(animalPreview);
-        RemoveComponents<AnimalBody>(animalPreview);
+        RemoveComponents<AnimalBodyPart>(animalPreview);
         FreezeObject(animalPreview);
         AddComponentToChildren<AnimalPrefabChildrenCollision>(animalPreview);
         CentralizeChildrenY(animalPreview);

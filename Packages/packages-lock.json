@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.jacksondunstan.native-collections": {
+      "version": "https://github.com/jacksondunstan/NativeCollections.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5e9142f62f39096988ba9fa40c69cfba45c4ac25"
+    },
     "com.unity.burst": {
       "version": "1.3.9",
       "depth": 0,

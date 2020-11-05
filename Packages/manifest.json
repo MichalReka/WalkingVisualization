@@ -7,6 +7,7 @@
     }
   ],
   "dependencies": {
+    "com.jacksondunstan.native-collections": "https://github.com/jacksondunstan/NativeCollections.git",
     "jillejr.newtonsoft.json-for-unity": "12.0.201",
     "com.unity.burst": "1.3.9",
     "com.unity.collab-proxy": "1.3.9",

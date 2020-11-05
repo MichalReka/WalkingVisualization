@@ -29,17 +29,17 @@ public class MenuButtonsHandler : MonoBehaviour
         PopulationInputData.startingPosition=float.Parse(GameObject.Find("StartingPositionInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.speed=float.Parse(GameObject.Find("SpeedInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.timeBeingAliveImportance=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        PopulationInputData.mutationRate=float.Parse(GameObject.Find("MutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        PopulationInputData.maxPercentGenesToMutate=float.Parse(GameObject.Find("MaxGenesToMutateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.weightsMutationRate=float.Parse(GameObject.Find("WeightsMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.physicalMutationRate=float.Parse(GameObject.Find("PhysicalMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PlayerPrefs.SetInt("animalPrefabDropdownValue",animalDropdown.value);
         PlayerPrefs.SetInt("populationSize",PopulationInputData.populationSize);
         PlayerPrefs.SetInt("populationPartSize",PopulationInputData.populationPartSize);
         PlayerPrefs.SetFloat("startingPosition", PopulationInputData.startingPosition);
         PlayerPrefs.SetFloat("speed", PopulationInputData.speed);
         PlayerPrefs.SetFloat("timeBeingAliveImportance", PopulationInputData.timeBeingAliveImportance);
-        PlayerPrefs.SetFloat("mutationRate", PopulationInputData.mutationRate);
-        PlayerPrefs.SetFloat("maxPercentGenesToMutate", PopulationInputData.maxPercentGenesToMutate);
-        var coroutineHandler=FadeInAndDo(()=>{VisualizationBasics.ResumeGame();SceneManager.LoadScene("walking");});
+        PlayerPrefs.SetFloat("weightsMutationRate", PopulationInputData.weightsMutationRate);
+        PlayerPrefs.SetFloat("physicalMutationRate", PopulationInputData.physicalMutationRate);
+        var coroutineHandler=FadeInAndDo(()=>{VisualizationBasics.ResumeGame();SceneManager.LoadScene("Simulation");});
         StartCoroutine(coroutineHandler);
     }
 

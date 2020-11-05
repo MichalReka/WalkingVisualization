@@ -25,8 +25,8 @@ public class VisualizationInputForm : MonoBehaviour
         SetStartingInput(GameObject.Find("StartingPositionInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("startingPosition",0));
         SetStartingInput(GameObject.Find("SpeedInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("speed",0));
         SetStartingInput(GameObject.Find("TimeImportanceInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("timeBeingAliveImportance",0));
-        SetStartingInput(GameObject.Find("MutationRateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("mutationRate",0));
-        SetStartingInput(GameObject.Find("MaxGenesToMutateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("maxPercentGenesToMutate",0));
+        SetStartingInput(GameObject.Find("WeightsMutationRateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("weightsMutationRate",0));
+        SetStartingInput(GameObject.Find("PhysicalMutationRateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("physicalMutationRate",0));
 
         // GameObject.Find("PopulationSizeInput").GetComponent<InputField>()=PlayerPrefs.GetInt("populationSize").ToString();
         // GameObject.Find("PopulationPartSizeInput").GetComponent<InputField>()=PlayerPrefs.GetFloat("populationPartSize").ToString();

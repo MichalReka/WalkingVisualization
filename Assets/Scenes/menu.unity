@@ -721,7 +721,7 @@ GameObject:
   m_Component:
   - component: {fileID: 259607454}
   m_Layer: 5
-  m_Name: MutationRate
+  m_Name: WeightsMutationRate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3749,7 +3749,7 @@ GameObject:
   - component: {fileID: 928678390}
   - component: {fileID: 928678389}
   m_Layer: 5
-  m_Name: MaxGenesToMutateInput
+  m_Name: PhysicalMutationRateInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4379,7 +4379,7 @@ GameObject:
   - component: {fileID: 1047726127}
   - component: {fileID: 1047726126}
   m_Layer: 5
-  m_Name: MutationRateInput
+  m_Name: WeightsMutationRateInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5956,7 +5956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1391586318}
   m_Layer: 5
-  m_Name: MaxGenesToMutate
+  m_Name: PhysicalMutationRate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6782,7 +6782,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Maksymalna si\u0142a mutacji"
+  m_Text: Szansa na mutacje cech fizycznych
 --- !u!222 &1620130571
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7646,7 +7646,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Wska\u017Anik mutacji"
+  m_Text: Szansa na mutacje wag
 --- !u!222 &1830499791
 CanvasRenderer:
   m_ObjectHideFlags: 0
