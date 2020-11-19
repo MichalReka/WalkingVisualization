@@ -98,7 +98,7 @@ public class JointHandler : MonoBehaviour
     }
     public void TranslateOutput(List<float> output)
     {
-        int velocityBorderDivision = 5;
+        // int velocityBorderDivision = 5;
         var velocityVector = joint.targetAngularVelocity;
         isMoving = output[0];
         if (isMoving < 0)
@@ -107,15 +107,16 @@ public class JointHandler : MonoBehaviour
         }
         else
         {
-            float absVelocity = translateToValue(targetVelocity / velocityBorderDivision, targetVelocity, Mathf.Abs(output[1]) * 2 - 1);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
-            if (output[1] < 0)
-            {
-                velocityVector[(int)axisToMove] = -absVelocity;
-            }
-            else
-            {
-                velocityVector[(int)axisToMove] = absVelocity;
-            }
+            // float absVelocity = translateToValue(-targetVelocity, targetVelocity, Mathf.Abs(output[1]) * 2 - 1);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
+            velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
+            // if (output[1] < 0)
+            // {
+            //     velocityVector[(int)axisToMove] = -absVelocity;
+            // }
+            // else
+            // {
+            //     velocityVector[(int)axisToMove] = absVelocity;
+            // }
         }
 
         // velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);  //taki zapis zmniejsza ruchliwosc osobnikow

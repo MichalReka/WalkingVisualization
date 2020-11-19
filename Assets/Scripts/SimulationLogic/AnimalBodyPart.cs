@@ -10,11 +10,11 @@ public class AnimalBodyPart : MonoBehaviour
     public bool ifPositionCanBeChanged = true;
     public bool ifScalable = false;
     public bool isMoveable = false;
-    public Vector3 scaleMultiplier;
-    public Vector3 positionMultiplier;
+    public System.Numerics.Vector3 scaleMultiplier;
+    public System.Numerics.Vector3 positionMultiplier;
     public float mass;
-    Vector3 _startingPosition;
-    Vector3 _startingScale;
+    System.Numerics.Vector3 _startingPosition;
+    System.Numerics.Vector3 _startingScale;
     Rigidbody bodyData;
     AnimalMovement animalMovement;
     JointHandler[] jointHandler;
@@ -25,8 +25,16 @@ public class AnimalBodyPart : MonoBehaviour
         {
             jointHandler = transform.GetComponents<JointHandler>();
         }
-        _startingScale = transform.localScale;
-        _startingPosition = transform.localPosition;
+        _startingScale = ConvertVector(transform.localScale);
+        _startingPosition = ConvertVector(transform.localPosition);
+    }
+    private System.Numerics.Vector3 ConvertVector(Vector3 unitySourceVector)
+    {
+        System.Numerics.Vector3 newVector = new System.Numerics.Vector3();
+        newVector.X=unitySourceVector.x;
+        newVector.Y=unitySourceVector.y;
+        newVector.Z=unitySourceVector.z;
+        return newVector;
     }
     private void Start()
     {
@@ -50,10 +58,10 @@ public class AnimalBodyPart : MonoBehaviour
         bodyData.mass = mass;
         this.mass = mass;
     }
-    public void SetScale(Vector3 scaleMultiplier)
+    public void SetScale(System.Numerics.Vector3 scaleMultiplier)
     {
         this.scaleMultiplier = scaleMultiplier;
-        transform.localScale = new Vector3(scaleMultiplier.x * _startingScale.x, _startingScale.y, scaleMultiplier.z * _startingScale.z);
+        transform.localScale = new Vector3(scaleMultiplier.X * _startingScale.X, _startingScale.Y, scaleMultiplier.Z * _startingScale.Z);
     }
     public void SetMaximumVelocity(int velocity)
     {
@@ -62,11 +70,11 @@ public class AnimalBodyPart : MonoBehaviour
             jointHandler[i].targetVelocity = velocity;
         }
     }
-    public void SetPosition(Vector3 positionMultiplier)
+    public void SetPosition(System.Numerics.Vector3 positionMultiplier)
     {
 
         this.positionMultiplier = positionMultiplier;
-        transform.localPosition = new Vector3(positionMultiplier.x * _startingPosition.x, _startingPosition.y, positionMultiplier.z * _startingPosition.z);
+        transform.localPosition = new Vector3(positionMultiplier.X * _startingPosition.X, _startingPosition.Y, positionMultiplier.Z * _startingPosition.Z);
 
     }
 }

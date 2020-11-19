@@ -19,7 +19,7 @@ public class GeneticAlgorithm
     List<int> elitesIndexes;
     private float[] _bodyPartsStartingPositions;
     const int minFitness = -999;
-
+    public AnimalData bestAnimalData; 
     public GeneticAlgorithm(List<AnimalMovement> gen, float _mutationRate, float _physcialMutationRate)
     {
         _currentGeneration = gen;
@@ -93,27 +93,26 @@ public class GeneticAlgorithm
             tempFitnessList[nextEliteIndex] = minFitness;
         }
     }
+    private void SetBestAnimalData()
+    {
+        int index=fitnessList.IndexOf(fitnessList.Max());
+        bestAnimalData = _currentGeneration[index].animalData;
+        bestDistance=fitnessList[index];
+        bestFitness=distancesList[index];
+
+    }
     private void AlgorithmStart()
     {
         SetDistancesList();
         SetFitnessList();
+        SetBestAnimalData();
         SetElitiesIndexesList();
-        bestDistance = distancesList.Max();
-        bestFitness = fitnessList.Max();
         var bestFitnessIndex = fitnessList.IndexOf(bestFitness);
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
             if (elitesIndexes.Contains(i))    //najlepszy zostaje
             {
-                _populationGenPool[i] = new AnimalData();
-                _populationGenPool[i].animalBrain = new AnimalBrain();
-                _populationGenPool[i].animalBrain.deepCopy(_currentGeneration[i].animalData.animalBrain);
-                _populationGenPool[i].animalBrain.isElite = true;
-                _populationGenPool[i].partsMass = new Dictionary<int, float>(_currentGeneration[i].animalData.partsMass);
-                _populationGenPool[i].partsScaleMultiplier = new Dictionary<int, Vector3>(_currentGeneration[i].animalData.partsScaleMultiplier);
-                _populationGenPool[i].targetJointsVelocity = new Dictionary<int, int>(_currentGeneration[i].animalData.targetJointsVelocity);
-                _populationGenPool[i].limbsPositionMultiplier = new Dictionary<int, Vector3>(_currentGeneration[i].animalData.limbsPositionMultiplier);
-
+                _populationGenPool[i] = _currentGeneration[i].animalData.DeepCopy();
             }
             else
             {
@@ -167,12 +166,12 @@ public class GeneticAlgorithm
         }
         AnimalBrain childBrain = new AnimalBrain();
         float mixChance;
-        childBrain.deepCopy(_currentGeneration[parent1Index].animalData.animalBrain);
+        childBrain.DeepCopyFrom(_currentGeneration[parent1Index].animalData.animalBrain);
         mixChance = Random.Range(0.0f, 100.0f);
         childData.partsMass = MixDictionaries<float>(_currentGeneration[parent1Index].animalData.partsMass, _currentGeneration[parent2Index].animalData.partsMass, mixChance);
-        childData.partsScaleMultiplier = MixDictionaries<Vector3>(_currentGeneration[parent1Index].animalData.partsScaleMultiplier, _currentGeneration[parent2Index].animalData.partsScaleMultiplier, mixChance);
+        childData.partsScaleMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.partsScaleMultiplier, _currentGeneration[parent2Index].animalData.partsScaleMultiplier, mixChance);
         childData.targetJointsVelocity = MixDictionaries<int>(_currentGeneration[parent1Index].animalData.targetJointsVelocity, _currentGeneration[parent2Index].animalData.targetJointsVelocity, mixChance);
-        childData.limbsPositionMultiplier = MixDictionaries<Vector3>(_currentGeneration[parent1Index].animalData.limbsPositionMultiplier, _currentGeneration[parent2Index].animalData.limbsPositionMultiplier, mixChance);
+        childData.limbsPositionMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.limbsPositionMultiplier, _currentGeneration[parent2Index].animalData.limbsPositionMultiplier, mixChance);
         childBrain.mixWeights(_currentGeneration[parent2Index].animalData.animalBrain, mixChance);
         float chance = Random.Range(0.0f, 1.0f);
         if (chance < _mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem

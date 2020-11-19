@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 public struct PopulationInputData
 {
+    public static bool migrationEnabled;
     public static int populationSize;
     public static int populationPartSize;
     public static float weightsMutationRate;
@@ -18,6 +16,10 @@ public struct PopulationInputData
 }
 public class GeneratePopulation : MonoBehaviour
 {
+    public float secondsPassed = 0.0f;
+    public List<AnimalData> migratedAnimals;
+    public string bestAnimalDataJson;
+    AnimalData bestAnimalData;
     private int animalsObjectsCatched = 0;
     List<GameObject> animalsObjects;
     List<AnimalMovement> animals;
@@ -40,16 +42,21 @@ public class GeneratePopulation : MonoBehaviour
     private int[] activeAnimalIndexes;
     private bool _newGenerationMove;
     PopulationUI populationUIhandler;
+    int migratedAnimalsLeftToPick = 0;
+    int migratedAnimalIndexToPick = 0;
+    int animalDivision = 1;
+    float chanceToMigrate = 0;
     void Start()
     {
-        populationSize=PopulationInputData.populationSize;
-        populationPartSize=PopulationInputData.populationPartSize;
-        mutationRate=PopulationInputData.weightsMutationRate;
-        animalPrefabName=PopulationInputData.animalPrefabName;
-        startingPosition=PopulationInputData.startingPosition;
-        speed=PopulationInputData.speed;
-        physicalMutationRate=PopulationInputData.physicalMutationRate;
-        timeBeingAliveImportance=PopulationInputData.timeBeingAliveImportance;
+
+        populationSize = PopulationInputData.populationSize;
+        populationPartSize = PopulationInputData.populationPartSize;
+        mutationRate = PopulationInputData.weightsMutationRate;
+        animalPrefabName = PopulationInputData.animalPrefabName;
+        startingPosition = PopulationInputData.startingPosition;
+        speed = PopulationInputData.speed;
+        physicalMutationRate = PopulationInputData.physicalMutationRate;
+        timeBeingAliveImportance = PopulationInputData.timeBeingAliveImportance;
         _newGenerationMove = true;
         bestDistances = new List<float>();
         activeAnimalIndexes = new int[populationPartSize];
@@ -58,10 +65,30 @@ public class GeneratePopulation : MonoBehaviour
         var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
         var movingParts = tempObject.GetComponentsInChildren<JointHandler>();
         AnimalBrain.noMovingParts = movingParts.Length;
-        AnimalBrain.outputSize  = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts + AnimalBrain.armsToMoveCount;
+        AnimalBrain.outputSize = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts + AnimalBrain.armsToMoveCount;
         Destroy(tempObject);
+        if (PopulationInputData.migrationEnabled)
+        {
+            LoadMigratedIndividuals();
+            migratedAnimalsLeftToPick = migratedAnimals.Count;
+            chanceToMigrate = Random.Range(0.0f, 100.0f);
+        }
         CreateGeneration();
         populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
+    }
+    void LoadMigratedIndividuals()
+    {
+        List<string> migratedAnimalDataJsons = DatabaseHandler.ReturnAnimalDataJsonArray(animalPrefabName);
+        migratedAnimals = new List<AnimalData>();
+        if (migratedAnimalDataJsons.Count > 0)
+        {
+            foreach (var json in migratedAnimalDataJsons)
+            {
+                AnimalData migratedData = JsonConvert.DeserializeObject<AnimalData>(json);
+                migratedData.animalBrain.DeserializeWeights();
+                migratedAnimals.Add(migratedData);
+            }
+        }
     }
     void CreateGeneration()
     {
@@ -79,7 +106,7 @@ public class GeneratePopulation : MonoBehaviour
             activeAnimalIndexes[i] = i;
         }
     }
-    
+
     void CreateAnimal(Vector3 position, AnimalData individualData = null)
     {
         var tempObject = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
@@ -91,17 +118,42 @@ public class GeneratePopulation : MonoBehaviour
         animalComponent.currentX = -startingPosition;
         if (currentGen > 0)
         {
-            animalComponent.SetBody(individualData.animalBrain.isElite);
+            animalComponent.SetBody(individualData.isElite, false);
             animalComponent.SetAnimalData(individualData);
         }
         else
         {
-            animalComponent.SetBody(false);
-            animalComponent.SetRandomData();
+
+            if (migratedAnimalsLeftToPick > 0)
+            {
+                float chanceForRandomData = 100.0f - ((float)animalDivision) / ((float)populationSize / (float)migratedAnimals.Count) * 100.0f;
+                Debug.Log(chanceForRandomData);
+                if (chanceToMigrate > chanceForRandomData)
+                {
+                    animalComponent.SetBody(false, true);
+                    chanceToMigrate = Random.Range(0.0f, 100.0f);
+                    Debug.Log("Migracja index: " + migratedAnimalIndexToPick + " ilosc zwierzat: " + animals.Count + " szansa random: " + chanceForRandomData);
+                    animalComponent.SetAnimalData(migratedAnimals[migratedAnimalIndexToPick]);
+                    animalDivision = 1;
+                    migratedAnimalsLeftToPick--;
+                    migratedAnimalIndexToPick++;
+                }
+                else
+                {
+                    animalComponent.SetBody(false, false);
+                    animalComponent.SetRandomData();
+                }
+            }
+            else
+            {
+                animalComponent.SetBody(false, false);
+                animalComponent.SetRandomData();
+            }
         }
         animalComponent.SetBodyPartsStartingX();
         animalsObjects.Add(tempObject);
         animals.Add(animalComponent);
+        animalDivision++;
     }
     void trimGeneration()
     {
@@ -115,6 +167,7 @@ public class GeneratePopulation : MonoBehaviour
     }
     private void GenerateJson()
     {
+        bestAnimalDataJson = bestAnimalData.SerializeData();
         string json = JsonUtility.ToJson(this);
         System.IO.File.WriteAllText(DatabaseHandler.jsonPath, json);
     }
@@ -123,7 +176,6 @@ public class GeneratePopulation : MonoBehaviour
         GenerateJson();
         DatabaseHandler.AddDataToTable();
     }
-
     public void GeneratePdfDataPresentation()
     {
         GenerateJson();
@@ -143,6 +195,7 @@ public class GeneratePopulation : MonoBehaviour
     {
         if (!VisualizationBasics.ifPaused)
         {
+            secondsPassed = secondsPassed + Time.deltaTime;
             if (animalsObjectsCatched == populationSize)
             {
                 _newGenerationMove = false;
@@ -159,6 +212,7 @@ public class GeneratePopulation : MonoBehaviour
                 if (currBestFitness > bestFitness)
                 {
                     bestFitness = currBestFitness;
+                    bestAnimalData = geneticAlgorithm.bestAnimalData.DeepCopy();
                 }
                 CreateGeneration();
                 trimGeneration();
@@ -167,15 +221,20 @@ public class GeneratePopulation : MonoBehaviour
             }
             else if (_newGenerationMove)
             {
-                for (int i = 0; i < populationPartSize; i++)     
+                for (int i = 0; i < populationPartSize; i++)
                 {
-                    animals[activeAnimalIndexes[i]].StartArmsToMoveJob();
+                    animals[activeAnimalIndexes[i]].SelectLimbsToChangeState();
                 }
-                for (int i = 0; i < populationPartSize; i++)     
+                for (int i = 0; i < populationPartSize; i++)
                 {
                     animals[activeAnimalIndexes[i]].FinishJob();
-                    animals[activeAnimalIndexes[i]].StartMovementJob();
+                    animals[activeAnimalIndexes[i]].MoveSelectedLimbs();
                 }
+                // for (int i = 0; i < populationPartSize; i++)     
+                // {
+                //     animals[activeAnimalIndexes[i]].FinishJob();
+                //     animals[activeAnimalIndexes[i]].MoveSelectedLimbs();
+                // }
                 for (int i = 0; i < populationPartSize; i++)
                 {
                     animals[activeAnimalIndexes[i]].FinishJob();
@@ -184,7 +243,7 @@ public class GeneratePopulation : MonoBehaviour
                     bool ifCatched = animals[activeAnimalIndexes[i]].ifCatched;
                     if (ifCatched == true && animalsObjects[activeAnimalIndexes[i]].activeSelf)    //logike lapania zwierzeta implementuje w pliku animal movement
                     {
-                        animalsObjectsCatched++;  
+                        animalsObjectsCatched++;
                         animalsObjects[activeAnimalIndexes[i]].SetActive(false);   //ustawiam to zwierze jako nieaktywne
                         if (animalsObjects.Count != populationSize)
                         {

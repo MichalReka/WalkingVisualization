@@ -33,7 +33,7 @@ public class AnimalMovement : MonoBehaviour
     Dictionary<int, List<AnimalBodyPart>> limbsDictionary;
     Dictionary<int, List<AnimalBodyPart>> similarBodyPartsDictionary;
     List<int> armsToMove = new List<int>();
-    NativeArray<int> outputIndexesToCompute;    
+    NativeArray<int> outputIndexesToCompute;
     void DisableJoints()
     {
         var jointTogglers = GetComponentsInChildren<JointToggler>();
@@ -72,7 +72,6 @@ public class AnimalMovement : MonoBehaviour
     public void SetAnimalData(AnimalData newAnimalData)
     {
         animalData = new AnimalData();
-        animalData.animalMovement = this;
         animalData.animalBrain = newAnimalData.animalBrain;
         animalData.partsMass = newAnimalData.partsMass;
         animalData.partsScaleMultiplier = newAnimalData.partsScaleMultiplier;
@@ -110,11 +109,10 @@ public class AnimalMovement : MonoBehaviour
     public void SetRandomData()
     {
         animalData = new AnimalData();
-        animalData.animalMovement = this;
         animalData.partsMass = new Dictionary<int, float>();
-        animalData.partsScaleMultiplier = new Dictionary<int, Vector3>();
+        animalData.partsScaleMultiplier = new Dictionary<int, System.Numerics.Vector3>();
         animalData.targetJointsVelocity = new Dictionary<int, int>();
-        animalData.limbsPositionMultiplier = new Dictionary<int, Vector3>();
+        animalData.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>();
         animalData.animalBrain = new AnimalBrain();
         animalData.animalBrain.setRandomWeights();
         float multiplierRangeMin = AnimalData.multiplierRangeMin;
@@ -123,7 +121,7 @@ public class AnimalMovement : MonoBehaviour
         DisableJoints();
         for (int i = 0; i < limbsIndexes.Count; i++)
         {
-            Vector3 randomMultiplier = new Vector3(Random.Range(multiplierRangeMin, multiplierRangeMax), 1, Random.Range(multiplierRangeMin, multiplierRangeMax));
+            System.Numerics.Vector3 randomMultiplier = new System.Numerics.Vector3(Random.Range(multiplierRangeMin, multiplierRangeMax), 1, Random.Range(multiplierRangeMin, multiplierRangeMax));
             foreach (AnimalBodyPart bodyPart in limbsDictionary[i])
             {
                 if (bodyPart.ifPositionCanBeChanged)
@@ -148,7 +146,7 @@ public class AnimalMovement : MonoBehaviour
                 bodyPart.SetMass(mass);
                 if (bodyPart.ifScalable)
                 {
-                    bodyPart.SetScale(new Vector3(xScale, 1, zScale));
+                    bodyPart.SetScale(new System.Numerics.Vector3(xScale, 1, zScale));
                 }
                 if (bodyPart.isMoveable)
                 {
@@ -156,7 +154,7 @@ public class AnimalMovement : MonoBehaviour
                 }
             }
             animalData.partsMass[i] = mass;
-            animalData.partsScaleMultiplier[i] = new Vector3(xScale, 1, zScale);
+            animalData.partsScaleMultiplier[i] = new System.Numerics.Vector3(xScale, 1, zScale);
             animalData.targetJointsVelocity[i] = maximumVelocity;
         }
 
@@ -167,48 +165,75 @@ public class AnimalMovement : MonoBehaviour
         // ifCrashed = true;
     }
 
-    public void StartArmsToMoveJob()
+    public void SelectLimbsToChangeState()
     {
-        outputIndexesToCompute= new NativeArray<int>(AnimalBrain.armsToMoveCount,Allocator.TempJob);
-        for(int i=0;i<outputIndexesToCompute.Length;i++)
+        outputIndexesToCompute = new NativeArray<int>(AnimalBrain.armsToMoveCount, Allocator.TempJob);
+        for (int i = 0; i < outputIndexesToCompute.Length; i++)
         {
-            outputIndexesToCompute[i]=i;
+            outputIndexesToCompute[i] = i;
         }
         animalData.animalBrain.SetOutput(outputIndexesToCompute);
     }
-    void TranslateArmsToMove()
+    void TranslateLimbsToMove()
     {
         int newArmIndex;
         for (int i = 0; i < AnimalBrain.armsToMoveCount; i++)
         {
-            newArmIndex=(int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
+            newArmIndex = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
             if (newArmIndex == orderedMovingParts.Length)
             {
                 newArmIndex -= 1;
             }
-            if(!armsToMove.Contains(newArmIndex))
+            if (!armsToMove.Contains(newArmIndex))
             {
                 armsToMove.Add(newArmIndex);
             }
         }
     }
-    public void StartMovementJob()
+    public void MoveSelectedLimbs()
     {
-        TranslateArmsToMove();
-        outputIndexesToCompute= new NativeArray<int>(armsToMove.Count*AnimalBrain.outputPerArm,Allocator.TempJob);
+        TranslateLimbsToMove();
+        outputIndexesToCompute = new NativeArray<int>(armsToMove.Count*AnimalBrain.outputPerArm, Allocator.TempJob);
         int arrIndex = 0;
         for (int i = 0; i < armsToMove.Count; i++)
         {
-            int startingIndex = AnimalBrain.armsToMoveCount+armsToMove[i]*AnimalBrain.outputPerArm;
-            int endingIndex = startingIndex+AnimalBrain.outputPerArm;
-            for(int j=startingIndex;j<endingIndex;j++)
+            int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
+            int endingIndex = startingIndex + AnimalBrain.outputPerArm;
+            for (int j = startingIndex; j < endingIndex; j++)
             {
-                outputIndexesToCompute[arrIndex]=j;
+                outputIndexesToCompute[arrIndex] = j;
                 arrIndex++;
             }
         }
         animalData.animalBrain.SetOutput(outputIndexesToCompute);
     }
+    // public void MoveSelectedLimbs()
+    // {
+    //     List<int> outputIndexesToComputeList = new List<int>();
+    //     for (int i = 0; i < armsToMove.Count; i++)
+    //     {
+    //         int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm+1;   //przesuwam o output ktory determinuje czy konczyna ma sie dalej poruszac, czy zmienic ruch
+    //         int endingIndex = startingIndex + AnimalBrain.outputPerArm-1;
+    //         if (animalData.animalBrain.output[limbsStateIndexes[i]] >= 0)
+    //         {
+    //             for (int j = startingIndex; j < endingIndex; j++)
+    //             {
+    //                 outputIndexesToComputeList.Add(j);
+    //             }
+    //         }
+    //         else
+    //         {
+    //             for (int j = startingIndex; j < endingIndex; j++)
+    //             {
+    //                 animalData.animalBrain.output[j]=0;
+    //             }
+    //         }
+
+    //     }
+    //     outputIndexesToCompute = new NativeArray<int>(outputIndexesToComputeList.Count, Allocator.TempJob);
+    //     outputIndexesToCompute.CopyFrom(outputIndexesToComputeList.ToArray());
+    //     animalData.animalBrain.SetOutput(outputIndexesToCompute);
+    // }
     public void FinishJob()
     {
         animalData.animalBrain.FinishJob();
@@ -276,8 +301,8 @@ public class AnimalMovement : MonoBehaviour
         GatherInput(animalData.animalBrain.input);
         for (int i = 0; i < armsToMove.Count; i++)
         {
-            int startingIndex = AnimalBrain.armsToMoveCount+armsToMove[i]*AnimalBrain.outputPerArm;
-            int endingIndex = startingIndex+AnimalBrain.outputPerArm;
+            int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
+            int endingIndex = startingIndex + AnimalBrain.outputPerArm;
             List<float> partOutput = new List<float>();
             for (int j = startingIndex; j < endingIndex; j++)
             {
@@ -338,13 +363,17 @@ public class AnimalMovement : MonoBehaviour
             similarBodyPartsDictionary.Add(i, partsWithIndex);
         }
     }
-    public void SetBody(bool isElite)
+    public void SetBody(bool isElite, bool isMigrated)
     {
         OrderAnimalChildren<JointHandler>(ref orderedMovingParts);
         body = transform.Find("body");
         if (isElite)
         {
             body.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+        }
+        if (isMigrated)
+        {
+            body.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
         }
         OrderAnimalChildren<AnimalBodyPart>(ref orderedBodyParts);
         SetIndexesLists();

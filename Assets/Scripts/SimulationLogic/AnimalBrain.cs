@@ -8,23 +8,36 @@ using Unity.Burst;
 using JacksonDunstan.NativeCollections;
 using static System.Math;
 using Unity.Collections.LowLevel.Unsafe;
+[System.Serializable]
+public struct SerializableWeightsData   //NetiveArray2D sa serializowane do jednowymiaorwoej tablicy dlatego konieczne jest rzutowanie na zwykle tablice
+{
+    public float[,] inputSynapsesWeights;
+    public float[,] outputSynapsesWeights;
+    public float[,] hiddenLayerSynapsesWeights;
+    public float[] hiddenLayerBias;
+    public float[] secondHiddenLayerBias;
+}
+[System.Serializable]
 public class AnimalBrain
 {
-
+    public SerializableWeightsData serializableWeightsData;
     public static int armsToMoveCount = 2;
     public static int outputPerArm = 2;
     public static int outputSize;
-    public bool isElite = false;
+    [System.NonSerialized]
     private const int bodyInput = 4;
     private const int noLimitsJoints = 3;
     public static int noMovingParts;
+    [System.NonSerialized]
     public int hiddenLayerSize;
-    public NativeArray2D<float> inputSynapsesWeights;
-    public NativeArray2D<float> outputSynapsesWeights;
-    public NativeArray2D<float> hiddenLayerSynapsesWeights;
-    public NativeArray<float> hiddenLayerBias;
-    public NativeArray<float> secondHiddenLayerBias;
+    private NativeArray2D<float> inputSynapsesWeights;
+    private NativeArray2D<float> outputSynapsesWeights;
+    private NativeArray2D<float> hiddenLayerSynapsesWeights;
+    private NativeArray<float> hiddenLayerBias;
+    private NativeArray<float> secondHiddenLayerBias;
+    [System.NonSerialized]
     public NativeArray<float> output;
+    [System.NonSerialized]
     public NativeArray<float> input;
     private JobHandle _jobHandler;
     public AnimalBrain()
@@ -51,7 +64,7 @@ public class AnimalBrain
             return false;
         }
     }
-    public void deepCopy(AnimalBrain source)
+    public void DeepCopyFrom(AnimalBrain source)
     {
         // inputSynapsesWeights = source.inputSynapsesWeights.Clone() as float[,];
         // outputSynapsesWeights = source.outputSynapsesWeights.Clone() as float[,];
@@ -160,7 +173,23 @@ public class AnimalBrain
         //     }
         // }
     }
-
+    public void PrepareToSerialize()
+    {
+        serializableWeightsData = new SerializableWeightsData();
+        serializableWeightsData.inputSynapsesWeights=inputSynapsesWeights.ToArray();
+        serializableWeightsData.outputSynapsesWeights=outputSynapsesWeights.ToArray();
+        serializableWeightsData.hiddenLayerSynapsesWeights=hiddenLayerSynapsesWeights.ToArray();
+        serializableWeightsData.hiddenLayerBias=hiddenLayerBias.ToArray();
+        serializableWeightsData.secondHiddenLayerBias=secondHiddenLayerBias.ToArray();
+    }
+    public void DeserializeWeights()
+    {
+        inputSynapsesWeights.CopyFrom(serializableWeightsData.inputSynapsesWeights);
+        outputSynapsesWeights.CopyFrom(serializableWeightsData.outputSynapsesWeights);
+        hiddenLayerSynapsesWeights.CopyFrom(serializableWeightsData.hiddenLayerSynapsesWeights);
+        hiddenLayerBias.CopyFrom(serializableWeightsData.hiddenLayerBias);
+        secondHiddenLayerBias.CopyFrom(serializableWeightsData.secondHiddenLayerBias);
+    }
     public void setRandomWeights()
     {
 

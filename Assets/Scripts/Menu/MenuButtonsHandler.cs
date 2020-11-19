@@ -31,6 +31,7 @@ public class MenuButtonsHandler : MonoBehaviour
         PopulationInputData.timeBeingAliveImportance=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.weightsMutationRate=float.Parse(GameObject.Find("WeightsMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.physicalMutationRate=float.Parse(GameObject.Find("PhysicalMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.migrationEnabled=GameObject.Find("MigrationToggle").GetComponent<Toggle>().isOn;
         PlayerPrefs.SetInt("animalPrefabDropdownValue",animalDropdown.value);
         PlayerPrefs.SetInt("populationSize",PopulationInputData.populationSize);
         PlayerPrefs.SetInt("populationPartSize",PopulationInputData.populationPartSize);
@@ -53,7 +54,7 @@ public class MenuButtonsHandler : MonoBehaviour
     }
     public void Quit()
     {
-        var coroutineHandler=FadeInAndDo(()=>{Application.Quit();});
+        var coroutineHandler=FadeInAndDo(()=>{Time.timeScale=1;;Application.Quit();});
         StartCoroutine(coroutineHandler);
     }
     public void GoBackToMainMenu()
@@ -67,7 +68,4 @@ public class MenuButtonsHandler : MonoBehaviour
         yield return StartCoroutine(coroutineHandler);
         toDoAfterFade.Invoke();
     }
-    
-    
-    
 }
