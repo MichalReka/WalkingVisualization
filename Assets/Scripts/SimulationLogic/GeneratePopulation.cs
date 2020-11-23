@@ -12,10 +12,11 @@ public struct PopulationInputData
     public static float startingPosition;
     public static float speed;
     public static float physicalMutationRate;
-    public static float timeBeingAliveImportance;
+    public static float timeBelowAveragePenalty;
 }
 public class GeneratePopulation : MonoBehaviour
 {
+
     public float secondsPassed = 0.0f;
     public List<AnimalData> migratedAnimals;
     public string bestAnimalDataJson;
@@ -35,20 +36,21 @@ public class GeneratePopulation : MonoBehaviour
     public float startingPosition;
     public float speed;
     public float physicalMutationRate;
-    public float timeBeingAliveImportance;
+    public float timeBelowAveragePenalty;
     public List<float> bestDistances;
     public List<float> bestFitnesses;
     private GeneticAlgorithm geneticAlgorithm;
     private int[] activeAnimalIndexes;
     private bool _newGenerationMove;
     PopulationUI populationUIhandler;
-    int migratedAnimalsLeftToPick = 0;
-    int migratedAnimalIndexToPick = 0;
-    int animalDivision = 1;
-    float chanceToMigrate = 0;
+    int _migratedAnimalsLeftToPick = 0;
+    int _migratedAnimalIndexToPick = 0;
+    int _animalDivision = 1;
+    float _chanceToMigrate = 0;
+    int _iterationsToResetMGenes;
+    List<float> _currentMGenes;
     void Start()
     {
-
         populationSize = PopulationInputData.populationSize;
         populationPartSize = PopulationInputData.populationPartSize;
         mutationRate = PopulationInputData.weightsMutationRate;
@@ -56,8 +58,9 @@ public class GeneratePopulation : MonoBehaviour
         startingPosition = PopulationInputData.startingPosition;
         speed = PopulationInputData.speed;
         physicalMutationRate = PopulationInputData.physicalMutationRate;
-        timeBeingAliveImportance = PopulationInputData.timeBeingAliveImportance;
+        timeBelowAveragePenalty = PopulationInputData.timeBelowAveragePenalty;
         _newGenerationMove = true;
+        _currentMGenes = new List<float>();
         bestDistances = new List<float>();
         activeAnimalIndexes = new int[populationPartSize];
         animalsObjects = new List<GameObject>();
@@ -66,12 +69,13 @@ public class GeneratePopulation : MonoBehaviour
         var movingParts = tempObject.GetComponentsInChildren<JointHandler>();
         AnimalBrain.noMovingParts = movingParts.Length;
         AnimalBrain.outputSize = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts + AnimalBrain.armsToMoveCount;
+        _iterationsToResetMGenes = (int)Mathf.Ceil(Mathf.Log(populationSize, 2));
         Destroy(tempObject);
         if (PopulationInputData.migrationEnabled)
         {
             LoadMigratedIndividuals();
-            migratedAnimalsLeftToPick = migratedAnimals.Count;
-            chanceToMigrate = Random.Range(0.0f, 100.0f);
+            _migratedAnimalsLeftToPick = migratedAnimals.Count;
+            _chanceToMigrate = Random.Range(0.0f, 100.0f);
         }
         CreateGeneration();
         populationUIhandler = transform.Find("infoCanvas").GetComponent<PopulationUI>();
@@ -114,7 +118,6 @@ public class GeneratePopulation : MonoBehaviour
         tempObject.transform.SetParent(transform);
         var animalComponent = tempObject.AddComponent<AnimalMovement>();
         animalComponent.speed = speed;
-        animalComponent.timeBeingAliveImportance = timeBeingAliveImportance;
         animalComponent.currentX = -startingPosition;
         if (currentGen > 0)
         {
@@ -123,20 +126,17 @@ public class GeneratePopulation : MonoBehaviour
         }
         else
         {
-
-            if (migratedAnimalsLeftToPick > 0)
+            if (_migratedAnimalsLeftToPick > 0)
             {
-                float chanceForRandomData = 100.0f - ((float)animalDivision) / ((float)populationSize / (float)migratedAnimals.Count) * 100.0f;
-                Debug.Log(chanceForRandomData);
-                if (chanceToMigrate > chanceForRandomData)
+                float chanceForRandomData = 100.0f - ((float)_animalDivision) / ((float)populationSize / (float)migratedAnimals.Count) * 100.0f;
+                if (_chanceToMigrate > chanceForRandomData)
                 {
                     animalComponent.SetBody(false, true);
-                    chanceToMigrate = Random.Range(0.0f, 100.0f);
-                    Debug.Log("Migracja index: " + migratedAnimalIndexToPick + " ilosc zwierzat: " + animals.Count + " szansa random: " + chanceForRandomData);
-                    animalComponent.SetAnimalData(migratedAnimals[migratedAnimalIndexToPick]);
-                    animalDivision = 1;
-                    migratedAnimalsLeftToPick--;
-                    migratedAnimalIndexToPick++;
+                    _chanceToMigrate = Random.Range(0.0f, 100.0f);
+                    animalComponent.SetAnimalData(migratedAnimals[_migratedAnimalIndexToPick]);
+                    _animalDivision = 1;
+                    _migratedAnimalsLeftToPick--;
+                    _migratedAnimalIndexToPick++;
                 }
                 else
                 {
@@ -150,12 +150,21 @@ public class GeneratePopulation : MonoBehaviour
                 animalComponent.SetRandomData();
             }
         }
+        if (currentGen % _iterationsToResetMGenes == 0)
+        {
+            float randomGene = Random.value;
+            while(_currentMGenes.Contains(randomGene))
+            {
+                randomGene = Random.value;
+            }
+            animalComponent.animalData.animalBrain.mGene = randomGene;
+        }
         animalComponent.SetBodyPartsStartingX();
         animalsObjects.Add(tempObject);
         animals.Add(animalComponent);
-        animalDivision++;
+        _animalDivision++;
     }
-    void trimGeneration()
+    void TrimGeneration()
     {
         for (int i = 0; i < populationSize; i++)
         {
@@ -191,16 +200,21 @@ public class GeneratePopulation : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         _newGenerationMove = true;
     }
+
     void FixedUpdate()
     {
         if (!VisualizationBasics.ifPaused)
         {
-            secondsPassed = secondsPassed + Time.deltaTime;
+            secondsPassed = secondsPassed + Time.fixedDeltaTime;
             if (animalsObjectsCatched == populationSize)
             {
+                if (currentGen % _iterationsToResetMGenes == 0)
+                {
+                    _currentMGenes = new List<float>();
+                }
                 _newGenerationMove = false;
                 currentGen++;
-                geneticAlgorithm = new GeneticAlgorithm(animals, mutationRate, physicalMutationRate);
+                geneticAlgorithm = new GeneticAlgorithm(animals);
                 currBestDistance = geneticAlgorithm.bestDistance;
                 currBestFitness = geneticAlgorithm.bestFitness;
                 bestDistances.Add(currBestDistance);
@@ -215,7 +229,7 @@ public class GeneratePopulation : MonoBehaviour
                     bestAnimalData = geneticAlgorithm.bestAnimalData.DeepCopy();
                 }
                 CreateGeneration();
-                trimGeneration();
+                TrimGeneration();
                 animalsObjectsCatched = 0;
                 StartCoroutine(CreateNewGeneration());
             }

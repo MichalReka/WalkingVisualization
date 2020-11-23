@@ -10,23 +10,31 @@ public class GeneticAlgorithm
     private AnimalData[] _populationGenPool;
     private float _mutationRate;
     private float _physcialMutationRate;
+    private float _timeBelowAveragePenalty;
+    private float _averageTimeBeingAlive;
+    private float _averageVelocity;
     private int numberOfElites;
     public float bestDistance { get; private set; }
     public float bestFitness { get; private set; }
-    private float elitionismPercent = 0.1f;
+    public float tournamentPartMaxSize = 0.1f;
+    public float elitionismPercent = 0.01f;
     List<float> distancesList;
     List<float> fitnessList;
     List<int> elitesIndexes;
     private float[] _bodyPartsStartingPositions;
     const int minFitness = -999;
-    public AnimalData bestAnimalData; 
-    public GeneticAlgorithm(List<AnimalMovement> gen, float _mutationRate, float _physcialMutationRate)
+    public AnimalData bestAnimalData;
+    int _matingMaxIterations;
+    public GeneticAlgorithm(List<AnimalMovement> gen)
     {
+        _averageTimeBeingAlive = 0;
         _currentGeneration = gen;
-        this._mutationRate = _mutationRate;
-        this._physcialMutationRate = _physcialMutationRate;
+        _mutationRate = PopulationInputData.weightsMutationRate;
+        _physcialMutationRate = PopulationInputData.physicalMutationRate;
+        _timeBelowAveragePenalty = PopulationInputData.timeBelowAveragePenalty;
         _populationGenPool = new AnimalData[_currentGeneration.Count()];
         numberOfElites = (int)Mathf.Ceil(_currentGeneration.Count() * elitionismPercent);
+        _matingMaxIterations = (int)Mathf.Ceil(gen.Count *0.1f);
         AlgorithmStart();
     }
     public List<AnimalData> GetPopulationGenPool()
@@ -37,7 +45,17 @@ public class GeneticAlgorithm
     {
         // var individualBody = individual.transform.Find("body").gameObject;
         float fitness = distance;
-        fitness = fitness + individual.timeBeingAlive;
+        if (individual.timeBeingAlive < _averageTimeBeingAlive)
+        {
+            fitness = fitness * _timeBelowAveragePenalty;
+        }
+        // else
+        // {
+        //     if (individual.averageVelocity > _averageVelocity)
+        //     {
+        //         fitness = fitness * (2-_timeBelowAveragePenalty);
+        //     }
+        // }
         // fitness = fitness * individual.averageBodyY;
         // if (individual.ifCrashed == true)
         // {
@@ -46,8 +64,8 @@ public class GeneticAlgorithm
         return fitness;
     }
 
-        
-    
+
+
     float CalculateDistance(AnimalMovement individual)
     {
         int bodyPartsCount = individual.transform.childCount;
@@ -95,15 +113,32 @@ public class GeneticAlgorithm
     }
     private void SetBestAnimalData()
     {
-        int index=fitnessList.IndexOf(fitnessList.Max());
+        int index = fitnessList.IndexOf(fitnessList.Max());
         bestAnimalData = _currentGeneration[index].animalData;
-        bestDistance=fitnessList[index];
-        bestFitness=distancesList[index];
-
+        bestDistance = fitnessList[index];
+        bestFitness = distancesList[index];
+    }
+    private void CalculateAliveTimeAverage()
+    {
+        for (int i = 0; i < _currentGeneration.Count; i++)
+        {
+            _averageTimeBeingAlive += _currentGeneration[i].timeBeingAlive;
+        }
+        _averageTimeBeingAlive = _averageTimeBeingAlive / _currentGeneration.Count;
+    }
+    private void CalculateAverageVelocity()
+    {
+        for (int i = 0; i < _currentGeneration.Count; i++)
+        {
+            _averageVelocity += _currentGeneration[i].averageVelocity;
+        }
+        _averageVelocity = _averageVelocity / _currentGeneration.Count;
     }
     private void AlgorithmStart()
     {
         SetDistancesList();
+        CalculateAliveTimeAverage();
+        CalculateAverageVelocity();
         SetFitnessList();
         SetBestAnimalData();
         SetElitiesIndexesList();
@@ -121,8 +156,10 @@ public class GeneticAlgorithm
         }
     }
 
-    private int ChooseParent()
+    private int ChooseParent()  //wybieram losowo osobnikow do konkursu - indexy nie moga sie powtarzac
     {
+        //jak galapagos
+        //dobieranie "wagami" prowadzilo do szybkiej stagnacji
         // int parentIndex = Random.Range(0, _currentGeneration.Count);
         // float worstFitness = fitnessList.Min();
         // float bestFitness = fitnessList.Max();
@@ -131,11 +168,30 @@ public class GeneticAlgorithm
         // {
         //     parentIndex = Random.Range(0, _currentGeneration.Count);
         // }
-        //tournament
-        int border = Random.Range(0, fitnessList.Count);
-        int count = Random.Range(1, fitnessList.Count - border);
-        float parentFitness = fitnessList.GetRange(border, count).Max();
-        return fitnessList.IndexOf(parentFitness);
+        //tournament - nie wybieram przedzialu osobnikow - przez to moga tworzyc sie "obszary" w liscie osobnikow, gdzie podobne osobniki sa krzyzowane z podobnymi
+        //wtedy bardzo szybko dane 
+        int count = Random.Range(1, (int)Mathf.Ceil((fitnessList.Count) * tournamentPartMaxSize));    //ilosc osobnikow w jednym konkursie bedzie definiowana w menu
+        Dictionary<int, float> fitnessesForTournament = new Dictionary<int, float>();
+        int randomIndex;
+        for (int i = 0; i < count; i++)
+        {
+            randomIndex = Random.Range(0, fitnessList.Count);
+            while (fitnessesForTournament.ContainsKey(randomIndex))
+            {
+                randomIndex = Random.Range(0, fitnessList.Count);
+            }
+            fitnessesForTournament.Add(randomIndex, fitnessList[randomIndex]);
+        }
+        KeyValuePair<int, float> tournamentWinner = fitnessesForTournament.First();
+        foreach (KeyValuePair<int, float> contester in fitnessesForTournament)
+        {
+            if (contester.Value > tournamentWinner.Value)
+            {
+                tournamentWinner = contester;
+            }
+        }
+        // float parentFitness = fitnessList.GetRange(beginning, count).Max();
+        return tournamentWinner.Key;
     }
     public Dictionary<int, T> MixDictionaries<T>(Dictionary<int, T> parent1, Dictionary<int, T> parent2, float mixChance)
     {
@@ -159,10 +215,22 @@ public class GeneticAlgorithm
         //losowani dwaj rodzice, rozmnazanie jak wczesniej
         AnimalData childData = new AnimalData();
         int parent1Index = ChooseParent();
+        float parent1MGene = _currentGeneration[parent1Index].animalData.animalBrain.mGene;
         int parent2Index = ChooseParent();
-        while (parent2Index == parent1Index)
+        int currentIteration = 0 ;
+        while (true)
         {
             parent2Index = ChooseParent();
+            float parent2MGene = _currentGeneration[parent2Index].animalData.animalBrain.mGene; //jeden z rodzicow przekazuje mGene
+            currentIteration++;
+            if(parent1MGene!=parent2MGene)  //jesli to ten sam index to taki sam mGene
+            {
+                break;
+            }
+            else if(currentIteration==_matingMaxIterations)
+            {
+                break;
+            }
         }
         AnimalBrain childBrain = new AnimalBrain();
         float mixChance;

@@ -20,13 +20,13 @@ public struct SerializableWeightsData   //NetiveArray2D sa serializowane do jedn
 [System.Serializable]
 public class AnimalBrain
 {
+    public float mGene;
     public SerializableWeightsData serializableWeightsData;
     public static int armsToMoveCount = 2;
-    public static int outputPerArm = 2;
+    public static int outputPerArm = 1;
     public static int outputSize;
     [System.NonSerialized]
     private const int bodyInput = 4;
-    private const int noLimitsJoints = 3;
     public static int noMovingParts;
     [System.NonSerialized]
     public int hiddenLayerSize;
@@ -43,7 +43,7 @@ public class AnimalBrain
     public AnimalBrain()
     {
         output = new NativeArray<float>(outputSize, Allocator.Persistent);
-        input = new NativeArray<float>((noMovingParts * JointHandler.inputSize) + bodyInput - noLimitsJoints, Allocator.Persistent); //-1 bo 
+        input = new NativeArray<float>((noMovingParts * JointHandler.inputSize) + bodyInput, Allocator.Persistent);
         hiddenLayerSize = input.Length * 4 / 3;
         inputSynapsesWeights = new NativeArray2D<float>(hiddenLayerSize, input.Length, Allocator.Persistent);
         outputSynapsesWeights = new NativeArray2D<float>(hiddenLayerSize, output.Length, Allocator.Persistent);
@@ -79,6 +79,7 @@ public class AnimalBrain
     }
     public void mixWeights(AnimalBrain parent, float chance)    //jaka jest szansa na zmiane genow
     {
+        mGene = parent.mGene;
         for (int i = 0; i < hiddenLayerSize; i++)
         {
             if (roll(chance))

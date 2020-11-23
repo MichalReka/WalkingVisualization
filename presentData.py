@@ -26,7 +26,7 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
     txt += '\nmutation rate: '+str(round(data['mutationRate']*100))+'%'
     txt += '\nchase starting position: '+str(round(data['startingPosition'],2))
     txt += '\nspeed: '+str(round(data['speed'],2))
-    txt += '\ntime being alive importance: '+str(round(data['timeBeingAliveImportance'],2))
+    txt += '\ntime below average penalty: '+str(round(data['timeBelowAveragePenalty'],2))
     txt += '\nbest fitness value: '+str(round(data['bestFitness'],3))
     txt += '\ngeneration with best fitness value: '+str(generationBestDistance)
     txt += '\nbest distance: '+str(round(data['bestDistance'],3))

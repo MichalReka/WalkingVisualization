@@ -100,15 +100,15 @@ public class JointHandler : MonoBehaviour
     {
         // int velocityBorderDivision = 5;
         var velocityVector = joint.targetAngularVelocity;
-        isMoving = output[0];
-        if (isMoving < 0)
-        {
-                velocityVector[(int)axisToMove] = 0;
-        }
-        else
-        {
+        // isMoving = output[0];
+        // if (isMoving < 0)
+        // {
+        //         velocityVector[(int)axisToMove] = 0;
+        // }
+        // else
+        // {
             // float absVelocity = translateToValue(-targetVelocity, targetVelocity, Mathf.Abs(output[1]) * 2 - 1);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
-            velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
+            velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[0]);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
             // if (output[1] < 0)
             // {
             //     velocityVector[(int)axisToMove] = -absVelocity;
@@ -117,20 +117,10 @@ public class JointHandler : MonoBehaviour
             // {
             //     velocityVector[(int)axisToMove] = absVelocity;
             // }
-        }
+        // }
 
         // velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);  //taki zapis zmniejsza ruchliwosc osobnikow
         joint.targetAngularVelocity = velocityVector;
     }
 
-    private void FixedUpdate()
-    {
-
-        // if (isMoving < 0)
-        // {
-        //     var velocityVector = joint.targetAngularVelocity;
-        //     velocityVector[(int)axisToMove] = 0;
-        //     joint.targetAngularVelocity = velocityVector;
-        // }
-    }
 }

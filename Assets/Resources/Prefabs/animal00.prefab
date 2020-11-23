@@ -133,8 +133,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &2553052265743219494
 ConfigurableJoint:
@@ -378,8 +376,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &2295001269693467282
 ConfigurableJoint:
@@ -464,7 +460,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 150000
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -501,7 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -652,11 +648,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -10
+    limit: -15
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 10
+    limit: 15
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -667,7 +663,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 10
+    limit: 20
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -747,8 +743,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 1
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189013871296624
 GameObject:
@@ -896,11 +890,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -10
+    limit: -15
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 10
+    limit: 15
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -911,7 +905,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 10
+    limit: 20
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -991,8 +985,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 1
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189014152672872
 GameObject:
@@ -1178,8 +1170,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &4140637869288539831
 ConfigurableJoint:
@@ -1435,11 +1425,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -10
+    limit: -15
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 10
+    limit: 15
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -1450,7 +1440,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 10
+    limit: 20
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -1530,8 +1520,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 1
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189014594254843
 GameObject:
@@ -1774,8 +1762,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189014617017073
 GameObject:
@@ -2018,8 +2004,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189014683333004
 GameObject:
@@ -2155,8 +2139,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &8419470458821446878
 ConfigurableJoint:
@@ -2241,7 +2223,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 1500
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -2278,7 +2260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -2417,8 +2399,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &4768881597379606506
 ConfigurableJoint:
@@ -2503,7 +2483,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 1500
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -2540,7 +2520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -2559,7 +2539,6 @@ GameObject:
   - component: {fileID: 7952189014934224396}
   - component: {fileID: 7952189014934224400}
   - component: {fileID: 906811852629873025}
-  - component: {fileID: 5688922442982377432}
   m_Layer: 0
   m_Name: body
   m_TagString: Untagged
@@ -2677,104 +2656,7 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 1
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
---- !u!153 &5688922442982377432
-ConfigurableJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7952189014934224397}
-  m_ConnectedBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0.5, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
-  m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 4.0600004, z: 0}
-  serializedVersion: 2
-  m_SecondaryAxis: {x: 0, y: 1, z: 0}
-  m_XMotion: 2
-  m_YMotion: 2
-  m_ZMotion: 2
-  m_AngularXMotion: 2
-  m_AngularYMotion: 2
-  m_AngularZMotion: 2
-  m_LinearLimitSpring:
-    spring: 0
-    damper: 0
-  m_LinearLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularXLimitSpring:
-    spring: 0
-    damper: 0
-  m_LowAngularXLimit:
-    limit: -40
-    bounciness: 0
-    contactDistance: 0
-  m_HighAngularXLimit:
-    limit: 40
-    bounciness: 0
-    contactDistance: 0
-  m_AngularYZLimitSpring:
-    spring: 0
-    damper: 0
-  m_AngularYLimit:
-    limit: 30
-    bounciness: 0
-    contactDistance: 0
-  m_AngularZLimit:
-    limit: 40
-    bounciness: 0
-    contactDistance: 0
-  m_TargetPosition: {x: 0, y: 0, z: 0}
-  m_TargetVelocity: {x: 0, y: 0, z: 0}
-  m_XDrive:
-    serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-  m_YDrive:
-    serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-  m_ZDrive:
-    serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
-  m_RotationDriveMode: 1
-  m_AngularXDrive:
-    serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-  m_AngularYZDrive:
-    serializedVersion: 3
-    positionSpring: 1
-    positionDamper: 1
-    maximumForce: 3.4028233e+38
-  m_SlerpDrive:
-    serializedVersion: 3
-    positionSpring: 1
-    positionDamper: 1
-    maximumForce: 3.4028233e+38
-  m_ProjectionMode: 0
-  m_ProjectionDistance: 0.1
-  m_ProjectionAngle: 180
-  m_ConfiguredInWorldSpace: 0
-  m_SwapBodies: 0
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
 --- !u!1 &7952189014943631486
 GameObject:
   m_ObjectHideFlags: 0
@@ -3016,8 +2898,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189015014578481
 GameObject:
@@ -3153,8 +3033,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &3655463034469963193
 ConfigurableJoint:
@@ -3239,7 +3117,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 1500
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -3276,7 +3154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -3522,8 +3400,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189015176739758
 GameObject:
@@ -3671,11 +3547,11 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -10
+    limit: -15
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 10
+    limit: 15
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -3686,7 +3562,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 10
+    limit: 20
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -3766,8 +3642,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 1
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!1 &7952189015341501475
 GameObject:
@@ -3902,8 +3776,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &7947537062430276733
 ConfigurableJoint:
@@ -4147,8 +4019,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &3283782890748733965
 ConfigurableJoint:
@@ -4233,7 +4103,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 150000
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -4270,7 +4140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -4408,8 +4278,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 0
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &48794130916098750
 ConfigurableJoint:
@@ -4653,8 +4521,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &6408894842786753067
 ConfigurableJoint:
@@ -4739,7 +4605,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 150000
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -4776,7 +4642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -4915,8 +4781,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &1168353557553266945
 ConfigurableJoint:
@@ -5001,7 +4865,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 150000
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -5038,7 +4902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0
@@ -5177,8 +5041,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 1
   ifScalable: 0
   isMoveable: 1
-  scaleMultiplier: {x: 0, y: 0, z: 0}
-  positionMultiplier: {x: 0, y: 0, z: 0}
   mass: 0
 --- !u!153 &1736071263307245629
 ConfigurableJoint:
@@ -5263,7 +5125,7 @@ ConfigurableJoint:
     serializedVersion: 3
     positionSpring: 0.5
     positionDamper: 0.5
-    maximumForce: 1500
+    maximumForce: 3.402823e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.15
   m_ProjectionAngle: 8
@@ -5300,7 +5162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189e5227d0551414d8f3a34756382ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasLimits: 0
+  hasLimits: 1
   targetVelocity: 0
   input: []
   axisToMove: 0

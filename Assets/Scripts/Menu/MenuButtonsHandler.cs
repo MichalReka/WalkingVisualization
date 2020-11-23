@@ -28,7 +28,7 @@ public class MenuButtonsHandler : MonoBehaviour
         PopulationInputData.populationPartSize=Int32.Parse(GameObject.Find("PopulationPartSizeInput").GetComponent<InputField>().text);
         PopulationInputData.startingPosition=float.Parse(GameObject.Find("StartingPositionInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.speed=float.Parse(GameObject.Find("SpeedInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
-        PopulationInputData.timeBeingAliveImportance=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
+        PopulationInputData.timeBelowAveragePenalty=float.Parse(GameObject.Find("TimeImportanceInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.weightsMutationRate=float.Parse(GameObject.Find("WeightsMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.physicalMutationRate=float.Parse(GameObject.Find("PhysicalMutationRateInput").GetComponent<InputField>().text, CultureInfo.InvariantCulture.NumberFormat);
         PopulationInputData.migrationEnabled=GameObject.Find("MigrationToggle").GetComponent<Toggle>().isOn;
@@ -37,7 +37,7 @@ public class MenuButtonsHandler : MonoBehaviour
         PlayerPrefs.SetInt("populationPartSize",PopulationInputData.populationPartSize);
         PlayerPrefs.SetFloat("startingPosition", PopulationInputData.startingPosition);
         PlayerPrefs.SetFloat("speed", PopulationInputData.speed);
-        PlayerPrefs.SetFloat("timeBeingAliveImportance", PopulationInputData.timeBeingAliveImportance);
+        PlayerPrefs.SetFloat("timeBelowAveragePenalty", PopulationInputData.timeBelowAveragePenalty);
         PlayerPrefs.SetFloat("weightsMutationRate", PopulationInputData.weightsMutationRate);
         PlayerPrefs.SetFloat("physicalMutationRate", PopulationInputData.physicalMutationRate);
         var coroutineHandler=FadeInAndDo(()=>{VisualizationBasics.ResumeGame();SceneManager.LoadScene("Simulation");});
@@ -59,7 +59,7 @@ public class MenuButtonsHandler : MonoBehaviour
     }
     public void GoBackToMainMenu()
     {
-        var coroutineHandler=FadeInAndDo(()=>{SceneManager.LoadScene("menu");});
+        var coroutineHandler=FadeInAndDo(()=>{Time.timeScale=1;SceneManager.LoadScene("menu");});
         StartCoroutine(coroutineHandler);
     }
     IEnumerator FadeInAndDo(Action toDoAfterFade=null)  //uzycie action pozwala na zrobienie czegos po animacji

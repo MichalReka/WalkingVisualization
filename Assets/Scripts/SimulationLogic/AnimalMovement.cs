@@ -9,18 +9,18 @@ public class AnimalMovement : MonoBehaviour
     public AnimalData animalData;
     public float[] bodyPartsStartingX;
     Transform[] children;
+    Rigidbody[] rigidbodiesChildren;
     private float startingBodyY;
-    private int framesPassed;
     public float averageBodyY;
     public JointHandler[] orderedMovingParts;
     public AnimalBodyPart[] orderedBodyParts;
-
+    int _framesPassed = 0;
     public bool ifCatched = false;
     // public bool ifCrashed = false;
     public float currentX = 0;
     public float speed;
     public float timeBeingAlive = 0;
-    public float timeBeingAliveImportance = 0.1f;
+    public float averageVelocity = 0;
     Transform body;
     Rigidbody bodyRigibody;
     // Transform leftFoot;
@@ -177,6 +177,7 @@ public class AnimalMovement : MonoBehaviour
     void TranslateLimbsToMove()
     {
         int newArmIndex;
+        armsToMove.Clear();
         for (int i = 0; i < AnimalBrain.armsToMoveCount; i++)
         {
             newArmIndex = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
@@ -387,6 +388,7 @@ public class AnimalMovement : MonoBehaviour
             orderedMovingParts[i].initArm();
         }
         OrderAnimalChildren<Transform>(ref children);
+        OrderAnimalChildren<Rigidbody>(ref rigidbodiesChildren);
     }
     public void SetBodyPartsStartingX()
     {
@@ -409,6 +411,16 @@ public class AnimalMovement : MonoBehaviour
         }
         return smallestX;
     }
+    void CalculateVelocity()
+    {
+        float averageFrameVelocity = 0;
+        foreach(Rigidbody child in rigidbodiesChildren)
+        {
+            averageFrameVelocity+=child.velocity.x;
+        }
+        averageFrameVelocity = averageFrameVelocity/rigidbodiesChildren.Length;
+        averageVelocity+=averageFrameVelocity;
+    }
     public void Chase()
     {
         // if (body.transform.position.y > startingBodyY)
@@ -423,9 +435,11 @@ public class AnimalMovement : MonoBehaviour
         // var bodyX = body.transform.position.x;
         // var leftFootX = leftFoot.transform.position.x - startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
         // var rightFootX = rightFoot.transform.position.x - startingRightFootPosition;
+        _framesPassed++;
         currentX += Time.fixedDeltaTime * speed;
-        timeBeingAlive += Time.fixedDeltaTime * timeBeingAliveImportance;
+        timeBeingAlive = timeBeingAlive+Time.fixedDeltaTime;
         float smallestX = GetSmallestX();
+        CalculateVelocity();
         if (currentX > smallestX)   //jak zostanie zlapane
         {
             ifCatched = true;
@@ -444,7 +458,8 @@ public class AnimalMovement : MonoBehaviour
         }
         if (ifCatched)
         {
-            averageBodyY = averageBodyY / framesPassed;
+            averageVelocity = averageVelocity / _framesPassed;
+            // averageBodyY = averageBodyY / timeBeingAlive;
         }
     }
     public void Destroy()
