@@ -23,7 +23,7 @@ public class AnimalBrain
     public float mGene;
     public SerializableWeightsData serializableWeightsData;
     public static int armsToMoveCount = 2;
-    public static int outputPerArm = 1;
+    // public static int outputPerArm = 2;
     public static int outputSize;
     [System.NonSerialized]
     private const int bodyInput = 4;
@@ -54,7 +54,7 @@ public class AnimalBrain
     }
     bool roll(float chance)
     {
-        float localchance = Random.Range(0.0f, 100.0f);
+        float localchance = Random.Range(0.0f, 1.0f);
         if (chance > localchance)
         {
             return true;
@@ -113,7 +113,7 @@ public class AnimalBrain
             }
         }
     }
-    public void mutateWeights() //mutacja zakonczona dla dwoch warstw
+    public void MutateWeights() //mutacja zakonczona dla dwoch warstw
     {
         // int maxMutations = Mathf.RoundToInt(_numberOfWeights * _maxPercentGenesToMutate);
         // List<int> mutationIndexes = new List<int>();

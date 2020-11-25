@@ -27,6 +27,8 @@ public class VisualizationInputForm : MonoBehaviour
         SetStartingInput(GameObject.Find("TimeImportanceInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("timeBelowAveragePenalty",0));
         SetStartingInput(GameObject.Find("WeightsMutationRateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("weightsMutationRate",0));
         SetStartingInput(GameObject.Find("PhysicalMutationRateInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("physicalMutationRate",0));
+        SetStartingInput(GameObject.Find("TournamentSizeInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("tournamentSize",0));
+        SetStartingInput(GameObject.Find("CrossoverPercentInput").GetComponent<InputField>(),PlayerPrefs.GetFloat("crossoverInput",0));
 
         // GameObject.Find("PopulationSizeInput").GetComponent<InputField>()=PlayerPrefs.GetInt("populationSize").ToString();
         // GameObject.Find("PopulationPartSizeInput").GetComponent<InputField>()=PlayerPrefs.GetFloat("populationPartSize").ToString();

@@ -34,6 +34,7 @@ public class AnimalMovement : MonoBehaviour
     Dictionary<int, List<AnimalBodyPart>> similarBodyPartsDictionary;
     List<int> armsToMove = new List<int>();
     NativeArray<int> outputIndexesToCompute;
+    bool ifStartedToMove = false;
     void DisableJoints()
     {
         var jointTogglers = GetComponentsInChildren<JointToggler>();
@@ -71,12 +72,12 @@ public class AnimalMovement : MonoBehaviour
     }
     public void SetAnimalData(AnimalData newAnimalData)
     {
-        animalData = new AnimalData();
-        animalData.animalBrain = newAnimalData.animalBrain;
-        animalData.partsMass = newAnimalData.partsMass;
-        animalData.partsScaleMultiplier = newAnimalData.partsScaleMultiplier;
-        animalData.targetJointsVelocity = newAnimalData.targetJointsVelocity;
-        animalData.limbsPositionMultiplier = newAnimalData.limbsPositionMultiplier;
+        animalData = newAnimalData;
+        // animalData.animalBrain = newAnimalData.animalBrain;
+        // animalData.partsMass = newAnimalData.partsMass;
+        // animalData.partsScaleMultiplier = newAnimalData.partsScaleMultiplier;
+        // animalData.targetJointsVelocity = newAnimalData.targetJointsVelocity;
+        // animalData.limbsPositionMultiplier = newAnimalData.limbsPositionMultiplier;
         for (int i = 0; i < similarBodyPartsIndexes.Count; i++)
         {
             foreach (AnimalBodyPart bodyPart in similarBodyPartsDictionary[i])
@@ -115,6 +116,8 @@ public class AnimalMovement : MonoBehaviour
         animalData.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>();
         animalData.animalBrain = new AnimalBrain();
         animalData.animalBrain.setRandomWeights();
+        animalData.weightsMutationRate=PopulationInputData.weightsMutationRate;
+        animalData.physicalMutationRate=PopulationInputData.physicalMutationRate;
         float multiplierRangeMin = AnimalData.multiplierRangeMin;
         float multiplierRangeMax = AnimalData.multiplierRangeMax;
         RandomizePhysicalData(ref animalData);
@@ -164,7 +167,6 @@ public class AnimalMovement : MonoBehaviour
         ifCatched = true;
         // ifCrashed = true;
     }
-
     public void SelectLimbsToChangeState()
     {
         outputIndexesToCompute = new NativeArray<int>(AnimalBrain.armsToMoveCount, Allocator.TempJob);
@@ -193,8 +195,12 @@ public class AnimalMovement : MonoBehaviour
     }
     public void MoveSelectedLimbs()
     {
+        if (!ifStartedToMove)
+        {
+            ifStartedToMove = true;
+        }
         TranslateLimbsToMove();
-        outputIndexesToCompute = new NativeArray<int>(armsToMove.Count*AnimalBrain.outputPerArm, Allocator.TempJob);
+        outputIndexesToCompute = new NativeArray<int>(armsToMove.Count * AnimalBrain.outputPerArm, Allocator.TempJob);
         int arrIndex = 0;
         for (int i = 0; i < armsToMove.Count; i++)
         {
@@ -208,33 +214,17 @@ public class AnimalMovement : MonoBehaviour
         }
         animalData.animalBrain.SetOutput(outputIndexesToCompute);
     }
-    // public void MoveSelectedLimbs()
-    // {
-    //     List<int> outputIndexesToComputeList = new List<int>();
-    //     for (int i = 0; i < armsToMove.Count; i++)
-    //     {
-    //         int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm+1;   //przesuwam o output ktory determinuje czy konczyna ma sie dalej poruszac, czy zmienic ruch
-    //         int endingIndex = startingIndex + AnimalBrain.outputPerArm-1;
-    //         if (animalData.animalBrain.output[limbsStateIndexes[i]] >= 0)
-    //         {
-    //             for (int j = startingIndex; j < endingIndex; j++)
-    //             {
-    //                 outputIndexesToComputeList.Add(j);
-    //             }
-    //         }
-    //         else
-    //         {
-    //             for (int j = startingIndex; j < endingIndex; j++)
-    //             {
-    //                 animalData.animalBrain.output[j]=0;
-    //             }
-    //         }
-
-    //     }
-    //     outputIndexesToCompute = new NativeArray<int>(outputIndexesToComputeList.Count, Allocator.TempJob);
-    //     outputIndexesToCompute.CopyFrom(outputIndexesToComputeList.ToArray());
-    //     animalData.animalBrain.SetOutput(outputIndexesToCompute);
-    // }
+    public void ResetAnimal(float startingX)
+    {
+        for (int i = 0; i < orderedBodyParts.Length; i++)
+        {
+            orderedBodyParts[i].ResetBodyPart();
+        }
+        currentX = startingX;
+        timeBeingAlive = 0;
+        ifCatched = false;
+        ifStartedToMove = false;
+    }
     public void FinishJob()
     {
         animalData.animalBrain.FinishJob();
@@ -414,14 +404,14 @@ public class AnimalMovement : MonoBehaviour
     void CalculateVelocity()
     {
         float averageFrameVelocity = 0;
-        foreach(Rigidbody child in rigidbodiesChildren)
+        foreach (Rigidbody child in rigidbodiesChildren)
         {
-            averageFrameVelocity+=child.velocity.x;
+            averageFrameVelocity += child.velocity.x;
         }
-        averageFrameVelocity = averageFrameVelocity/rigidbodiesChildren.Length;
-        averageVelocity+=averageFrameVelocity;
+        averageFrameVelocity = averageFrameVelocity / rigidbodiesChildren.Length;
+        averageVelocity += averageFrameVelocity;
     }
-    public void Chase()
+    void FixedUpdate()
     {
         // if (body.transform.position.y > startingBodyY)
         // {
@@ -435,32 +425,36 @@ public class AnimalMovement : MonoBehaviour
         // var bodyX = body.transform.position.x;
         // var leftFootX = leftFoot.transform.position.x - startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
         // var rightFootX = rightFoot.transform.position.x - startingRightFootPosition;
-        _framesPassed++;
-        currentX += Time.fixedDeltaTime * speed;
-        timeBeingAlive = timeBeingAlive+Time.fixedDeltaTime;
-        float smallestX = GetSmallestX();
-        CalculateVelocity();
-        if (currentX > smallestX)   //jak zostanie zlapane
+        if (ifStartedToMove)
         {
-            ifCatched = true;
+            _framesPassed++;
+            currentX += Time.fixedDeltaTime * speed;
+            timeBeingAlive = timeBeingAlive + Time.fixedDeltaTime;
+            float smallestX = GetSmallestX();
+            CalculateVelocity();
+            if (currentX > smallestX)   //jak zostanie zlapane
+            {
+                ifCatched = true;
+            }
+            else if (body.transform.position.y > startingBodyY * 2)   //jak poleci w nieznane
+            {
+                ifCatched = true;
+            }
+            else if (body.transform.position.y < 0)   //jak spadnie w nieznane
+            {
+                ifCatched = true;
+            }
+            else if (body.transform.rotation.z < -120)  //jesli zachce robic fikolki sobie
+            {
+                ifCatched = true;
+            }
+            if (ifCatched)
+            {
+                averageVelocity = averageVelocity / _framesPassed;
+                // averageBodyY = averageBodyY / timeBeingAlive;
+            }
         }
-        else if (body.transform.position.y > startingBodyY * 2)   //jak poleci w nieznane
-        {
-            ifCatched = true;
-        }
-        else if (body.transform.position.y < 0)   //jak spadnie w nieznane
-        {
-            ifCatched = true;
-        }
-        else if (body.transform.rotation.z < -120)  //jesli zachce robic fikolki sobie
-        {
-            ifCatched = true;
-        }
-        if (ifCatched)
-        {
-            averageVelocity = averageVelocity / _framesPassed;
-            // averageBodyY = averageBodyY / timeBeingAlive;
-        }
+
     }
     public void Destroy()
     {

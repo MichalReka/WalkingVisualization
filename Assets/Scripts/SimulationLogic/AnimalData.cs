@@ -19,6 +19,8 @@ public class AnimalData
     public Dictionary<int, System.Numerics.Vector3> partsScaleMultiplier;
     public Dictionary<int, System.Numerics.Vector3> limbsPositionMultiplier;
     public Dictionary<int, int> targetJointsVelocity;
+    public float weightsMutationRate;
+    public float physicalMutationRate;
     public AnimalData DeepCopy()
     {
         AnimalData copy = new AnimalData();
@@ -29,6 +31,8 @@ public class AnimalData
         copy.partsScaleMultiplier = new Dictionary<int, System.Numerics.Vector3>(this.partsScaleMultiplier);
         copy.targetJointsVelocity = new Dictionary<int, int>(this.targetJointsVelocity);
         copy.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>(this.limbsPositionMultiplier);
+        copy.weightsMutationRate = weightsMutationRate;
+        copy.physicalMutationRate = physicalMutationRate;
         return copy;
     }
     public void MutateData()

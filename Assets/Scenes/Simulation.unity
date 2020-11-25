@@ -1036,7 +1036,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &563322593
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1946,7 +1946,7 @@ GameObject:
   - component: {fileID: 1310826883}
   - component: {fileID: 1310826882}
   - component: {fileID: 1310826886}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2292,6 +2292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55e8647c1a77b34d9f958e06fd0a679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  secondsPassed: 0
   bestAnimalDataJson: 
   currentGen: 0
   bestDistance: 0
@@ -2300,12 +2301,12 @@ MonoBehaviour:
   currBestFitness: 0
   populationSize: 0
   populationPartSize: 0
-  mutationRate: 0
   animalPrefabName: 
   startingPosition: 0
   speed: 0
+  mutationRate: 0
   physicalMutationRate: 0
-  timeBeingAliveImportance: 0
+  timeBelowAveragePenalty: 0
   bestDistances: []
   bestFitnesses: []
 --- !u!4 &1503458745

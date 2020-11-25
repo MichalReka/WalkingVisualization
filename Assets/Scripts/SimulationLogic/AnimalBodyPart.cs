@@ -12,21 +12,22 @@ public class AnimalBodyPart : MonoBehaviour
     public bool isMoveable = false;
     public System.Numerics.Vector3 scaleMultiplier;
     public System.Numerics.Vector3 positionMultiplier;
-    public float mass;
     System.Numerics.Vector3 _startingPosition;
     System.Numerics.Vector3 _startingScale;
+    Vector3 _startingRotation;
     Rigidbody bodyData;
     AnimalMovement animalMovement;
-    JointHandler[] jointHandler;
+    JointHandler[] jointHandlers;
     private void Awake()
     {
         bodyData = transform.GetComponent<Rigidbody>();
         if (isMoveable)
         {
-            jointHandler = transform.GetComponents<JointHandler>();
+            jointHandlers = transform.GetComponents<JointHandler>();
         }
         _startingScale = ConvertVector(transform.localScale);
         _startingPosition = ConvertVector(transform.localPosition);
+        _startingRotation = transform.localEulerAngles;
     }
     private System.Numerics.Vector3 ConvertVector(Vector3 unitySourceVector)
     {
@@ -56,7 +57,6 @@ public class AnimalBodyPart : MonoBehaviour
     public void SetMass(float mass)
     {
         bodyData.mass = mass;
-        this.mass = mass;
     }
     public void SetScale(System.Numerics.Vector3 scaleMultiplier)
     {
@@ -65,16 +65,31 @@ public class AnimalBodyPart : MonoBehaviour
     }
     public void SetMaximumVelocity(int velocity)
     {
-        for (int i = 0; i < jointHandler.Length; i++)
+        for (int i = 0; i < jointHandlers.Length; i++)
         {
-            jointHandler[i].targetVelocity = velocity;
+            jointHandlers[i].targetVelocity = velocity;
         }
     }
     public void SetPosition(System.Numerics.Vector3 positionMultiplier)
     {
-
         this.positionMultiplier = positionMultiplier;
         transform.localPosition = new Vector3(positionMultiplier.X * _startingPosition.X, _startingPosition.Y, positionMultiplier.Z * _startingPosition.Z);
-
+    }
+    public void ResetBodyPart()
+    {
+        transform.localScale = new Vector3(_startingScale.X,_startingScale.Y,_startingScale.Z);
+        transform.localPosition = new Vector3(_startingPosition.X,_startingPosition.Y,_startingPosition.Z);
+        transform.localEulerAngles = _startingRotation;
+        bodyData.angularVelocity=Vector3.zero;
+        bodyData.velocity = Vector3.zero;
+        bodyData.isKinematic = false;
+        
+        if (isMoveable)
+        {
+            foreach(JointHandler joint in jointHandlers)
+            {
+                joint.ResetJoint();
+            }
+        }
     }
 }

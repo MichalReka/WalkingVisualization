@@ -122,5 +122,9 @@ public class JointHandler : MonoBehaviour
         // velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);  //taki zapis zmniejsza ruchliwosc osobnikow
         joint.targetAngularVelocity = velocityVector;
     }
+    public void ResetJoint()
+    {
+        joint.targetAngularVelocity = new Vector3(0,0,0);
+    }
 
 }
