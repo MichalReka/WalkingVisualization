@@ -23,7 +23,7 @@ public class AnimalBrain
     public float mGene;
     public SerializableWeightsData serializableWeightsData;
     public static int armsToMoveCount = 2;
-    // public static int outputPerArm = 2;
+    public static int outputPerArm = 1;
     public static int outputSize;
     [System.NonSerialized]
     private const int bodyInput = 4;

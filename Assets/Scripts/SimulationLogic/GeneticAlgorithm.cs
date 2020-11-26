@@ -89,7 +89,7 @@ public class GeneticAlgorithm
             Transform child = individual.transform.GetChild(i);
             distances[i] = child.transform.position.x - individual.bodyPartsStartingX[i];       //osobniki z nogami bardziej umiejscowionymi z przodu nie moga byc faworyzowane
         }
-        return distances.Min();
+        return distances.Average();
     }
     private void SetDistancesList()
     {

@@ -388,18 +388,16 @@ public class AnimalMovement : MonoBehaviour
             bodyPartsStartingX[i] = transform.GetChild(i).transform.localPosition.x;
         }
     }
-    float GetSmallestX()
+    float GetAverageX()
     {
-        float smallestX = 0;
+        float averageX = 0;
         for (int i = 0; i < transform.childCount; i++)
         {
             float x = children[i].localPosition.x - bodyPartsStartingX[i];
-            if (x < smallestX)
-            {
-                smallestX = x;
-            }
+            averageX=+x;
         }
-        return smallestX;
+
+        return averageX/children.Length;
     }
     void CalculateVelocity()
     {
@@ -430,9 +428,9 @@ public class AnimalMovement : MonoBehaviour
             _framesPassed++;
             currentX += Time.fixedDeltaTime * speed;
             timeBeingAlive = timeBeingAlive + Time.fixedDeltaTime;
-            float smallestX = GetSmallestX();
+            float averageX = GetAverageX();
             CalculateVelocity();
-            if (currentX > smallestX)   //jak zostanie zlapane
+            if (currentX > averageX)   //jak zostanie zlapane
             {
                 ifCatched = true;
             }
