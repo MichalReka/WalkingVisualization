@@ -241,7 +241,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &4819631074941208094
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +482,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064778989255303
 GameObject:
   m_ObjectHideFlags: 0
@@ -615,7 +613,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!1 &5071064779032251636
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,7 +854,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064779169343902
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,7 +988,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &7644204790615487328
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1359,7 +1354,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064779382029262
 GameObject:
   m_ObjectHideFlags: 0
@@ -1601,7 +1595,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064779514830267
 GameObject:
   m_ObjectHideFlags: 0
@@ -1736,7 +1729,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &1909811055889715507
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1996,7 +1988,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &8127630278344568481
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2255,7 +2246,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!153 &2924675961715426868
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2498,7 +2488,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &408002850843111047
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2757,7 +2746,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!153 &5075699252569880823
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -3000,7 +2988,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &3471167932283612343
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -3260,7 +3247,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &4038884529392977291
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -3627,7 +3613,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064780231043756
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,7 +3854,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064780240869616
 GameObject:
   m_ObjectHideFlags: 0
@@ -4004,7 +3988,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &4026965960302431768
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4263,7 +4246,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!153 &816718096607592364
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -4669,7 +4651,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064780732043081
 GameObject:
   m_ObjectHideFlags: 0
@@ -4803,7 +4784,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!153 &1246744474415366717
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -5046,7 +5026,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 1
-  mass: 0
 --- !u!153 &6695766931514738772
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -5413,7 +5392,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5071064780963188347
 GameObject:
   m_ObjectHideFlags: 0
@@ -5655,7 +5633,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5373654977278295184
 GameObject:
   m_ObjectHideFlags: 0
@@ -5897,7 +5874,6 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0
 --- !u!1 &5894526559848237782
 GameObject:
   m_ObjectHideFlags: 0
@@ -6169,4 +6145,3 @@ MonoBehaviour:
   ifPositionCanBeChanged: 0
   ifScalable: 0
   isMoveable: 0
-  mass: 0

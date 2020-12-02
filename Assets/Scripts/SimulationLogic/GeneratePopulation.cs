@@ -16,7 +16,7 @@ public struct PopulationInputData
     public static float timeBelowAveragePenalty;
     public static float tournamentSize;
     public static float crossoverPercent;
-
+    public static bool forceSimilarPartsSynchronization=false;
 }
 public class GeneratePopulation : MonoBehaviour
 {
@@ -29,12 +29,11 @@ public class GeneratePopulation : MonoBehaviour
     List<GameObject> animalsObjects;
     List<AnimalMovement> animals;
     public int currentGen = 0;
+    public bool forceSynchronization = false;
     public float bestDistance = 0;
     public float bestFitness = 0;
     public float currBestDistance = 0;
     public float currBestFitness = 0;
-    public float bestAverageDistance = 0;
-    public float bestAverageFitness = 0;
     public float currAverageDistance = 0;
     public float currAverageFitness = 0;
     public int populationSize;
@@ -63,7 +62,6 @@ public class GeneratePopulation : MonoBehaviour
 
     void Start()
     {
-        
         populationSize = PopulationInputData.populationSize;
         populationPartSize = PopulationInputData.populationPartSize;
         mutationRate = PopulationInputData.weightsMutationRate;
@@ -85,7 +83,8 @@ public class GeneratePopulation : MonoBehaviour
         modelAnimal = Instantiate(Resources.Load("Prefabs/" + animalPrefabName) as GameObject);
         var movingParts = modelAnimal.GetComponentsInChildren<JointHandler>();
         AnimalBrain.noMovingParts = movingParts.Length;
-        AnimalBrain.outputSize = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts + AnimalBrain.armsToMoveCount;
+        // AnimalBrain.outputSize = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts + AnimalBrain.armsToMoveCount;
+        AnimalBrain.outputSize = AnimalBrain.outputPerArm * AnimalBrain.noMovingParts;
         _iterationsToResetMGenes = (int)Mathf.Ceil(Mathf.Log(populationSize, 2));
         modelAnimal.SetActive(false);
         if (PopulationInputData.migrationEnabled)
@@ -141,7 +140,6 @@ public class GeneratePopulation : MonoBehaviour
         var animalComponent = tempObject.AddComponent<AnimalMovement>();
         animalComponent.speed = speed;
         animalComponent.currentX = -startingPosition;
-
         if (_migratedAnimalsLeftToPick > 0)
         {
             float chanceForRandomData = 100.0f - ((float)_animalDivision) / ((float)populationSize / (float)migratedAnimals.Count) * 100.0f;
@@ -234,20 +232,15 @@ public class GeneratePopulation : MonoBehaviour
             {
                 int iterationStart = batchSize * currentBatch;
                 int iterationEnd = populationPartSize - (batchesLeftToCompute * batchSize);
+                // for (int i = iterationStart; i < iterationEnd; i++)
+                // {
+                //     animals[_activeAnimalIndexes[i]].SelectLimbsToChangeState();
+                // }
                 for (int i = iterationStart; i < iterationEnd; i++)
                 {
-                    animals[_activeAnimalIndexes[i]].SelectLimbsToChangeState();
-                }
-                for (int i = iterationStart; i < iterationEnd; i++)
-                {
-                    animals[_activeAnimalIndexes[i]].FinishJob();
+                    // animals[_activeAnimalIndexes[i]].FinishJob();
                     animals[_activeAnimalIndexes[i]].MoveSelectedLimbs();
                 }
-                // for (int i = 0; i < populationPartSize; i++)     
-                // {
-                //     animals[_activeAnimalIndexes[i]].FinishJob();
-                //     animals[_activeAnimalIndexes[i]].MoveSelectedLimbs();
-                // }
                 for (int i = iterationStart; i < iterationEnd; i++)
                 {
                     animals[_activeAnimalIndexes[i]].FinishJob();
@@ -291,7 +284,6 @@ public class GeneratePopulation : MonoBehaviour
             }
             yield return new WaitForFixedUpdate();
         }
-
     }
     void FixedUpdate()
     {
@@ -306,7 +298,6 @@ public class GeneratePopulation : MonoBehaviour
                 }
                 _newGenerationMove = false;
                 currentGen++;
-                Debug.Log(animals.Count);
                 _geneticAlgorithm.AlgorithmStart();
                 currBestDistance = _geneticAlgorithm.bestDistance;
                 currBestFitness = _geneticAlgorithm.bestFitness;

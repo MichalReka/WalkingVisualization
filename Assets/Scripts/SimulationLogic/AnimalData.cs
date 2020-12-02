@@ -6,8 +6,6 @@ using System;
 using Newtonsoft.Json;
 public class AnimalData
 {
-    public bool isElite = false;
-    public bool isMigrated = false;
     public static float multiplierRangeMin = 0.6f;
     public static float multiplierRangeMax = 1.4f;
     public static float massMin = 2.0f;
@@ -26,7 +24,6 @@ public class AnimalData
         AnimalData copy = new AnimalData();
         copy.animalBrain = new AnimalBrain();
         copy.animalBrain.DeepCopyFrom(this.animalBrain);
-        copy.isElite = true;
         copy.partsMass = new Dictionary<int, float>(this.partsMass);
         copy.partsScaleMultiplier = new Dictionary<int, System.Numerics.Vector3>(this.partsScaleMultiplier);
         copy.targetJointsVelocity = new Dictionary<int, int>(this.targetJointsVelocity);

@@ -75,7 +75,8 @@ public class DropdownHandler : MonoBehaviour
         // }
         animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal00" });
         animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal01" });
-                animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal02" });
+        animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal02" });                
+        animalPrefabDropdown.options.Add(new Dropdown.OptionData() { text = "animal04" });
         animalPrefabDropdown.onValueChanged.AddListener(delegate
         {
             DropdownValueChanged(animalPrefabDropdown.options[animalPrefabDropdown.value].text);
@@ -109,6 +110,7 @@ public class DropdownHandler : MonoBehaviour
         StartCoroutine("ResizeAnimalPreview", animalPrefabCollision);
     }
     private void OnDisable() {
+        StopCoroutine("ResizeAnimalPreview");
         animalPrefabDropdown.value=0;
         Destroy(animalPreview);
         animalPrefabDropdown.onValueChanged.RemoveAllListeners();

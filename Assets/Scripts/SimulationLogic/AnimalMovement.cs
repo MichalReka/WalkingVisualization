@@ -20,21 +20,24 @@ public class AnimalMovement : MonoBehaviour
     public float currentX = 0;
     public float speed;
     public float timeBeingAlive = 0;
-    public float averageVelocity = 0;
+    // public float syncError = 0;
     Transform body;
-    Rigidbody bodyRigibody;
+    // Rigidbody bodyRigibody;
     // Transform leftFoot;
     // Transform rightFoot;
     // float startingRightFootPosition;
     // float startingLeftFootPosition;
-    Vector3 startingBodyRotation;
-    List<int> limbsIndexes;
-    List<int> similarBodyPartsIndexes;
-    Dictionary<int, List<AnimalBodyPart>> limbsDictionary;
-    Dictionary<int, List<AnimalBodyPart>> similarBodyPartsDictionary;
-    List<int> armsToMove = new List<int>();
-    NativeArray<int> outputIndexesToCompute;
+    Vector3 _startingBodyRotation;
+    List<int> _limbsIndexes;
+    List<int> _similarBodyPartsIndexes;
+    Dictionary<int, List<AnimalBodyPart>> _limbsDictionary;
+    Dictionary<int, List<AnimalBodyPart>> _similarBodyPartsDictionary;
+    List<JointHandler> _jointsForcedRotationList;
+    // List<int> armsToMove = new List<int>();
+    // NativeArray<int> outputIndexesToCompute;
     bool ifStartedToMove = false;
+    const float _secondsPerRotationCheck = 2f;
+    float _secondsAfterRotationCheck = 0f;
     void DisableJoints()
     {
         var jointTogglers = GetComponentsInChildren<JointToggler>();
@@ -78,9 +81,9 @@ public class AnimalMovement : MonoBehaviour
         // animalData.partsScaleMultiplier = newAnimalData.partsScaleMultiplier;
         // animalData.targetJointsVelocity = newAnimalData.targetJointsVelocity;
         // animalData.limbsPositionMultiplier = newAnimalData.limbsPositionMultiplier;
-        for (int i = 0; i < similarBodyPartsIndexes.Count; i++)
+        for (int i = 0; i < _similarBodyPartsIndexes.Count; i++)
         {
-            foreach (AnimalBodyPart bodyPart in similarBodyPartsDictionary[i])
+            foreach (AnimalBodyPart bodyPart in _similarBodyPartsDictionary[i])
             {
                 bodyPart.SetMass(newAnimalData.partsMass[i]);
                 if (bodyPart.ifScalable)
@@ -94,9 +97,9 @@ public class AnimalMovement : MonoBehaviour
             }
         }
         DisableJoints();
-        for (int i = 0; i < limbsIndexes.Count; i++)
+        for (int i = 0; i < _limbsIndexes.Count; i++)
         {
-            foreach (AnimalBodyPart bodyPart in limbsDictionary[i])
+            foreach (AnimalBodyPart bodyPart in _limbsDictionary[i])
             {
                 if (bodyPart.ifPositionCanBeChanged)
                 {
@@ -116,16 +119,16 @@ public class AnimalMovement : MonoBehaviour
         animalData.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>();
         animalData.animalBrain = new AnimalBrain();
         animalData.animalBrain.setRandomWeights();
-        animalData.weightsMutationRate=PopulationInputData.weightsMutationRate;
-        animalData.physicalMutationRate=PopulationInputData.physicalMutationRate;
+        animalData.weightsMutationRate = PopulationInputData.weightsMutationRate;
+        animalData.physicalMutationRate = PopulationInputData.physicalMutationRate;
         float multiplierRangeMin = AnimalData.multiplierRangeMin;
         float multiplierRangeMax = AnimalData.multiplierRangeMax;
         RandomizePhysicalData(ref animalData);
         DisableJoints();
-        for (int i = 0; i < limbsIndexes.Count; i++)
+        for (int i = 0; i < _limbsIndexes.Count; i++)
         {
             System.Numerics.Vector3 randomMultiplier = new System.Numerics.Vector3(Random.Range(multiplierRangeMin, multiplierRangeMax), 1, Random.Range(multiplierRangeMin, multiplierRangeMax));
-            foreach (AnimalBodyPart bodyPart in limbsDictionary[i])
+            foreach (AnimalBodyPart bodyPart in _limbsDictionary[i])
             {
                 if (bodyPart.ifPositionCanBeChanged)
                 {
@@ -138,13 +141,13 @@ public class AnimalMovement : MonoBehaviour
     }
     public void RandomizePhysicalData(ref AnimalData animalData)
     {
-        for (int i = 0; i < similarBodyPartsIndexes.Count; i++)
+        for (int i = 0; i < _similarBodyPartsIndexes.Count; i++)
         {
             float mass = Random.Range(AnimalData.massMin, AnimalData.massMax);
             float xScale = Random.Range(AnimalData.multiplierRangeMin, AnimalData.multiplierRangeMax);
             float zScale = Random.Range(AnimalData.multiplierRangeMin, AnimalData.multiplierRangeMax);
             int maximumVelocity = Random.Range(AnimalData.velocityMin, AnimalData.velocityMax);
-            foreach (AnimalBodyPart bodyPart in similarBodyPartsDictionary[i])
+            foreach (AnimalBodyPart bodyPart in _similarBodyPartsDictionary[i])
             {
                 bodyPart.SetMass(mass);
                 if (bodyPart.ifScalable)
@@ -167,52 +170,53 @@ public class AnimalMovement : MonoBehaviour
         ifCatched = true;
         // ifCrashed = true;
     }
-    public void SelectLimbsToChangeState()
-    {
-        outputIndexesToCompute = new NativeArray<int>(AnimalBrain.armsToMoveCount, Allocator.TempJob);
-        for (int i = 0; i < outputIndexesToCompute.Length; i++)
-        {
-            outputIndexesToCompute[i] = i;
-        }
-        animalData.animalBrain.SetOutput(outputIndexesToCompute);
-    }
-    void TranslateLimbsToMove()
-    {
-        int newArmIndex;
-        armsToMove.Clear();
-        for (int i = 0; i < AnimalBrain.armsToMoveCount; i++)
-        {
-            newArmIndex = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
-            if (newArmIndex == orderedMovingParts.Length)
-            {
-                newArmIndex -= 1;
-            }
-            if (!armsToMove.Contains(newArmIndex))
-            {
-                armsToMove.Add(newArmIndex);
-            }
-        }
-    }
+    // public void SelectLimbsToChangeState()
+    // {
+    //     outputIndexesToCompute = new NativeArray<int>(AnimalBrain.armsToMoveCount, Allocator.TempJob);
+    //     for (int i = 0; i < outputIndexesToCompute.Length; i++)
+    //     {
+    //         outputIndexesToCompute[i] = i;
+    //     }
+    //     animalData.animalBrain.SetOutput(outputIndexesToCompute);
+    // }
+    // void TranslateLimbsToMove()
+    // {
+    //     int newArmIndex;
+    //     armsToMove.Clear();
+    //     for (int i = 0; i < AnimalBrain.armsToMoveCount; i++)
+    //     {
+    //         newArmIndex = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
+    //         if (newArmIndex == orderedMovingParts.Length)
+    //         {
+    //             newArmIndex -= 1;
+    //         }
+    //         if (!armsToMove.Contains(newArmIndex))
+    //         {
+    //             armsToMove.Add(newArmIndex);
+    //         }
+    //     }
+    // }
     public void MoveSelectedLimbs()
     {
         if (!ifStartedToMove)
         {
             ifStartedToMove = true;
         }
-        TranslateLimbsToMove();
-        outputIndexesToCompute = new NativeArray<int>(armsToMove.Count * AnimalBrain.outputPerArm, Allocator.TempJob);
-        int arrIndex = 0;
-        for (int i = 0; i < armsToMove.Count; i++)
-        {
-            int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
-            int endingIndex = startingIndex + AnimalBrain.outputPerArm;
-            for (int j = startingIndex; j < endingIndex; j++)
-            {
-                outputIndexesToCompute[arrIndex] = j;
-                arrIndex++;
-            }
-        }
-        animalData.animalBrain.SetOutput(outputIndexesToCompute);
+        // TranslateLimbsToMove();
+        // outputIndexesToCompute = new NativeArray<int>(armsToMove.Count * AnimalBrain.outputPerArm, Allocator.TempJob);
+        // int arrIndex = 0;
+        // for (int i = 0; i < armsToMove.Count; i++)
+        // {
+        //     int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
+        //     int endingIndex = startingIndex + AnimalBrain.outputPerArm;
+        //     for (int j = startingIndex; j < endingIndex; j++)
+        //     {
+        //         outputIndexesToCompute[arrIndex] = j;
+        //         arrIndex++;
+        //     }
+        // }
+        animalData.animalBrain.SetOutput();
+        // animalData.animalBrain.SetOutput(outputIndexesToCompute);
     }
     public void ResetAnimal(float startingX)
     {
@@ -222,13 +226,14 @@ public class AnimalMovement : MonoBehaviour
         }
         currentX = startingX;
         timeBeingAlive = 0;
+        _secondsAfterRotationCheck = 0;
         ifCatched = false;
         ifStartedToMove = false;
     }
     public void FinishJob()
     {
         animalData.animalBrain.FinishJob();
-        outputIndexesToCompute.Dispose();
+        // outputIndexesToCompute.Dispose();
     }
     private void GatherInput(NativeArray<float> input)
     {
@@ -250,18 +255,18 @@ public class AnimalMovement : MonoBehaviour
         // currIndex++;
         //rotacje
         int angleDeviation = 15;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.x), startingBodyRotation.x - angleDeviation, startingBodyRotation.x + angleDeviation);
+        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.x), _startingBodyRotation.x - angleDeviation, _startingBodyRotation.x + angleDeviation);
         currIndex++;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.y), startingBodyRotation.y - angleDeviation, startingBodyRotation.y + angleDeviation);
+        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.y), _startingBodyRotation.y - angleDeviation, _startingBodyRotation.y + angleDeviation);
         currIndex++;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.z), startingBodyRotation.z - angleDeviation, startingBodyRotation.z + angleDeviation);
+        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.z), _startingBodyRotation.z - angleDeviation, _startingBodyRotation.z + angleDeviation);
         currIndex++;
         // int rotationBorder = 20; //im mniejsze tym czulsze
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.x, startingBodyRotation.x - rotationBorder, startingBodyRotation.x + rotationBorder);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.x, _startingBodyRotation.x - rotationBorder, _startingBodyRotation.x + rotationBorder);
         // currIndex++;
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.y, startingBodyRotation.y - rotationBorder, startingBodyRotation.y + rotationBorder);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.y, _startingBodyRotation.y - rotationBorder, _startingBodyRotation.y + rotationBorder);
         // currIndex++;
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, startingBodyRotation.z - rotationBorder, startingBodyRotation.z + rotationBorder);
+        // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, _startingBodyRotation.z - rotationBorder, _startingBodyRotation.z + rotationBorder);
         // currIndex++;
 
         //predkosc
@@ -290,68 +295,90 @@ public class AnimalMovement : MonoBehaviour
             orderedMovingParts[i].setInput();
         }
         GatherInput(animalData.animalBrain.input);
-        for (int i = 0; i < armsToMove.Count; i++)
+        // for (int i = 0; i < armsToMove.Count; i++)
+        // {
+        //     int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
+        //     int endingIndex = startingIndex + AnimalBrain.outputPerArm;
+        //     List<float> partOutput = new List<float>();
+        //     for (int j = startingIndex; j < endingIndex; j++)
+        //     {
+        //         partOutput.Add(animalData.animalBrain.output[j]);
+        //     }
+        //     orderedMovingParts[armsToMove[i]].TranslateOutput(partOutput);
+        // }
+        for (int i = 0; i < AnimalBrain.noMovingParts; i++)
         {
-            int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
+            int startingIndex = i * AnimalBrain.outputPerArm;
             int endingIndex = startingIndex + AnimalBrain.outputPerArm;
             List<float> partOutput = new List<float>();
             for (int j = startingIndex; j < endingIndex; j++)
             {
                 partOutput.Add(animalData.animalBrain.output[j]);
             }
-            orderedMovingParts[armsToMove[i]].TranslateOutput(partOutput);
+            orderedMovingParts[i].TranslateOutput(partOutput);
         }
 
     }
     void SetIndexesLists()
     {
-        limbsIndexes = new List<int>();
-        similarBodyPartsIndexes = new List<int>();
+        _limbsIndexes = new List<int>();
+        _similarBodyPartsIndexes = new List<int>();
         foreach (AnimalBodyPart bodyPart in orderedBodyParts)
         {
-            if (!limbsIndexes.Contains(bodyPart.limbIndex))
+            if (!_limbsIndexes.Contains(bodyPart.limbIndex))
             {
-                limbsIndexes.Add(bodyPart.limbIndex);
+                _limbsIndexes.Add(bodyPart.limbIndex);
             }
-            if (!similarBodyPartsIndexes.Contains(bodyPart.partIndex))
+            if (!_similarBodyPartsIndexes.Contains(bodyPart.partIndex))
             {
-                similarBodyPartsIndexes.Add(bodyPart.partIndex);
+                _similarBodyPartsIndexes.Add(bodyPart.partIndex);
             }
         }
     }
     void SetDictionaries()
     {
-        limbsDictionary = new Dictionary<int, List<AnimalBodyPart>>();
-        similarBodyPartsDictionary = new Dictionary<int, List<AnimalBodyPart>>();
+        _limbsDictionary = new Dictionary<int, List<AnimalBodyPart>>();
+        _similarBodyPartsDictionary = new Dictionary<int, List<AnimalBodyPart>>();
         List<AnimalBodyPart> tempList = new List<AnimalBodyPart>(orderedBodyParts);
-        for (int i = 0; i < limbsIndexes.Count; i++)
+        for (int i = 0; i < _limbsIndexes.Count; i++)
         {
             List<AnimalBodyPart> partsWithIndex = new List<AnimalBodyPart>();
             for (int j = 0; j < tempList.Count; j++)
             {
-                if (limbsIndexes[i] == tempList[j].limbIndex)
+                if (_limbsIndexes[i] == tempList[j].limbIndex)
                 {
                     partsWithIndex.Add(tempList[j]);
                     tempList.RemoveAt(j);
                     j--;
                 }
             }
-            limbsDictionary.Add(i, partsWithIndex);
+            _limbsDictionary.Add(i, partsWithIndex);
         }
         tempList = new List<AnimalBodyPart>(orderedBodyParts);
-        for (int i = 0; i < similarBodyPartsIndexes.Count; i++)
+        for (int i = 0; i < _similarBodyPartsIndexes.Count; i++)
         {
             List<AnimalBodyPart> partsWithIndex = new List<AnimalBodyPart>();
             for (int j = 0; j < tempList.Count; j++)
             {
-                if (similarBodyPartsIndexes[i] == tempList[j].partIndex)
+                if (_similarBodyPartsIndexes[i] == tempList[j].partIndex)
                 {
                     partsWithIndex.Add(tempList[j]);
                     tempList.RemoveAt(j);
                     j--;
                 }
             }
-            similarBodyPartsDictionary.Add(i, partsWithIndex);
+            _similarBodyPartsDictionary.Add(i, partsWithIndex);
+        }
+    }
+    void SetJointsForcedRotationList()
+    {
+        _jointsForcedRotationList = new List<JointHandler>();
+        for (int i = 0; i < orderedMovingParts.Length; i++)
+        {
+            if (orderedMovingParts[i].checkingRotation)
+            {
+                _jointsForcedRotationList.Add(orderedMovingParts[i]);
+            }
         }
     }
     public void SetBody(bool isElite, bool isMigrated)
@@ -370,8 +397,8 @@ public class AnimalMovement : MonoBehaviour
         SetIndexesLists();
         SetDictionaries();
         startingBodyY = body.transform.position.y;
-        startingBodyRotation = body.transform.localEulerAngles;
-        bodyRigibody = body.GetComponent<Rigidbody>();
+        _startingBodyRotation = body.transform.localEulerAngles;
+        //bodyRigibody = body.GetComponent<Rigidbody>();
         averageBodyY = 0;
         for (int i = 0; i < orderedMovingParts.Length; i++)
         {
@@ -379,6 +406,10 @@ public class AnimalMovement : MonoBehaviour
         }
         OrderAnimalChildren<Transform>(ref children);
         OrderAnimalChildren<Rigidbody>(ref rigidbodiesChildren);
+        if(PopulationInputData.forceSimilarPartsSynchronization)
+        {
+            SetJointsForcedRotationList();
+        }
     }
     public void SetBodyPartsStartingX()
     {
@@ -394,21 +425,11 @@ public class AnimalMovement : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             float x = children[i].localPosition.x - bodyPartsStartingX[i];
-            averageX=+x;
+            averageX = +x;
         }
+        return averageX / children.Length;
+    }
 
-        return averageX/children.Length;
-    }
-    void CalculateVelocity()
-    {
-        float averageFrameVelocity = 0;
-        foreach (Rigidbody child in rigidbodiesChildren)
-        {
-            averageFrameVelocity += child.velocity.x;
-        }
-        averageFrameVelocity = averageFrameVelocity / rigidbodiesChildren.Length;
-        averageVelocity += averageFrameVelocity;
-    }
     void FixedUpdate()
     {
         // if (body.transform.position.y > startingBodyY)
@@ -429,7 +450,31 @@ public class AnimalMovement : MonoBehaviour
             currentX += Time.fixedDeltaTime * speed;
             timeBeingAlive = timeBeingAlive + Time.fixedDeltaTime;
             float averageX = GetAverageX();
-            CalculateVelocity();
+            if (PopulationInputData.forceSimilarPartsSynchronization)
+            {
+                _secondsAfterRotationCheck = _secondsAfterRotationCheck + Time.fixedDeltaTime;
+                if (_secondsAfterRotationCheck > _secondsPerRotationCheck)
+                {
+                    foreach (JointHandler joint in _jointsForcedRotationList)
+                    {
+                        if(!joint.RotationsMinChangeFulfilled())
+                        {
+                            ifCatched = true;
+                            break;
+                        }
+                        joint.ClearRotations();
+                        _secondsAfterRotationCheck = 0;
+                    }
+                }
+                else
+                {
+                    foreach (JointHandler joint in _jointsForcedRotationList)
+                    {
+                        joint.AddCurrentRotation();
+                    }
+                }
+
+            }
             if (currentX > averageX)   //jak zostanie zlapane
             {
                 ifCatched = true;
@@ -442,15 +487,8 @@ public class AnimalMovement : MonoBehaviour
             {
                 ifCatched = true;
             }
-            else if (body.transform.rotation.z < -120)  //jesli zachce robic fikolki sobie
-            {
-                ifCatched = true;
-            }
-            if (ifCatched)
-            {
-                averageVelocity = averageVelocity / _framesPassed;
-                // averageBodyY = averageBodyY / timeBeingAlive;
-            }
+
+
         }
 
     }

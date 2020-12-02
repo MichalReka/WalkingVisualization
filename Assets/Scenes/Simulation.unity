@@ -2295,10 +2295,13 @@ MonoBehaviour:
   secondsPassed: 0
   bestAnimalDataJson: 
   currentGen: 0
+  forceSynchronization: 0
   bestDistance: 0
   bestFitness: 0
   currBestDistance: 0
   currBestFitness: 0
+  currAverageDistance: 0
+  currAverageFitness: 0
   populationSize: 0
   populationPartSize: 0
   animalPrefabName: 
@@ -2309,6 +2312,8 @@ MonoBehaviour:
   timeBelowAveragePenalty: 0
   bestDistances: []
   bestFitnesses: []
+  averageDistances: []
+  averageFitnesses: []
 --- !u!4 &1503458745
 Transform:
   m_ObjectHideFlags: 0

@@ -228,10 +228,10 @@ public class AnimalBrain
         [ReadOnly]
         public NativeArray2D<float> outputSynapsesWeights;
         public NativeArray<float> tempOutputValue;
-        public NativeArray<int> outputIndexesToCompute;
+        // public NativeArray<int> outputIndexesToCompute;
         public void Execute()
         {
-            for (int i = 0; i < outputIndexesToCompute.Length; i++)
+            for (int i = 0; i < tempOutputValue.Length; i++)
             {
                 for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerBias.Length; secondNeuronIndex++)
                 {
@@ -247,14 +247,16 @@ public class AnimalBrain
                         secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex];
                     }
                     secondNeuronCalculatedWeight += secondHiddenLayerBias[secondNeuronIndex];
-                    tempOutputValue[outputIndexesToCompute[i]] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, outputIndexesToCompute[i]];
+                    tempOutputValue[i] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, i];
+                    // tempOutputValue[outputIndexesToCompute[i]] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, outputIndexesToCompute[i]];
                 }
                 //sigmoid
-                tempOutputValue[outputIndexesToCompute[i]] = (float)(1 / (Exp(-tempOutputValue[outputIndexesToCompute[i]]) + 1)) * 2 - 1;  // wartosci od -1 do 1
+                tempOutputValue[i] = (float)(1 / (Exp(-tempOutputValue[i]) + 1)) * 2 - 1;  // wartosci od -1 do 1
+                // tempOutputValue[outputIndexesToCompute[i]] = (float)(1 / (Exp(-tempOutputValue[outputIndexesToCompute[i]]) + 1)) * 2 - 1;  // wartosci od -1 do 1
             }
         }
     }
-    public void SetOutput(NativeArray<int> outputIndexesToCompute)
+    public void SetOutput()//NativeArray<int> outputIndexesToCompute)
     {
         ComputeOutputJob outputJob = new ComputeOutputJob();
         outputJob.hiddenLayerBias = hiddenLayerBias;
@@ -264,7 +266,7 @@ public class AnimalBrain
         outputJob.hiddenLayerSynapsesWeights = hiddenLayerSynapsesWeights;
         outputJob.outputSynapsesWeights = outputSynapsesWeights;
         outputJob.tempOutputValue = output;
-        outputJob.outputIndexesToCompute=outputIndexesToCompute;
+        // outputJob.outputIndexesToCompute=outputIndexesToCompute;
         _jobHandler=outputJob.Schedule();
     }
     public void FinishJob()

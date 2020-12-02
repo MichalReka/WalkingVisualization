@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Jobs;
@@ -16,21 +16,50 @@ public class JointHandler : MonoBehaviour
     ConfigurableJoint joint;
     public float[] input;
     public static int inputSize = 2;
-    public MoveableAxis axisToMove;
+    public MoveableAxis localRotationAxis;
+    public MoveableAxis jointAxis;
 
+    public bool checkingRotation;
+    // public int jointPairIndex;
     Vector3 startingRotation;
-    public float isMoving = -1f;
+    // public float averageVelocityOutput = 0;
+    public List<float> rotationsInTimeSpan;
+    float _lowLimit;
+    float _highLimit;
+    float _minimumRotationChange;
+    public float max;
+    public float min;
     public void initArm()
     {
         startingRotation = transform.localEulerAngles;
         joint = GetComponent<ConfigurableJoint>();
         if (hasLimits)
         {
+            if (localRotationAxis == MoveableAxis.x)
+            {
+                _lowLimit = startingRotation.x + joint.lowAngularXLimit.limit;
+                _highLimit = startingRotation.x + joint.highAngularXLimit.limit;
+            }
+            else if (localRotationAxis == MoveableAxis.y)
+            {
+                _lowLimit = startingRotation.y - joint.angularYLimit.limit;
+                _highLimit = startingRotation.y + joint.angularYLimit.limit;
+            }
+            else
+            {
+                _lowLimit = startingRotation.z - joint.angularZLimit.limit;
+                _highLimit = startingRotation.z + joint.angularZLimit.limit;
+            }
             input = new float[inputSize];
         }
         else
         {
             input = new float[inputSize - 1];
+        }
+        if (PopulationInputData.forceSimilarPartsSynchronization)
+        {
+            rotationsInTimeSpan = new List<float>();
+            _minimumRotationChange = (Mathf.Abs(_lowLimit) + Mathf.Abs(_highLimit)) * 0.4f;
         }
         setInput();
     }
@@ -57,36 +86,43 @@ public class JointHandler : MonoBehaviour
     public float[] setInput()
     {
         int currentIndex = 0;
-        if (axisToMove == MoveableAxis.x)
+        if (hasLimits)
         {
-            if (hasLimits)
-            {
-                input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.x), startingRotation.x + joint.lowAngularXLimit.limit, startingRotation.x + joint.highAngularXLimit.limit);
-                currentIndex++;
-            }
-            input[currentIndex] = normalizeValue(joint.targetAngularVelocity.x, -targetVelocity, targetVelocity);
+            input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles[(int)localRotationAxis]), _lowLimit, _highLimit);
             currentIndex++;
         }
-        else if (axisToMove == MoveableAxis.y)
-        {
-            if (hasLimits)
-            {
-                input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.y), startingRotation.y - joint.angularYLimit.limit, startingRotation.y + joint.angularYLimit.limit);
-                currentIndex++;
-            }
-            input[currentIndex] = normalizeValue(joint.targetAngularVelocity.y, -targetVelocity, targetVelocity);
-            currentIndex++;
-        }
-        else
-        {
-            if (hasLimits)
-            {
-                input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.z), startingRotation.z - joint.angularZLimit.limit, startingRotation.z + joint.angularZLimit.limit);
-                currentIndex++;
-            }
-            input[currentIndex] = normalizeValue(joint.targetAngularVelocity.z, -targetVelocity, targetVelocity);
-            currentIndex++;
-        }
+        input[currentIndex] = normalizeValue(joint.targetAngularVelocity[(int)jointAxis], -targetVelocity, targetVelocity);
+        currentIndex++;
+        // if (axisToMove == MoveableAxis.x)
+        // {
+        //     if (hasLimits)
+        //     {
+        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.x), startingRotation.x + joint.lowAngularXLimit.limit, startingRotation.x + joint.highAngularXLimit.limit);
+        //         currentIndex++;
+        //     }
+        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.x, -targetVelocity, targetVelocity);
+        //     currentIndex++;
+        // }
+        // else if (axisToMove == MoveableAxis.y)
+        // {
+        //     if (hasLimits)
+        //     {
+        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.y), startingRotation.y - joint.angularYLimit.limit, startingRotation.y + joint.angularYLimit.limit);
+        //         currentIndex++;
+        //     }
+        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.y, -targetVelocity, targetVelocity);
+        //     currentIndex++;
+        // }
+        // else
+        // {
+        //     if (hasLimits)
+        //     {
+        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.z), startingRotation.z - joint.angularZLimit.limit, startingRotation.z + joint.angularZLimit.limit);
+        //         currentIndex++;
+        //     }
+        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.z, -targetVelocity, targetVelocity);
+        //     currentIndex++;
+        // }
         return input;
     }
     public static float translateToValue(float min, float max, float output)   //tlumacze output na wartosci
@@ -98,33 +134,36 @@ public class JointHandler : MonoBehaviour
     }
     public void TranslateOutput(List<float> output)
     {
-        // int velocityBorderDivision = 5;
         var velocityVector = joint.targetAngularVelocity;
-        // isMoving = output[0];
-        // if (isMoving < 0)
-        // {
-        //         velocityVector[(int)axisToMove] = 0;
-        // }
-        // else
-        // {
-            // float absVelocity = translateToValue(-targetVelocity, targetVelocity, Mathf.Abs(output[1]) * 2 - 1);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
-            velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[0]);    //abs*2-1 poniewaz np 0.2 i -0.2 maja miec te same predkosci
-            // if (output[1] < 0)
-            // {
-            //     velocityVector[(int)axisToMove] = -absVelocity;
-            // }
-            // else
-            // {
-            //     velocityVector[(int)axisToMove] = absVelocity;
-            // }
-        // }
-
-        // velocityVector[(int)axisToMove] = translateToValue(-targetVelocity, targetVelocity, output[1]);  //taki zapis zmniejsza ruchliwosc osobnikow
+        velocityVector[(int)jointAxis] = translateToValue(-targetVelocity, targetVelocity, output[0]);
         joint.targetAngularVelocity = velocityVector;
     }
     public void ResetJoint()
     {
-        joint.targetAngularVelocity = new Vector3(0,0,0);
+        if (PopulationInputData.forceSimilarPartsSynchronization)
+        {
+            rotationsInTimeSpan.Clear();
+        }
+        joint.targetAngularVelocity = new Vector3(0, 0, 0);
     }
-
+    public void AddCurrentRotation()
+    {
+        rotationsInTimeSpan.Add(AdjustRotation(transform.localEulerAngles[(int)localRotationAxis]));
+        max = rotationsInTimeSpan.Max();
+        min = rotationsInTimeSpan.Min();
+    }
+    public void ClearRotations()
+    {
+        rotationsInTimeSpan.Clear();
+    }
+    public bool RotationsMinChangeFulfilled()
+    {
+        // if ((rotationsInTimeSpan.Max() - rotationsInTimeSpan.Min()) > _minimumRotationChange)
+        // {
+        // }
+        // else
+        // {
+        // }
+        return true;
+    }
 }

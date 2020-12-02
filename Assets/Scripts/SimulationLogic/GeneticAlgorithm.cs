@@ -13,7 +13,6 @@ public class GeneticAlgorithm
     private float _globalPhyscialMutationRate;
     private float _timeBelowAveragePenalty;
     private float _averageTimeBeingAlive;
-    private float _averageVelocity;
     private int _globalNumberOfElites;
     public float bestDistance { get; private set; }
     public float bestFitness { get; private set; }
@@ -22,6 +21,7 @@ public class GeneticAlgorithm
     List<float> distancesList;
     List<float> fitnessList;
     List<int> elitesIndexes;
+    List<float> _syncErrors;
     private float[] _bodyPartsStartingPositions;
     const int minFitness = -999;
     public AnimalData bestAnimalData;
@@ -29,8 +29,11 @@ public class GeneticAlgorithm
     float _crossoverChance;
     public float fitnessAverage;
     public float distanceAverage;
-
     float _previousFitnessAverage;
+    int _numberOfWeightsMutations;
+    int _generationsToConsider;
+    List<float> _fitnessesToConsider;
+    // float _syncErrorAverage;
     public GeneticAlgorithm(List<AnimalMovement> gen)
     {
         _ifAdaptive = PopulationInputData.adaptationEnabled;
@@ -45,6 +48,9 @@ public class GeneticAlgorithm
         _populationGenPool = new AnimalData[_currentGeneration.Count()];
         _globalNumberOfElites = (int)Mathf.Ceil(_currentGeneration.Count() * elitionismPercent);
         _matingMaxIterations = (int)Mathf.Ceil(gen.Count * 0.1f);
+        _numberOfWeightsMutations = 1;
+        _generationsToConsider = 3;
+        _fitnessesToConsider = new List<float>();
     }
 
     public List<AnimalData> GetPopulationGenPool()
@@ -59,6 +65,13 @@ public class GeneticAlgorithm
         {
             fitness = fitness * _timeBelowAveragePenalty;
         }
+        // if (PopulationInputData.forceSimilarPartsSynchronization)
+        // {
+        //     // if(_syncErrorAverage<individual.syncError)
+        //     // {
+        //     //     fitness = fitness * 0.9f;
+        //     // }
+        // }
         // else
         // {
         //     if (individual.averageVelocity > _averageVelocity)
@@ -136,19 +149,40 @@ public class GeneticAlgorithm
         }
         _averageTimeBeingAlive = _averageTimeBeingAlive / _currentGeneration.Count;
     }
-    private void CalculateAverageVelocity()
-    {
-        for (int i = 0; i < _currentGeneration.Count; i++)
-        {
-            _averageVelocity += _currentGeneration[i].averageVelocity;
-        }
-        _averageVelocity = _averageVelocity / _currentGeneration.Count;
-    }
-    public void AdjustMutation(AnimalData animalData, float fitness)
+    public void AdjustMutationChance(AnimalData animalData, float fitness)
     {
         animalData.weightsMutationRate = animalData.weightsMutationRate * fitnessAverage / fitness;
         animalData.physicalMutationRate = animalData.physicalMutationRate * fitnessAverage / fitness;
     }
+    // private float CalculateIndAverageSyncError(AnimalMovement individual)
+    // {
+    //     List<JointHandler> jointsToChoose = new List<JointHandler>(individual.orderedMovingParts);
+    //     float syncError = 0;
+    //     while (jointsToChoose.Count > 0)
+    //     {
+    //         int pairIndex = jointsToChoose[0].jointPairIndex;
+    //         for (int secondIndex = 1; secondIndex < jointsToChoose.Count; secondIndex++)
+    //         {
+    //             if (jointsToChoose[secondIndex].jointPairIndex == pairIndex)
+    //             {
+    //                 syncError += Mathf.Abs(jointsToChoose[secondIndex].averageVelocityOutput - jointsToChoose[0].averageVelocityOutput);
+    //                 jointsToChoose.RemoveAt(secondIndex);
+    //                 jointsToChoose.RemoveAt(0);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     individual.syncError = syncError;
+    //     return syncError;
+    // }
+    // private void CalculateGenAverageSyncError()
+    // {
+    //     _syncErrorAverage = 0;
+    //     foreach (AnimalMovement individual in _currentGeneration)
+    //     {
+    //         _syncErrorAverage+=CalculateIndAverageSyncError(individual);
+    //     }
+    // }
     void AdjustCrossoverPercent()
     {
         if (_previousFitnessAverage > 0)
@@ -174,12 +208,36 @@ public class GeneticAlgorithm
             }
         }
     }
+    void AdjustMutationsIterationNumber()
+    {
+        if (_fitnessesToConsider.Count == _generationsToConsider)
+        {
+            if (Mathf.RoundToInt(bestFitness) > Mathf.RoundToInt(_fitnessesToConsider.Average()))
+            {
+                if (_numberOfWeightsMutations > 1)
+                {
+                    _numberOfWeightsMutations = _numberOfWeightsMutations - (int)Mathf.Ceil(_numberOfWeightsMutations * 0.5f);
+                }
+            }
+            else
+            {
+                _numberOfWeightsMutations = _numberOfWeightsMutations + (int)Mathf.Ceil(_numberOfWeightsMutations * 0.5f);
+            }
+            _fitnessesToConsider.Clear();
+        }
+        else
+        {
+            _fitnessesToConsider.Add(bestFitness);
+        }
+    }
     public void AlgorithmStart()
     {
-
         SetDistancesList();
+        // if (PopulationInputData.forceSimilarPartsSynchronization)
+        // {
+        //     // CalculateGenAverageSyncError();
+        // }
         CalculateAliveTimeAverage();
-        CalculateAverageVelocity();
         SetFitnessList();
         SetBestAnimalData();
         SetElitiesIndexesList();
@@ -187,13 +245,15 @@ public class GeneticAlgorithm
         {
             AdjustCrossoverPercent();
             AdjustSelectionPressure();
+            AdjustMutationsIterationNumber();
         }
+
         var bestFitnessIndex = fitnessList.IndexOf(bestFitness);
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
             if (_ifAdaptive)
             {
-                AdjustMutation(_currentGeneration[i].animalData, fitnessList[i]);
+                AdjustMutationChance(_currentGeneration[i].animalData, fitnessList[i]);
             }
             if (elitesIndexes.Contains(i))    //najlepszy zostaje
             {
@@ -267,6 +327,7 @@ public class GeneticAlgorithm
         int parent1Index = ChooseParent();
         float parent1MGene = _currentGeneration[parent1Index].animalData.animalBrain.mGene;
         int parent2Index = ChooseParent();
+        float chance;
         int currentIteration = 0;
         while (true)
         {
@@ -289,13 +350,11 @@ public class GeneticAlgorithm
         // float mixChance;
         childBrain.DeepCopyFrom(_currentGeneration[parent1Index].animalData.animalBrain);
         // mixChance = Random.Range(0.0f, 75.0f);
-        Debug.Log(_crossoverChance);
         childData.partsMass = MixDictionaries<float>(_currentGeneration[parent1Index].animalData.partsMass, _currentGeneration[parent2Index].animalData.partsMass, _crossoverChance);
         childData.partsScaleMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.partsScaleMultiplier, _currentGeneration[parent2Index].animalData.partsScaleMultiplier, _crossoverChance);
         childData.targetJointsVelocity = MixDictionaries<int>(_currentGeneration[parent1Index].animalData.targetJointsVelocity, _currentGeneration[parent2Index].animalData.targetJointsVelocity, _crossoverChance);
         childData.limbsPositionMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.limbsPositionMultiplier, _currentGeneration[parent2Index].animalData.limbsPositionMultiplier, _crossoverChance);
         childBrain.mixWeights(_currentGeneration[parent2Index].animalData.animalBrain, _crossoverChance);
-        float chance = Random.Range(0.0f, 1.0f);
         float mutationRate;
         float physicalMutationRate;
         if (_ifAdaptive)
@@ -308,9 +367,13 @@ public class GeneticAlgorithm
             physicalMutationRate = _globalPhyscialMutationRate;
             mutationRate = _globalMutationRate;
         }
-        if (chance < mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem
+        for (int i = 0; i < _numberOfWeightsMutations; i++)
         {
-            childBrain.MutateWeights();
+            chance = Random.Range(0.0f, 1.0f);
+            if (chance < mutationRate) //obsluga mutacji - mutacja obejmuje zmiane indexu genu z losowym innym genem
+            {
+                childBrain.MutateWeights();
+            }
         }
         chance = Random.Range(0.0f, 1.0f);  //szanse na mutacje wag i mutacje fizycznych wlasciwosci sa inne
         if (chance < physicalMutationRate)
