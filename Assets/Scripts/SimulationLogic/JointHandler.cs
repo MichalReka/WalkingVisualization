@@ -18,7 +18,6 @@ public class JointHandler : MonoBehaviour
     public static int inputSize = 2;
     public MoveableAxis localRotationAxis;
     public MoveableAxis jointAxis;
-
     public bool checkingRotation;
     // public int jointPairIndex;
     Vector3 startingRotation;
@@ -35,20 +34,20 @@ public class JointHandler : MonoBehaviour
         joint = GetComponent<ConfigurableJoint>();
         if (hasLimits)
         {
-            if (localRotationAxis == MoveableAxis.x)
+            if (jointAxis == MoveableAxis.x)
             {
-                _lowLimit = startingRotation.x + joint.lowAngularXLimit.limit;
-                _highLimit = startingRotation.x + joint.highAngularXLimit.limit;
+                _lowLimit = startingRotation[(int)localRotationAxis] + joint.lowAngularXLimit.limit;
+                _highLimit = startingRotation[(int)localRotationAxis] + joint.highAngularXLimit.limit;
             }
-            else if (localRotationAxis == MoveableAxis.y)
+            else if (jointAxis == MoveableAxis.y)
             {
-                _lowLimit = startingRotation.y - joint.angularYLimit.limit;
-                _highLimit = startingRotation.y + joint.angularYLimit.limit;
+                _lowLimit = startingRotation[(int)localRotationAxis] - joint.angularYLimit.limit;
+                _highLimit = startingRotation[(int)localRotationAxis] + joint.angularYLimit.limit;
             }
             else
             {
-                _lowLimit = startingRotation.z - joint.angularZLimit.limit;
-                _highLimit = startingRotation.z + joint.angularZLimit.limit;
+                _lowLimit = startingRotation[(int)localRotationAxis] - joint.angularZLimit.limit;
+                _highLimit = startingRotation[(int)localRotationAxis] + joint.angularZLimit.limit;
             }
             input = new float[inputSize];
         }

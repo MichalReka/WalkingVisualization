@@ -498,7 +498,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -2258,7 +2258,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -2521,7 +2521,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -3156,7 +3156,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -4646,7 +4646,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -4909,7 +4909,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []
@@ -5172,7 +5172,7 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  localRotationAxis: 0
+  localRotationAxis: 2
   jointAxis: 0
   checkingRotation: 0
   rotationsInTimeSpan: []

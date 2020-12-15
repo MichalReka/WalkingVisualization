@@ -498,8 +498,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 0
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!1 &2551014184873144372
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,8 +907,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 2
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!153 &7407901583947100073
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1446,8 +1454,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 2
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!153 &8717822568360985946
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -1705,8 +1717,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 2
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!153 &7084595235818832308
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2059,8 +2075,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 0
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!1 &2551014185903248255
 GameObject:
   m_ObjectHideFlags: 0
@@ -2223,8 +2243,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 2
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!153 &6592736336542269402
 ConfigurableJoint:
   m_ObjectHideFlags: 0
@@ -2708,8 +2732,12 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 0
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
 --- !u!1 &2551014186185903082
 GameObject:
   m_ObjectHideFlags: 0
@@ -3208,5 +3236,9 @@ MonoBehaviour:
   hasLimits: 1
   targetVelocity: 0
   input: []
-  axisToMove: 0
-  isMoving: -1
+  localRotationAxis: 0
+  jointAxis: 0
+  checkingRotation: 0
+  rotationsInTimeSpan: []
+  max: 0
+  min: 0
