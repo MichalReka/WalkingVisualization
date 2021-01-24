@@ -22,11 +22,10 @@ public class AnimalBrain
 {
     public float mGene;
     public SerializableWeightsData serializableWeightsData;
-    public static int armsToMoveCount = 2;
     public static int outputPerArm = 1;
     public static int outputSize;
     [System.NonSerialized]
-    private const int bodyInput = 4;
+    private const int bodyInput = 5;
     public static int noMovingParts;
     [System.NonSerialized]
     public int hiddenLayerSize;
@@ -139,49 +138,16 @@ public class AnimalBrain
                 hiddenLayerSynapsesWeights[Random.Range(0, hiddenLayerSize), Random.Range(0, hiddenLayerSize)] = Random.Range(-1.0f, 1.0f);
                 break;
         }
-        // }
 
-        //sposob losowego doboru ilosci synaps z kazdej grupy nie dowiodl swojej skutecznosci
-        //mutowane osobniki byly w wiekszosci wadliwe i odpadaly - zbyt duzo losowych wartosci
-        //mozna bylo zaobserwowac szybki wzrost odleglosci w pierwszych paru generacjach
-        //po ktorym nastepowala stagnacja
-        //co po eksperymentach na algorytmie genetycznym w innym programie
-        //dowodzi brak prawidlowego dzialania mutacji
-        //po prostu wybrane zostaly najlepsze osobniki z puli genowej danej na poczatku
-        //mutacja nei pracowala wlasciwie
-        // for (int i = 0; i < hiddenLayerSize; i++)
-        // {
-        //     mutationChance = Random.Range(0.0f, 100.0f);
-        //     if (roll(mutationChance))
-        //     {
-        //         hiddenLayerBias[i] = Random.Range(-1.0f, 1.0f);
-        //     }
-        //     for (int j = 0; j < input.Length; j++)
-        //     {
-        //         mutationChance = Random.Range(0.0f, 100.0f);
-        //         if (roll(mutationChance))
-        //         {
-        //             inputSynapsesWeights[i,j] = Random.Range(-1.0f, 1.0f);
-        //         }
-        //     }
-        //     for (int j = 0; j < output.Length; j++)
-        //     {
-        //         mutationChance = Random.Range(0.0f, 100.0f);
-        //         if (roll(mutationChance))
-        //         {
-        //             outputSynapsesWeights[i,j] = Random.Range(-1.0f, 1.0f);
-        //         }
-        //     }
-        // }
     }
     public void PrepareToSerialize()
     {
         serializableWeightsData = new SerializableWeightsData();
-        serializableWeightsData.inputSynapsesWeights=inputSynapsesWeights.ToArray();
-        serializableWeightsData.outputSynapsesWeights=outputSynapsesWeights.ToArray();
-        serializableWeightsData.hiddenLayerSynapsesWeights=hiddenLayerSynapsesWeights.ToArray();
-        serializableWeightsData.hiddenLayerBias=hiddenLayerBias.ToArray();
-        serializableWeightsData.secondHiddenLayerBias=secondHiddenLayerBias.ToArray();
+        serializableWeightsData.inputSynapsesWeights = inputSynapsesWeights.ToArray();
+        serializableWeightsData.outputSynapsesWeights = outputSynapsesWeights.ToArray();
+        serializableWeightsData.hiddenLayerSynapsesWeights = hiddenLayerSynapsesWeights.ToArray();
+        serializableWeightsData.hiddenLayerBias = hiddenLayerBias.ToArray();
+        serializableWeightsData.secondHiddenLayerBias = secondHiddenLayerBias.ToArray();
     }
     public void DeserializeWeights()
     {
@@ -227,12 +193,17 @@ public class AnimalBrain
         public NativeArray2D<float> hiddenLayerSynapsesWeights;
         [ReadOnly]
         public NativeArray2D<float> outputSynapsesWeights;
-        public NativeArray<float> tempOutputValue;
-        // public NativeArray<int> outputIndexesToCompute;
+        public NativeArray<float> output;
+        float Sigmoid(float inputValue)
+        {
+            float outputValue = (float)(1/(1+Exp(-inputValue))*2-1);
+            return outputValue;
+        }
         public void Execute()
         {
-            for (int i = 0; i < tempOutputValue.Length; i++)
+            for (int i = 0; i < output.Length; i++)
             {
+                output[i] = 0;
                 for (int secondNeuronIndex = 0; secondNeuronIndex < hiddenLayerBias.Length; secondNeuronIndex++)
                 {
                     float secondNeuronCalculatedWeight = 0;
@@ -244,15 +215,14 @@ public class AnimalBrain
                             neuronCalculatedWeight += input[synapseIndex] * inputSynapsesWeights[neuronIndex, synapseIndex];
                         }
                         neuronCalculatedWeight += hiddenLayerBias[neuronIndex];
+                        neuronCalculatedWeight = Sigmoid(neuronCalculatedWeight);
                         secondNeuronCalculatedWeight += neuronCalculatedWeight * hiddenLayerSynapsesWeights[secondNeuronIndex, neuronIndex];
                     }
                     secondNeuronCalculatedWeight += secondHiddenLayerBias[secondNeuronIndex];
-                    tempOutputValue[i] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, i];
-                    // tempOutputValue[outputIndexesToCompute[i]] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, outputIndexesToCompute[i]];
+                    secondNeuronCalculatedWeight = Sigmoid(secondNeuronCalculatedWeight);
+                    output[i] += secondNeuronCalculatedWeight * outputSynapsesWeights[secondNeuronIndex, i];
                 }
-                //sigmoid
-                tempOutputValue[i] = (float)(1 / (Exp(-tempOutputValue[i]) + 1)) * 2 - 1;  // wartosci od -1 do 1
-                // tempOutputValue[outputIndexesToCompute[i]] = (float)(1 / (Exp(-tempOutputValue[outputIndexesToCompute[i]]) + 1)) * 2 - 1;  // wartosci od -1 do 1
+                output[i] = Sigmoid(output[i]);
             }
         }
     }
@@ -265,9 +235,9 @@ public class AnimalBrain
         outputJob.inputSynapsesWeights = inputSynapsesWeights;
         outputJob.hiddenLayerSynapsesWeights = hiddenLayerSynapsesWeights;
         outputJob.outputSynapsesWeights = outputSynapsesWeights;
-        outputJob.tempOutputValue = output;
+        outputJob.output = output;
         // outputJob.outputIndexesToCompute=outputIndexesToCompute;
-        _jobHandler=outputJob.Schedule();
+        _jobHandler = outputJob.Schedule();
     }
     public void FinishJob()
     {

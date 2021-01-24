@@ -16,8 +16,8 @@ public class AnimalBodyPart : MonoBehaviour
     System.Numerics.Vector3 _startingScale;
     Vector3 _startingRotation;
     Rigidbody bodyData;
-    AnimalMovement animalMovement;
-    JointHandler[] jointHandlers;
+    Animal animal;
+    public JointHandler[] jointHandlers;
     private void Awake()
     {
         bodyData = transform.GetComponent<Rigidbody>();
@@ -39,7 +39,7 @@ public class AnimalBodyPart : MonoBehaviour
     }
     private void Start()
     {
-        animalMovement = transform.parent.GetComponent<AnimalMovement>();
+        animal = transform.parent.GetComponent<Animal>();
     }
     enum MoveablePositions
     {
@@ -51,7 +51,7 @@ public class AnimalBodyPart : MonoBehaviour
         if (collision.gameObject.name == "ground" && ifCollisionKills)
         {
             bodyData.isKinematic = true;
-            animalMovement.CollisionDetected();
+            animal.CollisionDetected();
         }
     }
     public void SetMass(float mass)
@@ -63,11 +63,22 @@ public class AnimalBodyPart : MonoBehaviour
         this.scaleMultiplier = scaleMultiplier;
         transform.localScale = new Vector3(scaleMultiplier.X * _startingScale.X, _startingScale.Y, scaleMultiplier.Z * _startingScale.Z);
     }
-    public void SetMaximumVelocity(int velocity)
+    public void SetMaximumVelocity(System.Numerics.Vector3 velocity)
     {
         for (int i = 0; i < jointHandlers.Length; i++)
         {
-            jointHandlers[i].targetVelocity = velocity;
+            if((int)jointHandlers[i].jointAxis==0)
+            {
+                jointHandlers[i].targetVelocity = velocity.X;
+            }
+            else if((int)jointHandlers[i].jointAxis==1)
+            {
+                jointHandlers[i].targetVelocity = velocity.Y;
+            }
+            else
+            {
+                jointHandlers[i].targetVelocity = velocity.Z;
+            }
         }
     }
     public void SetPosition(System.Numerics.Vector3 positionMultiplier)

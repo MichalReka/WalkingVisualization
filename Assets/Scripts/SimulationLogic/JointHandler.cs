@@ -12,7 +12,7 @@ public class JointHandler : MonoBehaviour
     {
         x = 0, y = 1, z = 2
     }
-    public int targetVelocity;
+    public float targetVelocity;
     ConfigurableJoint joint;
     public float[] input;
     public static int inputSize = 2;
@@ -36,18 +36,18 @@ public class JointHandler : MonoBehaviour
         {
             if (jointAxis == MoveableAxis.x)
             {
-                _lowLimit = startingRotation[(int)localRotationAxis] + joint.lowAngularXLimit.limit;
-                _highLimit = startingRotation[(int)localRotationAxis] + joint.highAngularXLimit.limit;
+                _lowLimit = joint.lowAngularXLimit.limit;
+                _highLimit =  joint.highAngularXLimit.limit;
             }
             else if (jointAxis == MoveableAxis.y)
             {
-                _lowLimit = startingRotation[(int)localRotationAxis] - joint.angularYLimit.limit;
-                _highLimit = startingRotation[(int)localRotationAxis] + joint.angularYLimit.limit;
+                _lowLimit = -joint.angularYLimit.limit;
+                _highLimit = joint.angularYLimit.limit;
             }
             else
             {
-                _lowLimit = startingRotation[(int)localRotationAxis] - joint.angularZLimit.limit;
-                _highLimit = startingRotation[(int)localRotationAxis] + joint.angularZLimit.limit;
+                _lowLimit = -joint.angularZLimit.limit;
+                _highLimit = joint.angularZLimit.limit;
             }
             input = new float[inputSize];
         }
@@ -60,16 +60,16 @@ public class JointHandler : MonoBehaviour
             rotationsInTimeSpan = new List<float>();
             _minimumRotationChange = (Mathf.Abs(_lowLimit) + Mathf.Abs(_highLimit)) * 0.4f;
         }
-        setInput();
+        SetInput();
     }
+    
 
-
-    public static float normalizeValue(float value, float min, float max) //wartosci od -1 do 1 - normalizacja potrzebna dla zwiekszenia wydajnosci
+    public static float NormalizeValue(float value, float sourceMin, float sourceMax)
     {
         float targetMin = -1;
         float targetMax = 1;
-        float translatedValue = (targetMax - targetMin) / (max - min) * (value - max) + targetMax;
-        return translatedValue;
+        float normalizedValue = (targetMax - targetMin) * ((value-sourceMin)/(sourceMax-sourceMin))+targetMin;
+        return normalizedValue;
     }
     public static float AdjustRotation(float rotationAngle)
     {
@@ -82,46 +82,21 @@ public class JointHandler : MonoBehaviour
             return rotationAngle;
         }
     }
-    public float[] setInput()
+    public Quaternion GetJointRotation()
+    {
+        //https://answers.unity.com/questions/1694646/how-to-get-the-rotation-of-configurable-joint.html
+        return (Quaternion.Inverse(joint.connectedBody.transform.rotation) * joint.transform.rotation);
+    }
+    public float[] SetInput()
     {
         int currentIndex = 0;
         if (hasLimits)
         {
-            input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles[(int)localRotationAxis]), _lowLimit, _highLimit);
+            input[currentIndex] = NormalizeValue(-AdjustRotation(GetJointRotation().eulerAngles[(int)localRotationAxis]), _lowLimit, _highLimit);
             currentIndex++;
         }
-        input[currentIndex] = normalizeValue(joint.targetAngularVelocity[(int)jointAxis], -targetVelocity, targetVelocity);
+        input[currentIndex] = NormalizeValue(joint.targetAngularVelocity[(int)jointAxis], -targetVelocity, targetVelocity);
         currentIndex++;
-        // if (axisToMove == MoveableAxis.x)
-        // {
-        //     if (hasLimits)
-        //     {
-        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.x), startingRotation.x + joint.lowAngularXLimit.limit, startingRotation.x + joint.highAngularXLimit.limit);
-        //         currentIndex++;
-        //     }
-        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.x, -targetVelocity, targetVelocity);
-        //     currentIndex++;
-        // }
-        // else if (axisToMove == MoveableAxis.y)
-        // {
-        //     if (hasLimits)
-        //     {
-        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.y), startingRotation.y - joint.angularYLimit.limit, startingRotation.y + joint.angularYLimit.limit);
-        //         currentIndex++;
-        //     }
-        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.y, -targetVelocity, targetVelocity);
-        //     currentIndex++;
-        // }
-        // else
-        // {
-        //     if (hasLimits)
-        //     {
-        //         input[currentIndex] = normalizeValue(AdjustRotation(transform.localEulerAngles.z), startingRotation.z - joint.angularZLimit.limit, startingRotation.z + joint.angularZLimit.limit);
-        //         currentIndex++;
-        //     }
-        //     input[currentIndex] = normalizeValue(joint.targetAngularVelocity.z, -targetVelocity, targetVelocity);
-        //     currentIndex++;
-        // }
         return input;
     }
     public static float translateToValue(float min, float max, float output)   //tlumacze output na wartosci

@@ -18,6 +18,7 @@ public class MenuButtonsHandler : MonoBehaviour
     GameObject loadingObject;
     Slider progressBar;
     Image fadeInOutImage;
+    Animator[] animations;
     private void Start()
     {
         if (GameObject.Find("FadeInOutImage"))
@@ -63,13 +64,23 @@ public class MenuButtonsHandler : MonoBehaviour
         {
             loadingObject.SetActive(true);
             Application.backgroundLoadingPriority = ThreadPriority.Normal;
-            StartCoroutine("LoadScene");
+            StartCoroutine("LoadScene","Simulation");
         });
         StartCoroutine(coroutineHandler);
     }
-
+    public void PresentSelectedAnimal()
+    {
+        var coroutineHandler = FadeInAndDo(() =>
+        {
+            loadingObject.SetActive(true);
+            Application.backgroundLoadingPriority = ThreadPriority.Normal;
+            StartCoroutine("LoadScene","AnimalPresentation");
+        });
+        StartCoroutine(coroutineHandler);
+    }
     public void SwitchMenu(string subMenuName)
     {
+
         EventSystem.current.currentSelectedGameObject.GetComponent<Animator>().keepAnimatorControllerStateOnDisable = true;
         EventSystem.current.currentSelectedGameObject.GetComponent<Animator>().Play("Normal", -1);
         mainMenuContainer.SetActive(!mainMenuContainer.activeSelf);
@@ -92,26 +103,23 @@ public class MenuButtonsHandler : MonoBehaviour
         yield return StartCoroutine(coroutineHandler);
         toDoAfterFade.Invoke();
     }
-    IEnumerator LoadScene()  //uzycie action pozwala na zrobienie czegos po animacji
+    IEnumerator LoadScene(string sceneName)
     {
-
-        loadingOperation = SceneManager.LoadSceneAsync("Simulation");
+        loadingOperation = SceneManager.LoadSceneAsync(sceneName);
         VisualizationBasics.ResumeGame();
         while (!loadingOperation.isDone)
         {
-            Debug.Log(Mathf.Clamp01(loadingOperation.progress / 0.9f));
             yield return null;
         }
     }
     private void FixedUpdate()
     {
-        if (loadingObject)
-        {
-            if (loadingObject.activeSelf)
-            {
-                Debug.Log(Mathf.Clamp01(loadingOperation.progress / 0.9f));
-                progressBar.value = Mathf.Clamp01(loadingOperation.progress / 0.9f);
-            }
-        }
+        // if (loadingObject)
+        // {
+        //     if (loadingObject.activeSelf)
+        //     {
+        //         progressBar.value = Mathf.Clamp01(loadingOperation.progress / 0.9f);
+        //     }
+        // }
     }
 }

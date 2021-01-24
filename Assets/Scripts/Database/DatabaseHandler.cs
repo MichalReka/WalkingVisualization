@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Data;
 using Mono.Data.Sqlite;
 using Newtonsoft.Json;
+
 public class DatabaseHandler : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -24,7 +25,7 @@ public class DatabaseHandler : MonoBehaviour
     }
     public static void AddDataToTable()
     {
-        CreateTable();
+        CheckIfTableCreated();
         OpenConnection();
         string json = System.IO.File.ReadAllText(jsonPath);
         var data = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json);
@@ -42,12 +43,11 @@ public class DatabaseHandler : MonoBehaviour
     }
     public static List<List<string>> ReturnDataFromTable()
     {
-        CreateTable();
-
+        CheckIfTableCreated();
         OpenConnection();
         List<List<string>> tableData = new List<List<string>>();
         IDataReader reader;
-        string query = "SELECT animal_prefab_name, population_size,best_distance, id FROM " + TABLE_NAME;
+        string query = "SELECT animal_prefab_name, population_size,best_distance,current_gen,seconds_passed, id FROM " + TABLE_NAME;
         dbcmd.CommandText = query;
         reader = dbcmd.ExecuteReader();
         while (reader.Read())
@@ -55,7 +55,16 @@ public class DatabaseHandler : MonoBehaviour
             List<string> tempList = new List<string>();
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                tempList.Add(reader[i].ToString());
+                if (reader[i].GetType() == typeof(System.Double))
+                {
+                    double doubleValue = (double)reader[i];
+                    doubleValue = System.Math.Round(doubleValue, 2, System.MidpointRounding.AwayFromZero);
+                    tempList.Add(doubleValue.ToString());
+                }
+                else
+                {
+                    tempList.Add(reader[i].ToString());
+                }
             }
             tableData.Add(tempList);
         }
@@ -64,8 +73,7 @@ public class DatabaseHandler : MonoBehaviour
     }
     public static List<string> ReturnAnimalDataJsonArray(string animalPrefabName)
     {
-        CreateTable();
-
+        CheckIfTableCreated();
         OpenConnection();
         List<string> tableData = new List<string>();
         IDataReader reader;
@@ -84,7 +92,26 @@ public class DatabaseHandler : MonoBehaviour
         dbconn.Close();
         return tableData;
     }
-    private static void CreateTable()
+    public static string ReturnAnimalDataJsonSingle(string animalId)
+    {
+        OpenConnection();
+        List<string> tableData = new List<string>();
+        IDataReader reader;
+        string query = "SELECT best_individual_data FROM " + TABLE_NAME + " WHERE id='" + animalId + "'";
+        dbcmd.CommandText = query;
+        reader = dbcmd.ExecuteReader();
+        string animalDataJson = "";
+        while (reader.Read())
+        {
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                animalDataJson = reader[i].ToString();
+            }
+        }
+        dbconn.Close();
+        return animalDataJson;
+    }
+    private static void CheckIfTableCreated()
     {
         OpenConnection();
         sqlQuery = "CREATE TABLE IF NOT EXISTS [" + TABLE_NAME + "] (" +

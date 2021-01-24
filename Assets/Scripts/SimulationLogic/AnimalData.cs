@@ -16,7 +16,7 @@ public class AnimalData
     public Dictionary<int, float> partsMass;
     public Dictionary<int, System.Numerics.Vector3> partsScaleMultiplier;
     public Dictionary<int, System.Numerics.Vector3> limbsPositionMultiplier;
-    public Dictionary<int, int> targetJointsVelocity;
+    public Dictionary<int,  System.Numerics.Vector3> targetJointsVelocity;
     public float weightsMutationRate;
     public float physicalMutationRate;
     public AnimalData DeepCopy()
@@ -26,7 +26,7 @@ public class AnimalData
         copy.animalBrain.DeepCopyFrom(this.animalBrain);
         copy.partsMass = new Dictionary<int, float>(this.partsMass);
         copy.partsScaleMultiplier = new Dictionary<int, System.Numerics.Vector3>(this.partsScaleMultiplier);
-        copy.targetJointsVelocity = new Dictionary<int, int>(this.targetJointsVelocity);
+        copy.targetJointsVelocity = new Dictionary<int,  System.Numerics.Vector3>(this.targetJointsVelocity);
         copy.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>(this.limbsPositionMultiplier);
         copy.weightsMutationRate = weightsMutationRate;
         copy.physicalMutationRate = physicalMutationRate;
@@ -57,9 +57,22 @@ public class AnimalData
             case 3:
                 keysArray = targetJointsVelocity.Keys.ToArray();
                 index = UnityEngine.Random.Range(0, keysArray.Length);
-                targetJointsVelocity[keysArray[index]] = UnityEngine.Random.Range(velocityMin, velocityMax);
+                targetJointsVelocity[keysArray[index]] = new System.Numerics.Vector3(MutateVelocityAxis(targetJointsVelocity[keysArray[index]].X),MutateVelocityAxis(targetJointsVelocity[keysArray[index]].Y),MutateVelocityAxis(targetJointsVelocity[keysArray[index]].Z));
                 break;
         }
+    }
+    float MutateVelocityAxis(float axis)
+    {
+        float newAxis;
+        if(axis >= velocityMin)
+        {
+            newAxis = UnityEngine.Random.Range(velocityMin, velocityMax);
+        }
+        else
+        {
+            newAxis = 0;
+        }
+        return newAxis;
     }
     public string SerializeData()
     {

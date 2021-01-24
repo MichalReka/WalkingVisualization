@@ -13,7 +13,4 @@ public class AnimalPrefabCollision : MonoBehaviour
     //     transform.Rotate(Vector3.up,-x);
     //     transform.Rotate(Vector3.right,y);
     // }
-    private void Update() {
-
-    }
 }

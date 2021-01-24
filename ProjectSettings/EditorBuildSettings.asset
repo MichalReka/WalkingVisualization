@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Simulation.unity
     guid: 079b56f83719a684e88223a862954d04
+  - enabled: 1
+    path: Assets/Scenes/AnimalPresentation.unity
+    guid: 21c9de4538fcc0049ac8d8983a7e844a
   m_configObjects: {}

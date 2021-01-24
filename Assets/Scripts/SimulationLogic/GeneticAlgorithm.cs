@@ -7,7 +7,7 @@ using UnityEngine;
 public class GeneticAlgorithm
 {
     bool _ifAdaptive = false;
-    private List<AnimalMovement> _currentGeneration;   //list of animals
+    private List<Animal> _currentGeneration;   //list of animals
     private AnimalData[] _populationGenPool;
     private float _globalMutationRate;
     private float _globalPhyscialMutationRate;
@@ -29,12 +29,12 @@ public class GeneticAlgorithm
     float _crossoverChance;
     public float fitnessAverage;
     public float distanceAverage;
-    float _previousFitnessAverage;
+    float _previousFitness;
     int _numberOfWeightsMutations;
     int _generationsToConsider;
     List<float> _fitnessesToConsider;
     // float _syncErrorAverage;
-    public GeneticAlgorithm(List<AnimalMovement> gen)
+    public GeneticAlgorithm(List<Animal> gen)
     {
         _ifAdaptive = PopulationInputData.adaptationEnabled;
         _tournamentPartMaxSize = PopulationInputData.tournamentSize;
@@ -57,39 +57,19 @@ public class GeneticAlgorithm
     {
         return _populationGenPool.ToList();
     }
-    float CalculateFitness(AnimalMovement individual, float distance)
+    float CalculateFitness(Animal individual, float distance)
     {
-        // var individualBody = individual.transform.Find("body").gameObject;
-        float fitness = distance;
+        //promowane są osobniki które dojdą najdalej w osi X (przed siebie)
+        //osobniki są karane za pójście w bok (oś Z)
+        float fitness = distance-Mathf.Abs(individual.GetAverageZ());
         if (individual.timeBeingAlive < _averageTimeBeingAlive)
         {
             fitness = fitness * _timeBelowAveragePenalty;
         }
-        // if (PopulationInputData.forceSimilarPartsSynchronization)
-        // {
-        //     // if(_syncErrorAverage<individual.syncError)
-        //     // {
-        //     //     fitness = fitness * 0.9f;
-        //     // }
-        // }
-        // else
-        // {
-        //     if (individual.averageVelocity > _averageVelocity)
-        //     {
-        //         fitness = fitness * (2-_timeBelowAveragePenalty);
-        //     }
-        // }
-        // fitness = fitness * individual.averageBodyY;
-        // if (individual.ifCrashed == true)
-        // {
-        //     fitness = fitness * penaltyForCrash;   //jesli upadnie, nieznacznie zmniejszam fitness
-        // }
         return fitness;
     }
-    float CalculateDistance(AnimalMovement individual)
+    float CalculateDistance(Animal individual)
     {
-        int bodyPartsCount = individual.transform.childCount;
-        float[] distances = new float[bodyPartsCount];
         // for (int i = 0; i < bodyPartsCount; i++)        // sprawdzam wszystkie czesci ciala, dziele przez ilosc czesci ciala, tak otrzymuje jak daleko doszly i fitness (koniec z wyrzucaniem body d przodu)
         // {
         //     Transform child = individual.transform.GetChild(i);
@@ -97,12 +77,7 @@ public class GeneticAlgorithm
         // }
         // distance = distance / bodyPartsCount;
         //dystans to najmniejszy pokonany dystans ze wszystkich czesci ciala - dzieki temu osobnniki nie wyrzucaja sie calym cialem do przodu
-        for (int i = 0; i < bodyPartsCount; i++)
-        {
-            Transform child = individual.transform.GetChild(i);
-            distances[i] = child.transform.position.x - individual.bodyPartsStartingX[i];       //osobniki z nogami bardziej umiejscowionymi z przodu nie moga byc faworyzowane
-        }
-        return distances.Average();
+        return individual.GetAverageX();
     }
     private void SetDistancesList()
     {
@@ -116,7 +91,7 @@ public class GeneticAlgorithm
     private void SetFitnessList()
     {
         fitnessList = new List<float>();
-        _previousFitnessAverage = fitnessAverage;
+        _previousFitness = bestFitness;
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
             fitnessList.Add(CalculateFitness(_currentGeneration[i], distancesList[i])); //tutaj bede trzymac wagi
@@ -133,13 +108,14 @@ public class GeneticAlgorithm
             elitesIndexes.Add(nextEliteIndex);
             tempFitnessList[nextEliteIndex] = minFitness;
         }
+
     }
     private void SetBestAnimalData()
     {
         int index = fitnessList.IndexOf(fitnessList.Max());
         bestAnimalData = _currentGeneration[index].animalData;
-        bestDistance = fitnessList[index];
-        bestFitness = distancesList[index];
+        bestDistance = distancesList[index];
+        bestFitness = fitnessList[index];
     }
     private void CalculateAliveTimeAverage()
     {
@@ -154,7 +130,7 @@ public class GeneticAlgorithm
         animalData.weightsMutationRate = animalData.weightsMutationRate * fitnessAverage / fitness;
         animalData.physicalMutationRate = animalData.physicalMutationRate * fitnessAverage / fitness;
     }
-    // private float CalculateIndAverageSyncError(AnimalMovement individual)
+    // private float CalculateIndAverageSyncError(Animal individual)
     // {
     //     List<JointHandler> jointsToChoose = new List<JointHandler>(individual.orderedMovingParts);
     //     float syncError = 0;
@@ -178,34 +154,42 @@ public class GeneticAlgorithm
     // private void CalculateGenAverageSyncError()
     // {
     //     _syncErrorAverage = 0;
-    //     foreach (AnimalMovement individual in _currentGeneration)
+    //     foreach (Animal individual in _currentGeneration)
     //     {
     //         _syncErrorAverage+=CalculateIndAverageSyncError(individual);
     //     }
     // }
     void AdjustCrossoverPercent()
     {
-        if (_previousFitnessAverage > 0)
+        if (bestFitness > _previousFitness)
         {
-            // _crossoverChance = _crossoverChance * _previousFitnessAverage / fitnessAverage;
+            // _crossoverChance = _crossoverChance * _previousFitness / fitnessAverage;
             // if (_crossoverChance > 0.5f)   //bezpiecznik aby dziwne krzyzowki nie powstaly
             // {
             //     _crossoverChance = 0.5f;
             // }
-            if (_crossoverChance < 0.5f)
+            if (_crossoverChance < 1.0f)
             {
-                _crossoverChance = _crossoverChance + _crossoverChance * 0.02f;
+                _crossoverChance = _crossoverChance + _crossoverChance * 0.05f;
             }
+        }
+        else
+        {
+                _crossoverChance = _crossoverChance - _crossoverChance * 0.05f;
         }
     }
     void AdjustSelectionPressure()
     {
-        if (fitnessAverage > _previousFitnessAverage)
+        if (bestFitness > _previousFitness)
         {
             if (_tournamentPartMaxSize < 0.5f)
             {
-                _tournamentPartMaxSize = _tournamentPartMaxSize + _tournamentPartMaxSize * 0.02f;
+                _tournamentPartMaxSize = _tournamentPartMaxSize + _tournamentPartMaxSize * 0.05f;
             }
+        }
+        else
+        {
+            _tournamentPartMaxSize = _tournamentPartMaxSize - _tournamentPartMaxSize * 0.05f;
         }
     }
     void AdjustMutationsIterationNumber()
@@ -230,13 +214,9 @@ public class GeneticAlgorithm
             _fitnessesToConsider.Add(bestFitness);
         }
     }
-    public void AlgorithmStart()
+    public void RunAlgorithm()
     {
         SetDistancesList();
-        // if (PopulationInputData.forceSimilarPartsSynchronization)
-        // {
-        //     // CalculateGenAverageSyncError();
-        // }
         CalculateAliveTimeAverage();
         SetFitnessList();
         SetBestAnimalData();
@@ -247,8 +227,6 @@ public class GeneticAlgorithm
             AdjustSelectionPressure();
             AdjustMutationsIterationNumber();
         }
-
-        var bestFitnessIndex = fitnessList.IndexOf(bestFitness);
         for (int i = 0; i < _currentGeneration.Count; i++)
         {
             if (_ifAdaptive)
@@ -261,7 +239,14 @@ public class GeneticAlgorithm
             }
             else
             {
-                _populationGenPool[i] = Mate();
+                if(_crossoverChance>=Random.Range(0.0f,1.0f))
+                {
+                    _populationGenPool[i] = Mate();
+                }
+                else
+                {
+                     _populationGenPool[i] = _currentGeneration[i].animalData;
+                }
             }
         }
     }
@@ -323,6 +308,7 @@ public class GeneticAlgorithm
         //losowana jest wartosc pomiedzy minimalna wartoscia z fitness list a maksymalna wartoscia z fitness list
         //losowany index osobnika dopoki wylosowana wczesniej wartosc nie jest mniejsza od wartosci fitness danego indexu
         //losowani dwaj rodzice, rozmnazanie jak wczesniej
+        float crossoverPower = 0.5f;
         AnimalData childData = new AnimalData();
         int parent1Index = ChooseParent();
         float parent1MGene = _currentGeneration[parent1Index].animalData.animalBrain.mGene;
@@ -350,11 +336,11 @@ public class GeneticAlgorithm
         // float mixChance;
         childBrain.DeepCopyFrom(_currentGeneration[parent1Index].animalData.animalBrain);
         // mixChance = Random.Range(0.0f, 75.0f);
-        childData.partsMass = MixDictionaries<float>(_currentGeneration[parent1Index].animalData.partsMass, _currentGeneration[parent2Index].animalData.partsMass, _crossoverChance);
-        childData.partsScaleMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.partsScaleMultiplier, _currentGeneration[parent2Index].animalData.partsScaleMultiplier, _crossoverChance);
-        childData.targetJointsVelocity = MixDictionaries<int>(_currentGeneration[parent1Index].animalData.targetJointsVelocity, _currentGeneration[parent2Index].animalData.targetJointsVelocity, _crossoverChance);
-        childData.limbsPositionMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.limbsPositionMultiplier, _currentGeneration[parent2Index].animalData.limbsPositionMultiplier, _crossoverChance);
-        childBrain.mixWeights(_currentGeneration[parent2Index].animalData.animalBrain, _crossoverChance);
+        childData.partsMass = MixDictionaries<float>(_currentGeneration[parent1Index].animalData.partsMass, _currentGeneration[parent2Index].animalData.partsMass, crossoverPower);
+        childData.partsScaleMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.partsScaleMultiplier, _currentGeneration[parent2Index].animalData.partsScaleMultiplier, crossoverPower);
+        childData.targetJointsVelocity = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.targetJointsVelocity, _currentGeneration[parent2Index].animalData.targetJointsVelocity, crossoverPower);
+        childData.limbsPositionMultiplier = MixDictionaries<System.Numerics.Vector3>(_currentGeneration[parent1Index].animalData.limbsPositionMultiplier, _currentGeneration[parent2Index].animalData.limbsPositionMultiplier, crossoverPower);
+        childBrain.mixWeights(_currentGeneration[parent2Index].animalData.animalBrain, crossoverPower);
         float mutationRate;
         float physicalMutationRate;
         if (_ifAdaptive)

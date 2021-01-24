@@ -4,7 +4,8 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
-public class AnimalMovement : MonoBehaviour
+using static System.Math;
+public class Animal : MonoBehaviour
 {
     public AnimalData animalData;
     public float[] bodyPartsStartingX;
@@ -35,9 +36,10 @@ public class AnimalMovement : MonoBehaviour
     List<JointHandler> _jointsForcedRotationList;
     // List<int> armsToMove = new List<int>();
     // NativeArray<int> outputIndexesToCompute;
-    bool ifStartedToMove = false;
+    bool _ifStartedToMove = false;
     const float _secondsPerRotationCheck = 2f;
     float _secondsAfterRotationCheck = 0f;
+    public bool ifSimulated = true;
     void DisableJoints()
     {
         var jointTogglers = GetComponentsInChildren<JointToggler>();
@@ -108,14 +110,13 @@ public class AnimalMovement : MonoBehaviour
             }
         }
         EnableJoints();
-
     }
     public void SetRandomData()
     {
         animalData = new AnimalData();
         animalData.partsMass = new Dictionary<int, float>();
         animalData.partsScaleMultiplier = new Dictionary<int, System.Numerics.Vector3>();
-        animalData.targetJointsVelocity = new Dictionary<int, int>();
+        animalData.targetJointsVelocity = new Dictionary<int, System.Numerics.Vector3>();
         animalData.limbsPositionMultiplier = new Dictionary<int, System.Numerics.Vector3>();
         animalData.animalBrain = new AnimalBrain();
         animalData.animalBrain.setRandomWeights();
@@ -146,7 +147,7 @@ public class AnimalMovement : MonoBehaviour
             float mass = Random.Range(AnimalData.massMin, AnimalData.massMax);
             float xScale = Random.Range(AnimalData.multiplierRangeMin, AnimalData.multiplierRangeMax);
             float zScale = Random.Range(AnimalData.multiplierRangeMin, AnimalData.multiplierRangeMax);
-            int maximumVelocity = Random.Range(AnimalData.velocityMin, AnimalData.velocityMax);
+            System.Numerics.Vector3 maximumVelocity = System.Numerics.Vector3.Zero;
             foreach (AnimalBodyPart bodyPart in _similarBodyPartsDictionary[i])
             {
                 bodyPart.SetMass(mass);
@@ -156,6 +157,24 @@ public class AnimalMovement : MonoBehaviour
                 }
                 if (bodyPart.isMoveable)
                 {
+                    if(maximumVelocity.Equals(System.Numerics.Vector3.Zero))
+                    {
+                        for(int j=0;j<bodyPart.jointHandlers.Length;j++)
+                        {
+                            if((int)bodyPart.jointHandlers[j].jointAxis==0)
+                            {
+                                maximumVelocity.X = Random.Range(AnimalData.velocityMin, AnimalData.velocityMax);
+                            }
+                            else if((int)bodyPart.jointHandlers[j].jointAxis==1)
+                            {
+                                maximumVelocity.Y = Random.Range(AnimalData.velocityMin, AnimalData.velocityMax);
+                            }
+                            else
+                            {
+                                maximumVelocity.Z = Random.Range(AnimalData.velocityMin, AnimalData.velocityMax);
+                            }
+                        }
+                    }
                     bodyPart.SetMaximumVelocity(maximumVelocity);
                 }
             }
@@ -168,39 +187,12 @@ public class AnimalMovement : MonoBehaviour
     public void CollisionDetected()
     {
         ifCatched = true;
-        // ifCrashed = true;
     }
-    // public void SelectLimbsToChangeState()
-    // {
-    //     outputIndexesToCompute = new NativeArray<int>(AnimalBrain.armsToMoveCount, Allocator.TempJob);
-    //     for (int i = 0; i < outputIndexesToCompute.Length; i++)
-    //     {
-    //         outputIndexesToCompute[i] = i;
-    //     }
-    //     animalData.animalBrain.SetOutput(outputIndexesToCompute);
-    // }
-    // void TranslateLimbsToMove()
-    // {
-    //     int newArmIndex;
-    //     armsToMove.Clear();
-    //     for (int i = 0; i < AnimalBrain.armsToMoveCount; i++)
-    //     {
-    //         newArmIndex = (int)Mathf.Floor(JointHandler.translateToValue(0, orderedMovingParts.Length, animalData.animalBrain.output[i]));
-    //         if (newArmIndex == orderedMovingParts.Length)
-    //         {
-    //             newArmIndex -= 1;
-    //         }
-    //         if (!armsToMove.Contains(newArmIndex))
-    //         {
-    //             armsToMove.Add(newArmIndex);
-    //         }
-    //     }
-    // }
-    public void MoveSelectedLimbs()
+    public void ComputeOutput()
     {
-        if (!ifStartedToMove)
+        if (!_ifStartedToMove)
         {
-            ifStartedToMove = true;
+            _ifStartedToMove = true;
         }
         // TranslateLimbsToMove();
         // outputIndexesToCompute = new NativeArray<int>(armsToMove.Count * AnimalBrain.outputPerArm, Allocator.TempJob);
@@ -228,7 +220,7 @@ public class AnimalMovement : MonoBehaviour
         timeBeingAlive = 0;
         _secondsAfterRotationCheck = 0;
         ifCatched = false;
-        ifStartedToMove = false;
+        _ifStartedToMove = false;
     }
     public void FinishJob()
     {
@@ -246,66 +238,31 @@ public class AnimalMovement : MonoBehaviour
                 currIndex++;
             }
         }
-        var bodyY = JointHandler.normalizeValue(body.position.y, startingBodyY * 0.8f, startingBodyY * 1.2f);
+        var bodyY = JointHandler.NormalizeValue(body.localPosition.y, startingBodyY * 0.8f, startingBodyY * 1.2f);
         input[currIndex] = bodyY;
         currIndex++;
-        // input[currIndex] = bodyRigibody.velocity.x;
-        // currIndex++;
-        // input[currIndex] = bodyRigibody.velocity.y;
-        // currIndex++;
-        //rotacje
-        int angleDeviation = 15;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.x), _startingBodyRotation.x - angleDeviation, _startingBodyRotation.x + angleDeviation);
+        int angleDeviation = 45;
+        input[currIndex] = JointHandler.NormalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.x), _startingBodyRotation.x - angleDeviation, _startingBodyRotation.x + angleDeviation);
         currIndex++;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.y), _startingBodyRotation.y - angleDeviation, _startingBodyRotation.y + angleDeviation);
+        input[currIndex] = JointHandler.NormalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.y), _startingBodyRotation.y - angleDeviation, _startingBodyRotation.y + angleDeviation);
         currIndex++;
-        input[currIndex] = JointHandler.normalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.z), _startingBodyRotation.z - angleDeviation, _startingBodyRotation.z + angleDeviation);
+        input[currIndex] = JointHandler.NormalizeValue(JointHandler.AdjustRotation(body.localEulerAngles.z), _startingBodyRotation.z - angleDeviation, _startingBodyRotation.z + angleDeviation);
         currIndex++;
-        // int rotationBorder = 20; //im mniejsze tym czulsze
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.x, _startingBodyRotation.x - rotationBorder, _startingBodyRotation.x + rotationBorder);
-        // currIndex++;
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.y, _startingBodyRotation.y - rotationBorder, _startingBodyRotation.y + rotationBorder);
-        // currIndex++;
-        // input[currIndex] = JointHandler.normalizeValue(body.rotation.z, _startingBodyRotation.z - rotationBorder, _startingBodyRotation.z + rotationBorder);
-        // currIndex++;
-
-        //predkosc
-        // if (!animalBrain.ifFirstOutput)
-        // {
-        //     for (int i = 0; i < animalBrain.output.Length-1; i++)
-        //     {
-        //         input[currIndex] = animalBrain.output[i];
-        //         currIndex++;
-        //     }
-        // }
-        // else
-        // {
-        //     for (int i = 0; i < animalBrain.output.Length-1; i++)
-        //     {
-        //         input[currIndex] = 0;
-        //         currIndex++;
-        //     }
-        //     animalBrain.ifFirstOutput = false;
-        // }
+        input[currIndex] = (float)(1 / (Exp(-body.localPosition.z) + 1)) * 2 - 1;
+        currIndex++;
     }
-    public void UpdateIO()
+    public void UpdateInput()
     {
         for (int i = 0; i < orderedMovingParts.Length; i++)
         {
-            orderedMovingParts[i].setInput();
+            orderedMovingParts[i].SetInput();
         }
         GatherInput(animalData.animalBrain.input);
-        // for (int i = 0; i < armsToMove.Count; i++)
-        // {
-        //     int startingIndex = AnimalBrain.armsToMoveCount + armsToMove[i] * AnimalBrain.outputPerArm;
-        //     int endingIndex = startingIndex + AnimalBrain.outputPerArm;
-        //     List<float> partOutput = new List<float>();
-        //     for (int j = startingIndex; j < endingIndex; j++)
-        //     {
-        //         partOutput.Add(animalData.animalBrain.output[j]);
-        //     }
-        //     orderedMovingParts[armsToMove[i]].TranslateOutput(partOutput);
-        // }
+    }
+    
+    public void MoveLimbs()
+    {
+        
         for (int i = 0; i < AnimalBrain.noMovingParts; i++)
         {
             int startingIndex = i * AnimalBrain.outputPerArm;
@@ -396,7 +353,7 @@ public class AnimalMovement : MonoBehaviour
         OrderAnimalChildren<AnimalBodyPart>(ref orderedBodyParts);
         SetIndexesLists();
         SetDictionaries();
-        startingBodyY = body.transform.position.y;
+        startingBodyY = body.transform.localPosition.y;
         _startingBodyRotation = body.transform.localEulerAngles;
         //bodyRigibody = body.GetComponent<Rigidbody>();
         averageBodyY = 0;
@@ -419,32 +376,29 @@ public class AnimalMovement : MonoBehaviour
             bodyPartsStartingX[i] = transform.GetChild(i).transform.localPosition.x;
         }
     }
-    float GetAverageX()
+    public float GetAverageX()
     {
         float averageX = 0;
         for (int i = 0; i < transform.childCount; i++)
         {
             float x = children[i].localPosition.x - bodyPartsStartingX[i];
-            averageX = +x;
+            averageX += x;
         }
         return averageX / children.Length;
     }
-
+    public float GetAverageZ()
+    {
+        float averageZ = 0;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            float z = children[i].localPosition.z;  //rozstaw nóg na szerokosc zawsze bedzie symetryczny
+            averageZ += z;
+        }
+        return averageZ / children.Length;
+    }
     void FixedUpdate()
     {
-        // if (body.transform.position.y > startingBodyY)
-        // {
-        //     averageBodyY += startingBodyY;
-        // }
-        // else
-        // {
-        //     averageBodyY += body.transform.position.y;
-        // }
-        // framesPassed++;
-        // var bodyX = body.transform.position.x;
-        // var leftFootX = leftFoot.transform.position.x - startingLeftFootPosition;   // inaczej stopy maja za duzy udzial - zwierzeta je wyrzucaja do przodu i sie blokuja
-        // var rightFootX = rightFoot.transform.position.x - startingRightFootPosition;
-        if (ifStartedToMove)
+        if (_ifStartedToMove&&ifSimulated)
         {
             _framesPassed++;
             currentX += Time.fixedDeltaTime * speed;
@@ -479,11 +433,11 @@ public class AnimalMovement : MonoBehaviour
             {
                 ifCatched = true;
             }
-            else if (body.transform.position.y > startingBodyY * 2)   //jak poleci w nieznane
+            else if (body.transform.localPosition.y > startingBodyY * 2)   //jak poleci w nieznane
             {
                 ifCatched = true;
             }
-            else if (body.transform.position.y < 0)   //jak spadnie w nieznane
+            else if (body.transform.localPosition.y < -1)   //jak spadnie w nieznane
             {
                 ifCatched = true;
             }
