@@ -26,7 +26,7 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
     txt += '\nmutation rate: '+str(round(data['mutationRate']*100))+'%'
     txt += '\nchase starting position: '+str(round(data['startingPosition'],2))
     txt += '\nspeed: '+str(round(data['speed'],2))
-    txt += '\ntime being alive importance: '+str(round(data['timeBeingAliveImportance'],2))
+    txt += '\ntime below average penalty: '+str(round(data['timeBelowAveragePenalty'],2))
     txt += '\nbest fitness value: '+str(round(data['bestFitness'],3))
     txt += '\ngeneration with best fitness value: '+str(generationBestDistance)
     txt += '\nbest distance: '+str(round(data['bestDistance'],3))
@@ -42,7 +42,10 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
     plt.plot([generationBestDistance,generationBestDistance],[data['bestDistance'],min(data['bestDistances'])],'--k',linewidth=0.5)
     plt.plot([0,generationBestDistance],[data['bestDistance'],data['bestDistance']],'--k',linewidth=0.5)
     plt.rc_context({'axes.autolimit_mode': 'round_numbers'})
-    plt.plot(data['bestDistances'])
+    best_distance, =plt.plot(data['bestDistances'],label='best distance')
+    average_distance, =plt.plot(data['averageDistances'], label = 'average distance')
+    plt.legend(handles=[best_distance, average_distance])
+
     x1,x2,y1,y2 = plt.axis()
     xt = ax.get_xticks() 
     xt=np.append(xt,generationBestDistance)
@@ -62,9 +65,9 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
 
     
 
-    plt.title("Best distance in individual generations")
+    plt.title("Distance in individual generations")
     plt.xlabel("generation number")
-    plt.ylabel("best distance")
+    plt.ylabel("distance")
     pp.savefig()
     plt.close()
 
@@ -72,7 +75,9 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
     plt.plot([generationBestFitness,generationBestFitness],[data['bestFitness'],min(data['bestFitnesses'])],'--k',linewidth=0.5)
     plt.plot([0,generationBestFitness],[data['bestFitness'],data['bestFitness']],'--k',linewidth=0.5)
     plt.rc_context({'axes.autolimit_mode': 'round_numbers'})
-    plt.plot(data['bestFitnesses'])
+    best_fitness,=plt.plot(data['bestFitnesses'], label='best fitness')
+    average_fitness,=plt.plot(data['averageFitnesses'],label='average fitness')
+    plt.legend(handles=[best_fitness, average_fitness])
     x1,x2,y1,y2 = plt.axis()
     xt = ax.get_xticks() 
     xt=np.append(xt,generationBestFitness)
@@ -92,9 +97,9 @@ with open(sys.path[0]+'//tempData.json') as dataJson:
 
     
 
-    plt.title("Best fitness value in individual generations")
+    plt.title("Fitness value in individual generations")
     plt.xlabel("generation number")
-    plt.ylabel("best fitness value")
+    plt.ylabel("fitness value")
     pp.savefig()
     plt.close()
     #plt.plot(data['bestFitnesses'])
